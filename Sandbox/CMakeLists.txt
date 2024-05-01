@@ -5,9 +5,6 @@ project(Sandbox VERSION 0.1.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-# Include directory for engine headers
-include_directories(${CMAKE_SOURCE_DIR}/../HrothCore/src)
-
 # Include directory for header files
 include_directories(${CMAKE_SOURCE_DIR}/src)
 
@@ -34,9 +31,25 @@ if(CMAKE_BUILD_TYPE MATCHES Release)
 	set(BIN_TYPE_DIR Release)
 endif()
 
+
+###########################################
+# EXTERNAL
+###########################################
+
+# Glad
+set(GLAD_DIR ${CMAKE_SOURCE_DIR}/external/glad)
+
+###########################################
+
 # Create the Sandbox executable
-add_executable(Sandbox ${SOURCE_FILES} ${HEADER_FILES})
+add_executable(Sandbox ${SOURCE_FILES} ${HEADER_FILES}
+						${GLAD_SOURCE_FILES}
+)
+
+# Include GLAD's header file in source files where needed
+target_include_directories(Sandbox PUBLIC ${GLAD_DIR}/include)
 
 # Link with engine library
 target_link_directories(Sandbox PRIVATE ${CMAKE_SOURCE_DIR}/../bin/${BIN_TYPE_DIR})
 target_link_libraries(Sandbox PRIVATE HrothCore)
+include_directories(${CMAKE_SOURCE_DIR}/../HrothCore/src)

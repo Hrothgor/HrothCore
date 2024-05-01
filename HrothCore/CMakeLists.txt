@@ -29,5 +29,22 @@ if(CMAKE_BUILD_TYPE MATCHES Release)
     add_definitions(-DRELEASE)
 endif()
 
+###########################################
+# EXTERNAL
+###########################################
+
+# Glad
+set(GLAD_DIR ${CMAKE_SOURCE_DIR}/external/glad)
+set (GLAD_SOURCE_FILES
+    ${GLAD_DIR}/src/glad.c
+)
+
+###########################################
+
 # Create library
-add_library(HrothCore STATIC ${SOURCE_FILES} ${HEADER_FILES})
+add_library(HrothCore STATIC ${SOURCE_FILES} ${HEADER_FILES}
+                            ${GLAD_SOURCE_FILES}
+)
+
+# Include GLAD's header file in source files where needed
+target_include_directories(HrothCore PUBLIC ${GLAD_DIR}/include)
