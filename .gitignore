@@ -30,3 +30,19 @@
 *.exe
 *.out
 *.app
+
+# CMake build directory
+/build/
+
+# Visual Studio files
+.vs/
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+
+# Text editor autosave files
+*~
+
+# macOS Finder files
+.DS_Store
