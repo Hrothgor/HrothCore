@@ -38,18 +38,18 @@ endif()
 
 # Glad
 set(GLAD_DIR ${CMAKE_SOURCE_DIR}/external/glad)
+include_directories(${GLAD_DIR}/include)
+
+# GLFW
+set(GLFW_DIR ${CMAKE_SOURCE_DIR}/external/glfw)
+include_directories(${GLFW_DIR}/include)
 
 ###########################################
 
 # Create the Sandbox executable
-add_executable(Sandbox ${SOURCE_FILES} ${HEADER_FILES}
-						${GLAD_SOURCE_FILES}
-)
-
-# Include GLAD's header file in source files where needed
-target_include_directories(Sandbox PUBLIC ${GLAD_DIR}/include)
+add_executable(Sandbox ${SOURCE_FILES} ${HEADER_FILES})
 
 # Link with engine library
 target_link_directories(Sandbox PRIVATE ${CMAKE_SOURCE_DIR}/../bin/${BIN_TYPE_DIR})
-target_link_libraries(Sandbox PRIVATE HrothCore)
+target_link_libraries(Sandbox HrothCore)
 include_directories(${CMAKE_SOURCE_DIR}/../HrothCore/src)

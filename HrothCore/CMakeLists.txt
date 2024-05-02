@@ -35,16 +35,18 @@ endif()
 
 # Glad
 set(GLAD_DIR ${CMAKE_SOURCE_DIR}/external/glad)
-set (GLAD_SOURCE_FILES
-    ${GLAD_DIR}/src/glad.c
-)
+add_library(glad ${GLAD_DIR}/src/glad.c)
+include_directories(${GLAD_DIR}/include)
+
+# GLFW
+set(GLFW_DIR ${CMAKE_SOURCE_DIR}/external/glfw)
+add_subdirectory(${GLFW_DIR})
+
+set(LIBS glfw glad)
 
 ###########################################
 
 # Create library
-add_library(HrothCore STATIC ${SOURCE_FILES} ${HEADER_FILES}
-                            ${GLAD_SOURCE_FILES}
-)
+add_library(HrothCore STATIC ${SOURCE_FILES} ${HEADER_FILES})
 
-# Include GLAD's header file in source files where needed
-target_include_directories(HrothCore PUBLIC ${GLAD_DIR}/include)
+target_link_libraries(HrothCore ${LIBS})
