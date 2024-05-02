@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(HrothCore VERSION 0.1.0 LANGUAGES CXX)
+project(HrothCore VERSION 0.1.0)
 
 # Set C++ standard
 set(CMAKE_CXX_STANDARD 20)
@@ -35,18 +35,17 @@ endif()
 
 # Glad
 set(GLAD_DIR ${CMAKE_SOURCE_DIR}/external/glad)
-add_library(glad ${GLAD_DIR}/src/glad.c)
 include_directories(${GLAD_DIR}/include)
 
 # GLFW
 set(GLFW_DIR ${CMAKE_SOURCE_DIR}/external/glfw)
 add_subdirectory(${GLFW_DIR})
 
-set(LIBS glfw glad)
+set(LIBS glfw)
 
 ###########################################
 
 # Create library
-add_library(HrothCore STATIC ${SOURCE_FILES} ${HEADER_FILES})
+add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES} ${GLAD_DIR}/src/glad.c)
 
-target_link_libraries(HrothCore ${LIBS})
+target_link_libraries(${PROJECT_NAME} PUBLIC glfw)

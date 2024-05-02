@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(Sandbox VERSION 0.1.0 LANGUAGES CXX)
+project(Sandbox VERSION 0.1.0)
 
 # Set C++ standard
 set(CMAKE_CXX_STANDARD 20)
@@ -51,5 +51,5 @@ add_executable(Sandbox ${SOURCE_FILES} ${HEADER_FILES})
 
 # Link with engine library
 target_link_directories(Sandbox PRIVATE ${CMAKE_SOURCE_DIR}/../bin/${BIN_TYPE_DIR})
-target_link_libraries(Sandbox HrothCore)
+target_link_libraries(Sandbox PUBLIC HrothCore)
 include_directories(${CMAKE_SOURCE_DIR}/../HrothCore/src)
