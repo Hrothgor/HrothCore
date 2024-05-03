@@ -17,9 +17,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install dependencies
-        uses: Symbitic/install-cmake@master
-
       - name: Build Debug
         run: ./build_debug.sh
 
