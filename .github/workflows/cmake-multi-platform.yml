@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build Debug
-        run: ./build_debug.sh
+        run: ./scripts/build_debug.sh
 
       - name: Build Release
-        run: ./build_release.sh
+        run: ./scripts/build_release.sh
