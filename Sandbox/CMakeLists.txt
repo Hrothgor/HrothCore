@@ -1,22 +1,19 @@
 cmake_minimum_required(VERSION 3.10)
-project(Sandbox VERSION 0.1.0)
+project(Sandbox VERSION 0.1.0 LANGUAGES CXX)
 
 # Set C++ standard
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-# Include directory for header files
-include_directories(${CMAKE_SOURCE_DIR}/src)
-
 # Add all Source Files
 file(GLOB_RECURSE SOURCE_FILES
-	${CMAKE_SOURCE_DIR}/src/*.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
 )
 
 # Add all Header Files
 file(GLOB_RECURSE HEADER_FILES 
-	${CMAKE_SOURCE_DIR}/src/*.h
-	${CMAKE_SOURCE_DIR}/src/*.hpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/*.h
+	${CMAKE_CURRENT_SOURCE_DIR}/src/*.hpp
 )
 
 # Debug build
@@ -31,25 +28,19 @@ if(CMAKE_BUILD_TYPE MATCHES Release)
 	set(BIN_TYPE_DIR Release)
 endif()
 
+# Create the Sandbox executable
+add_executable(Sandbox ${SOURCE_FILES} ${HEADER_FILES})
+
+# Include directory for header files
+target_include_directories(Sandbox PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 ###########################################
 # EXTERNAL
 ###########################################
 
-# Glad
-set(GLAD_DIR ${CMAKE_SOURCE_DIR}/external/glad)
-include_directories(${GLAD_DIR}/include)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../HrothCore ${CMAKE_CURRENT_BINARY_DIR}/HrothCore)
 
-# GLFW
-set(GLFW_DIR ${CMAKE_SOURCE_DIR}/external/glfw)
-include_directories(${GLFW_DIR}/include)
+target_link_libraries(Sandbox PRIVATE
+						HrothCore)
 
 ###########################################
-
-# Create the Sandbox executable
-add_executable(Sandbox ${SOURCE_FILES} ${HEADER_FILES})
-
-# Link with engine library
-target_link_directories(Sandbox PRIVATE ${CMAKE_SOURCE_DIR}/../bin/${BIN_TYPE_DIR})
-target_link_libraries(Sandbox PUBLIC HrothCore)
-include_directories(${CMAKE_SOURCE_DIR}/../HrothCore/src)
