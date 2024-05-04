@@ -27,5 +27,5 @@ fi
 # Create bin directory if it doesn't exist
 mkdir -p "$BIN_DIR"
 # Copy binary to bin directory
-cp "$PROJECT_ROOT/build/Release/Sandbox.exe" "$BIN_DIR" 2>&1
+cp "$PROJECT_ROOT/build/Release/Sandbox.exe" "$BIN_DIR"
 echo -e "${GREEN}\nRelease build complete.\n${NC}"
