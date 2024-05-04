@@ -20,13 +20,21 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: true
-          
-      - name: Build Debug
+
+      - name: Install Wayland development tools (only for Linux)
+        if: runner.os == 'Linux' && matrix.os == 'ubuntu-latest'
         run: |
-          chmod +x ./scripts/build_debug.sh
-          ./scripts/build_debug.sh
+          sudo apt update
+          sudo apt install wayland-scanner
+          
+      - name: Prepare build Debug
+        run: chmod +x ./scripts/build_debug.sh
+
+      - name: Build Debug
+        run: ./scripts/build_debug.sh
+
+      - name: Prepare build Release
+        run: chmod +x ./scripts/build_release.sh
 
       - name: Build Release
-        run: |
-          chmod +x ./scripts/build_release.sh
-          ./scripts/build_release.sh
+        run: ./scripts/build_release.sh
