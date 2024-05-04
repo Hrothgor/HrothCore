@@ -3,6 +3,8 @@
 int main(int argc, char** argv);
 
 namespace HrothCore {
+	class Window;
+	
 	struct ApplicationCommandLineArgs
 	{
 		int Count = 0;
@@ -10,6 +12,7 @@ namespace HrothCore {
 
 		const char* operator[](int index) const
 		{
+			// ASSERT index < Count
 			return Args[index];
 		}
 	};
@@ -17,7 +20,7 @@ namespace HrothCore {
 	struct ApplicationSpecification
 	{
 		std::string Name = "HrothCore Application";
-		std::string WorkingDirectory;
+		std::string WorkingDirectory = "./";
 		ApplicationCommandLineArgs CommandLineArgs;
 	};
 
@@ -28,13 +31,19 @@ namespace HrothCore {
 		virtual ~Application();
 
 		void Close();
+
+		static Application& Get() { return *s_Instance; }
 	private:
 		void Run();
 
 	private:
 		ApplicationSpecification m_Specification;
 		bool m_Running = true;
+
+		std::unique_ptr<Window> m_Window;
+
 	private:
+		static Application* s_Instance;
 		friend int ::main(int argc, char** argv);
 	};
 
