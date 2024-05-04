@@ -1,4 +1,4 @@
-name: CI
+name: Build
 
 on:
   push:
@@ -21,20 +21,16 @@ jobs:
         with:
           submodules: true
 
-      - name: Install Wayland development tools (only for Linux)
+      - name: Install Wayland development tools (only for Ubuntu)
         if: runner.os == 'Linux' && matrix.os == 'ubuntu-latest'
-        run: |
-          sudo apt update
-          sudo apt install wayland-scanner
+        run: sudo apt install libwayland-dev libxkbcommon-dev xorg-dev
           
-      - name: Prepare build Debug
-        run: chmod +x ./scripts/build_debug.sh
-
       - name: Build Debug
-        run: ./scripts/build_debug.sh
-
-      - name: Prepare build Release
-        run: chmod +x ./scripts/build_release.sh
+        run: |
+          chmod +x ./scripts/build_debug.sh
+          ./scripts/build_debug.sh 2>&1
 
       - name: Build Release
-        run: ./scripts/build_release.sh
+        run: |
+          chmod +x ./scripts/build_release.sh
+          ./scripts/build_release.sh 2>&1
