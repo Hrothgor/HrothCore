@@ -38,9 +38,11 @@ target_include_directories(HrothCore PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/external/glad)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/external/glfw)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/external/glm)
 
 target_link_libraries(HrothCore PUBLIC 
 						glfw 
-						glad)
+						glad
+						glm)
 
 ###########################################
