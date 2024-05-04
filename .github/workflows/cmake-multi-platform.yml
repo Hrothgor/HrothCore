@@ -18,7 +18,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
+        with:
+          submodules: true
+          
       - name: Build Debug
         run: |
           chmod +x ./scripts/build_debug.sh

@@ -1,0 +1,3 @@
+[submodule "HrothCore/external/glfw"]
+	path = HrothCore/external/glfw
+	url = https://github.com/glfw/glfw.git
