@@ -1,5 +1,7 @@
 #pragma once
 
+#include "HrothCore/Core/Macro.hpp"
+
 int main(int argc, char** argv);
 
 namespace HrothCore {
@@ -12,7 +14,8 @@ namespace HrothCore {
 
 		const char* operator[](int index) const
 		{
-			// ASSERT index < Count
+			HC_ASSERT(index < Count);
+			HC_ASSERT(Args != nullptr);
 			return Args[index];
 		}
 	};

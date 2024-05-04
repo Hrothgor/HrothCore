@@ -3,13 +3,15 @@
 #include "HrothCore/Core/Application.hpp"
 #include "HrothCore/Core/Window.hpp"
 
+#include "HrothCore/Core/Macro.hpp"
+
 namespace HrothCore {
 	Application* Application::s_Instance = nullptr;
 
 	Application::Application(const ApplicationSpecification& specification)
 		: m_Specification(specification)
 	{
-		// ASSERT s_Instance == nullptr
+		HC_ASSERT(s_Instance == nullptr);
 		s_Instance = this;
 
 		// Set working directory here

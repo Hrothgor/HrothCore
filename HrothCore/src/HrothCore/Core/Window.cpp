@@ -3,6 +3,8 @@
 #include "HrothCore/Core/Window.hpp"
 #include "HrothCore/Core/Application.hpp"
 
+#include "HrothCore/Core/Macro.hpp"
+
 #include <GLFW/glfw3.h>
 
 namespace HrothCore
@@ -26,10 +28,7 @@ namespace HrothCore
         m_Props.VSync = props.VSync;
 
         int success = glfwInit();
-        if (!success)
-        {
-            // ASSERT
-        }
+        HC_ASSERT(success == GLFW_TRUE);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -41,8 +40,8 @@ namespace HrothCore
         m_Window = glfwCreateWindow(m_Props.Width, m_Props.Height, m_Props.Title.c_str(), nullptr, nullptr);
         if (!m_Window)
         {
+            HC_ASSERT(m_Window != nullptr);
             glfwTerminate();
-            // ASSERT
         }
 
         EnableVSync(m_Props.VSync);

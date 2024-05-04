@@ -21,11 +21,6 @@ if(CMAKE_BUILD_TYPE MATCHES Debug)
     add_definitions(-DDEBUG)
 endif()
 
-# Release build
-if(CMAKE_BUILD_TYPE MATCHES Release)
-    add_definitions(-DRELEASE)
-endif()
-
 # Create library
 add_library(HrothCore STATIC ${SOURCE_FILES} ${HEADER_FILES})
 

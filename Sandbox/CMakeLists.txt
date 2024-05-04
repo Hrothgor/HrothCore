@@ -20,11 +20,7 @@ file(GLOB_RECURSE HEADER_FILES
 if(CMAKE_BUILD_TYPE MATCHES Debug)
     add_definitions(-DDEBUG)
 	set(BIN_TYPE_DIR Debug)
-endif()
-
-# Release build
-if(CMAKE_BUILD_TYPE MATCHES Release)
-    add_definitions(-DRELEASE)
+else()
 	set(BIN_TYPE_DIR Release)
 endif()
 
