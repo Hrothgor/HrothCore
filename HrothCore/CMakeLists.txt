@@ -32,6 +32,9 @@ add_library(HrothCore STATIC ${SOURCE_FILES} ${HEADER_FILES})
 # Include directory for header files
 target_include_directories(HrothCore PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
+# Precompiled headers
+target_precompile_headers(HrothCore PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/HrothCore_pch.hpp)
+
 ###########################################
 # EXTERNAL
 ###########################################
