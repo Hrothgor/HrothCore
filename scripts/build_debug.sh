@@ -19,8 +19,8 @@ mkdir -p "$BUILD_DIR"
 # Build the project (debug)
 echo -e "${YELLOW}\nDebug build Start.\n${NC}"
 cd "$BUILD_DIR"
-cmake -DCMAKE_BUILD_TYPE=Debug "$PROJECT_ROOT/Sandbox" 2>&1
-if ! cmake --build . --config Debug 2>&1; then
+cmake -DCMAKE_BUILD_TYPE=Debug "$PROJECT_ROOT/Sandbox"
+if ! cmake --build . --config Debug; then
     echo -e "${RED}\nFailed to build.${NC}\n"
     exit 1
 fi

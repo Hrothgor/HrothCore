@@ -19,8 +19,8 @@ mkdir -p "$BUILD_DIR"
 # Build the project (release)
 echo -e "${YELLOW}\nRelease build Start.\n${NC}"
 cd "$BUILD_DIR"
-cmake -DCMAKE_BUILD_TYPE=Release "$PROJECT_ROOT/Sandbox" 2>&1
-if ! cmake --build . --config Release 2>&1; then
+cmake -DCMAKE_BUILD_TYPE=Release "$PROJECT_ROOT/Sandbox"
+if ! cmake --build . --config Release; then
     echo -e "${RED}\nFailed to build.${NC}\n"
     exit 1
 fi
