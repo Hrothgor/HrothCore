@@ -2,6 +2,7 @@
 
 #include "HrothCore/Core/Application.hpp"
 #include "HrothCore/Core/Window.hpp"
+#include "HrothCore/Core/Engine.hpp"
 
 #include "HrothCore/Core/Macro.hpp"
 
@@ -34,6 +35,10 @@ namespace HrothCore {
 	{
 		while (m_Running)
 		{
+			float dt = m_Window->GetDeltaTime();
+
+			Engine::Get().Update(dt);
+
             m_Window->Update();
 		}
 	}

@@ -34,12 +34,18 @@ namespace HrothCore
 		void EnableVSync(bool enable = true);
 		bool IsVSync() const { return m_Props.VSync; }
 
+		GLFWwindow *GetNativeWindow() const { return m_Window; }
+
+		float GetDeltaTime() const { return m_DeltaTime; }
+
 	private:
 		void Init(const WindowProps &props);
 		void Shutdown();
 
     private:
         WindowProps m_Props;
+		float m_LastFrameTime = 0.0f;
+		float m_DeltaTime = 0.016f;
 		GLFWwindow *m_Window;
     };
 }

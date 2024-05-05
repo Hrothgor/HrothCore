@@ -34,6 +34,7 @@ namespace HrothCore {
 		virtual ~Application();
 
 		void Close();
+		Window &GetWindow() { return *m_Window; }
 
 		static Application& Get() { return *s_Instance; }
 	private:
@@ -43,6 +44,8 @@ namespace HrothCore {
 		ApplicationSpecification m_Specification;
 		bool m_Running = true;
 
+		float m_LastFrameTime = 0.0f;
+		
 		std::unique_ptr<Window> m_Window;
 
 	private:

@@ -44,11 +44,21 @@ namespace HrothCore
             glfwTerminate();
         }
 
+        glfwMakeContextCurrent(m_Window);
+
+        glfwSetWindowUserPointer(m_Window, &m_Props);
         EnableVSync(m_Props.VSync);
 
         glfwSetWindowCloseCallback(m_Window, [](GLFWwindow* window)
 		{
             Application::Get().Close();
+		});
+
+        glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height)
+		{
+			WindowProps& data = *(WindowProps*)glfwGetWindowUserPointer(window);
+			data.Width = width;
+			data.Height = height;
 		});
     }
 
@@ -60,17 +70,15 @@ namespace HrothCore
 
     void Window::EnableVSync(bool enable)
     {
-        if (m_Props.VSync == enable)
-            return;
-
         glfwSwapInterval(enable ? 1 : 0);
-
         m_Props.VSync = enable;
     }
 
     void Window::Update()
     {
-        glfwSwapBuffers(m_Window);
         glfwPollEvents();
+        glfwSwapBuffers(m_Window);
+        m_DeltaTime = (float)glfwGetTime() - m_LastFrameTime;
+        m_LastFrameTime = (float)glfwGetTime();
     }
 }
