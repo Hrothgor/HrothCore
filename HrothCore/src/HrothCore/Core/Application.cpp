@@ -4,8 +4,6 @@
 #include "HrothCore/Core/Window.hpp"
 #include "HrothCore/Core/Engine.hpp"
 
-#include "HrothCore/Core/Macro.hpp"
-
 namespace HrothCore {
 	Application* Application::s_Instance = nullptr;
 

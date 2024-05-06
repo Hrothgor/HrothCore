@@ -15,15 +15,15 @@
     #define HC_ASSERT(check)
 #endif
 
-#define HC_SINGLETON(className) \
-    private: \
-        className(); \
-    public: \
-        className(const className&) = delete; \
-        className& operator=(const className &) = delete; \
-        className(className &&) = delete; \
-        className & operator=(className &&) = delete; \
-        static className& Get() { \
+#define HC_SINGLETON(className)                                                  \
+    private:                                                                     \
+        className();                                                             \
+    public:                                                                      \
+        className(const className&) = delete;                                    \
+        className& operator=(const className &) = delete;                        \
+        className(className &&) = delete;                                        \
+        className & operator=(className &&) = delete;                            \
+        static className& Get() {                                                \
             static const std::unique_ptr<className> s_Instance(new className()); \
-            return *s_Instance; \
-        } \
+            return *s_Instance;                                                  \
+        }

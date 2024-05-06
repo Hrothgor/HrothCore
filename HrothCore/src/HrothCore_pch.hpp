@@ -10,3 +10,6 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+
+// FROM HROTHCORE
+#include "HrothCore/Core/Macro.hpp"

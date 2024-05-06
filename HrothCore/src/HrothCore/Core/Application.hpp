@@ -1,7 +1,5 @@
 #pragma once
 
-#include "HrothCore/Core/Macro.hpp"
-
 int main(int argc, char** argv);
 
 namespace HrothCore {

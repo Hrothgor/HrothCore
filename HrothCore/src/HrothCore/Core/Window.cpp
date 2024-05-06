@@ -3,8 +3,6 @@
 #include "HrothCore/Core/Window.hpp"
 #include "HrothCore/Core/Application.hpp"
 
-#include "HrothCore/Core/Macro.hpp"
-
 #include <GLFW/glfw3.h>
 
 namespace HrothCore

@@ -1,7 +1,5 @@
 #pragma once
 
-#include "HrothCore/Core/Macro.hpp"
-
 namespace HrothCore
 {
     class Engine
