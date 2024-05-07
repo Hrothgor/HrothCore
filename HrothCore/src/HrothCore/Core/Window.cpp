@@ -101,13 +101,13 @@ namespace HrothCore
         {
             case WindowMode::Windowed:
             {
-                glfwSetWindowMonitor(m_Window, nullptr, m_WindowedPos[0], m_WindowedPos[1], m_WindowedSize[0], m_WindowedSize[1], m_VideoMode->refreshRate);
+                glfwSetWindowMonitor(m_Window, nullptr, m_OldWindowedPos[0], m_OldWindowedPos[1], m_OldWindowedSize[0], m_OldWindowedSize[1], m_VideoMode->refreshRate);
                 break;
             }
             case WindowMode::Fullscreen:
             {
-                glfwGetWindowPos(m_Window, &m_WindowedPos[0], &m_WindowedPos[1] );
-                glfwGetWindowSize(m_Window, &m_WindowedSize[0], &m_WindowedSize[1] );
+                glfwGetWindowPos(m_Window, &m_OldWindowedPos[0], &m_OldWindowedPos[1] );
+                glfwGetWindowSize(m_Window, &m_OldWindowedSize[0], &m_OldWindowedSize[1] );
                 glfwSetWindowMonitor(m_Window, m_Monitor, 0, 0, m_VideoMode->width, m_VideoMode->height, m_VideoMode->refreshRate);
                 break;
             }

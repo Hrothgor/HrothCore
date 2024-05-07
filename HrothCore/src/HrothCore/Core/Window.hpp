@@ -63,8 +63,8 @@ namespace HrothCore
 		GLFWmonitor *m_Monitor;
 		const GLFWvidmode *m_VideoMode;
 
-		int m_WindowedSize[2];
-		int m_WindowedPos[2];
+		int m_OldWindowedSize[2];
+		int m_OldWindowedPos[2];
 		WindowMode m_CurrentWindowMode = WindowMode::Windowed;
     };
 }
