@@ -28,11 +28,6 @@ namespace HrothCore
 		}
 	};
 
-	struct WindowPosition
-	{
-		int x,y = 0;
-	};
-
     class Window
     {
     public:
