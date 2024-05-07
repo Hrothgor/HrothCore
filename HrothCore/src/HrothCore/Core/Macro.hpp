@@ -17,7 +17,7 @@
 
 #define HC_SINGLETON(className)                                                  \
     private:                                                                     \
-        className();                                                             \
+        className() = default;                                                   \
     public:                                                                      \
         className(const className&) = delete;                                    \
         className& operator=(const className &) = delete;                        \
@@ -27,3 +27,5 @@
             static const std::unique_ptr<className> s_Instance(new className()); \
             return *s_Instance;                                                  \
         }
+
+#define HC_STRINGIFY_CLASS(class) virtual const char *ToString() const { return #class; }

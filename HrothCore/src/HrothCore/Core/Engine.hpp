@@ -12,7 +12,7 @@ namespace HrothCore
 
             void Init();
             void Shutdown();
-            void Update(float dt);
+            void Update(double dt);
 
         private:
     };

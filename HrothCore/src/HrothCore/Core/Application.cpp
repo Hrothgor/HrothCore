@@ -4,6 +4,10 @@
 #include "HrothCore/Core/Window.hpp"
 #include "HrothCore/Core/Engine.hpp"
 
+#include "HrothCore/Events/EventManager.hpp"
+#include "HrothCore/Events/WindowEvent.hpp"
+#include "HrothCore/Events/KeyMouseEvent.hpp"
+
 namespace HrothCore {
 	Application* Application::s_Instance = nullptr;
 
@@ -18,6 +22,12 @@ namespace HrothCore {
 			std::filesystem::current_path(m_Specification.WorkingDirectory);
 
 		m_Window = std::make_unique<Window>(WindowProps(m_Specification.Name));
+
+		HC_REGISTER_EVENT(WindowCloseEvent, [](const WindowCloseEvent& event) -> bool
+        {
+            Application::Get().Close();
+            return true;
+        });
 	}
 
 	Application::~Application()
@@ -33,7 +43,7 @@ namespace HrothCore {
 	{
 		while (m_Running)
 		{
-			float dt = m_Window->GetDeltaTime();
+			double dt = m_Window->GetDeltaTime();
 
 			Engine::Get().Update(dt);
 
