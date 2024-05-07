@@ -102,13 +102,29 @@ namespace HrothCore
             case WindowMode::Windowed:
             {
                 glfwSetWindowMonitor(m_Window, nullptr, m_OldWindowedPos[0], m_OldWindowedPos[1], m_OldWindowedSize[0], m_OldWindowedSize[1], m_VideoMode->refreshRate);
+                glfwSetWindowAttrib(m_Window, GLFW_DECORATED, GLFW_TRUE);
                 break;
             }
             case WindowMode::Fullscreen:
             {
-                glfwGetWindowPos(m_Window, &m_OldWindowedPos[0], &m_OldWindowedPos[1] );
-                glfwGetWindowSize(m_Window, &m_OldWindowedSize[0], &m_OldWindowedSize[1] );
+                if (m_CurrentWindowMode == WindowMode::Windowed)
+                {
+                    glfwGetWindowPos(m_Window, &m_OldWindowedPos[0], &m_OldWindowedPos[1]);
+                    glfwGetWindowSize(m_Window, &m_OldWindowedSize[0], &m_OldWindowedSize[1]);
+                }
                 glfwSetWindowMonitor(m_Window, m_Monitor, 0, 0, m_VideoMode->width, m_VideoMode->height, m_VideoMode->refreshRate);
+                glfwSetWindowAttrib(m_Window, GLFW_DECORATED, GLFW_TRUE);
+                break;
+            }
+            case WindowMode::Borderless:
+            {
+                if (m_CurrentWindowMode == WindowMode::Windowed)
+                {
+                    glfwGetWindowPos(m_Window, &m_OldWindowedPos[0], &m_OldWindowedPos[1]);
+                    glfwGetWindowSize(m_Window, &m_OldWindowedSize[0], &m_OldWindowedSize[1]);
+                }
+                glfwSetWindowMonitor(m_Window, nullptr, 0, 0, m_VideoMode->width, m_VideoMode->height, m_VideoMode->refreshRate);
+                glfwSetWindowAttrib(m_Window, GLFW_DECORATED, GLFW_FALSE);
                 break;
             }
             default:
@@ -131,6 +147,10 @@ namespace HrothCore
         if (glfwGetKey(m_Window, GLFW_KEY_I) == GLFW_PRESS)
         {
             SetWindowMode(WindowMode::Fullscreen);
+        }
+        if (glfwGetKey(m_Window, GLFW_KEY_O) == GLFW_PRESS)
+        {
+            SetWindowMode(WindowMode::Borderless);
         }
     }
 }

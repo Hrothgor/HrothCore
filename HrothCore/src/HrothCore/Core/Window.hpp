@@ -10,6 +10,7 @@ namespace HrothCore
 	{
 		Windowed,
 		Fullscreen,
+		Borderless,
 	};
 
     struct WindowProps
