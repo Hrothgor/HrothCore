@@ -7,10 +7,11 @@
 
 namespace HrothCore
 {
-    Window::Window(const WindowProps &props)
+    Window::Window(const WindowProps &props, WindowMode mode)
         : m_Props(props)
     {
         Init(props);
+        SetWindowMode(mode);
     }
 
     Window::~Window()
@@ -35,11 +36,31 @@ namespace HrothCore
             // LOG ERROR
         });
 
+        m_Monitor = glfwGetPrimaryMonitor();
+        if (!m_Monitor)
+        {
+            HC_ASSERT(m_Monitor);
+            Application::Get().Close();
+            return;
+        }
+        m_VideoMode = glfwGetVideoMode(m_Monitor);
+        if (!m_VideoMode)
+        {
+            HC_ASSERT(m_VideoMode);
+            Application::Get().Close();
+            return;
+        }
+        glfwWindowHint(GLFW_RED_BITS, m_VideoMode->redBits);
+        glfwWindowHint(GLFW_GREEN_BITS, m_VideoMode->greenBits);
+        glfwWindowHint(GLFW_BLUE_BITS, m_VideoMode->blueBits);
+        glfwWindowHint(GLFW_REFRESH_RATE, m_VideoMode->refreshRate);
+
         m_Window = glfwCreateWindow(m_Props.Width, m_Props.Height, m_Props.Title.c_str(), nullptr, nullptr);
         if (!m_Window)
         {
-            HC_ASSERT(m_Window != nullptr);
-            glfwTerminate();
+            HC_ASSERT(m_Window);
+            Application::Get().Close();
+            return;
         }
 
         glfwMakeContextCurrent(m_Window);
@@ -72,11 +93,44 @@ namespace HrothCore
         m_Props.VSync = enable;
     }
 
+    void Window::SetWindowMode(WindowMode mode)
+    {
+        if (m_CurrentWindowMode == mode)
+            return;
+        switch (mode)
+        {
+            case WindowMode::Windowed:
+            {
+                glfwSetWindowMonitor(m_Window, nullptr, m_WindowedPos[0], m_WindowedPos[1], m_WindowedSize[0], m_WindowedSize[1], m_VideoMode->refreshRate);
+                break;
+            }
+            case WindowMode::Fullscreen:
+            {
+                glfwGetWindowPos(m_Window, &m_WindowedPos[0], &m_WindowedPos[1] );
+                glfwGetWindowSize(m_Window, &m_WindowedSize[0], &m_WindowedSize[1] );
+                glfwSetWindowMonitor(m_Window, m_Monitor, 0, 0, m_VideoMode->width, m_VideoMode->height, m_VideoMode->refreshRate);
+                break;
+            }
+            default:
+                break;
+        }
+        m_CurrentWindowMode = mode;
+    }
+
     void Window::Update()
     {
         glfwPollEvents();
         glfwSwapBuffers(m_Window);
         m_DeltaTime = (float)glfwGetTime() - m_LastFrameTime;
         m_LastFrameTime = (float)glfwGetTime();
+
+        if (glfwGetKey(m_Window, GLFW_KEY_U) == GLFW_PRESS)
+        {
+            SetWindowMode(WindowMode::Windowed);
+        }
+        if (glfwGetKey(m_Window, GLFW_KEY_I) == GLFW_PRESS)
+        {
+            SetWindowMode(WindowMode::Fullscreen);
+        }
     }
 }

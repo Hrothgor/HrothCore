@@ -1,9 +1,17 @@
 #pragma once
 
 struct GLFWwindow;
+struct GLFWmonitor;
+struct GLFWvidmode;
 
 namespace HrothCore
 {
+	enum class WindowMode
+	{
+		Windowed,
+		Fullscreen,
+	};
+
     struct WindowProps
 	{
 		std::string Title;
@@ -20,10 +28,15 @@ namespace HrothCore
 		}
 	};
 
+	struct WindowPosition
+	{
+		int x,y = 0;
+	};
+
     class Window
     {
     public:
-        Window(const WindowProps &props = WindowProps());
+        Window(const WindowProps &props = WindowProps(), WindowMode mode = WindowMode::Windowed);
         virtual ~Window();
 
         void Update();
@@ -34,7 +47,7 @@ namespace HrothCore
 		void EnableVSync(bool enable = true);
 		bool IsVSync() const { return m_Props.VSync; }
 
-		GLFWwindow *GetNativeWindow() const { return m_Window; }
+		void SetWindowMode(WindowMode mode);
 
 		float GetDeltaTime() const { return m_DeltaTime; }
 
@@ -47,5 +60,11 @@ namespace HrothCore
 		float m_LastFrameTime = 0.0f;
 		float m_DeltaTime = 0.016f;
 		GLFWwindow *m_Window;
+		GLFWmonitor *m_Monitor;
+		const GLFWvidmode *m_VideoMode;
+
+		int m_WindowedSize[2];
+		int m_WindowedPos[2];
+		WindowMode m_CurrentWindowMode = WindowMode::Windowed;
     };
 }
