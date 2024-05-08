@@ -47,6 +47,8 @@ namespace HrothCore
 
 		double GetDeltaTime() const { return m_DeltaTime; }
 
+		GLFWwindow *GetNativeWindow() const { return m_Window; }
+
 	private:
 		void Init(const WindowProps &props);
 		void SetupCallbacks();
