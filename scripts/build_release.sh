@@ -28,7 +28,7 @@ fi
 mkdir -p "$BIN_DIR"
 # Copy binary to bin directory
 if [ "$(uname)" == "Darwin" ]; then
-    cp "$PROJECT_ROOT/build/Release/Sandbox" "$BIN_DIR"
+    cp "$PROJECT_ROOT/build/Sandbox" "$BIN_DIR"
 elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
     cp "$PROJECT_ROOT/build/Sandbox" "$BIN_DIR"
 elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW32_NT" ]; then
