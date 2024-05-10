@@ -139,18 +139,5 @@ namespace HrothCore
         glfwSwapBuffers(m_Window);
         m_DeltaTime = (float)glfwGetTime() - m_LastFrameTime;
         m_LastFrameTime = (float)glfwGetTime();
-
-        if (glfwGetKey(m_Window, GLFW_KEY_U) == GLFW_PRESS)
-        {
-            SetWindowMode(WindowMode::Windowed);
-        }
-        if (glfwGetKey(m_Window, GLFW_KEY_I) == GLFW_PRESS)
-        {
-            SetWindowMode(WindowMode::Fullscreen);
-        }
-        if (glfwGetKey(m_Window, GLFW_KEY_O) == GLFW_PRESS)
-        {
-            SetWindowMode(WindowMode::Borderless);
-        }
     }
 }
