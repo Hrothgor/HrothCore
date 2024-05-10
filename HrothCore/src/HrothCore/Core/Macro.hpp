@@ -11,8 +11,8 @@
 
     #define HC_ASSERT(check) if (!(check)) { std::cerr << "Assertion '" << #check << "' failed at " << std::filesystem::path(__FILE__).filename().string() << ":" << __LINE__; HC_DEBUGBREAK(); }
 #else
-    #define HC_DEBUGBREAK()
-    #define HC_ASSERT(check)
+    #define HC_DEBUGBREAK() void(0)
+    #define HC_ASSERT(check) void(0)
 #endif
 
 #define HC_SINGLETON(className)                                                  \

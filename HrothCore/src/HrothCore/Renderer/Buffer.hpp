@@ -2,20 +2,20 @@
 
 namespace HrothCore
 {
-    enum BufferUsage {
+    enum class BufferUsage {
         Static,
-        Dynamic,
-        Stream
+        Dynamic
     };
 
     class Buffer {
         public:
-            Buffer();
+            Buffer(uint32_t size, const void *data = nullptr, BufferUsage usage = BufferUsage::Dynamic);
             ~Buffer();
 
-            void SetData(const void* data, uint32_t size, BufferUsage usage = BufferUsage::Static);
+            void SetData(uint32_t size, const void *data, uint32_t offset = 0);
 
         private:
+            BufferUsage m_Usage;
             uint32_t m_Size;
             uint32_t m_HandleID;
     };

@@ -12,5 +12,7 @@
 #include <vector>
 #include <unordered_map>
 
+#include <glm/glm.hpp>
+
 // FROM HROTHCORE
 #include "HrothCore/Core/Macro.hpp"

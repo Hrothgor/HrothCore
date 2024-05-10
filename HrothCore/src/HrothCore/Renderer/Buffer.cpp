@@ -6,10 +6,18 @@
 
 namespace HrothCore
 {
-    Buffer::Buffer()
-        : m_Size(0), m_HandleID(0)
+    Buffer::Buffer(uint32_t size, const void *data, BufferUsage usage)
+        : m_Size(size), m_Usage(usage), m_HandleID(0)
     {
+        GLbitfield usageGL;
+        switch (usage)
+        {
+            case BufferUsage::Static: usageGL = 0;
+            case BufferUsage::Dynamic: usageGL |= GL_DYNAMIC_STORAGE_BIT;
+        }
+
         glCreateBuffers(1, &m_HandleID);
+        glNamedBufferStorage(m_HandleID, m_Size, data, usageGL);
     }
 
     Buffer::~Buffer()
@@ -17,15 +25,11 @@ namespace HrothCore
         glDeleteBuffers(1, &m_HandleID);
     }
 
-    void Buffer::SetData(const void *data, uint32_t size, BufferUsage usage)
+    void Buffer::SetData(uint32_t size, const void *data, uint32_t offset)
     {
-        GLenum usageGL = 0;
-        switch (usage)
-        {
-        case BufferUsage::Static: usageGL = GL_STATIC_DRAW;
-        case BufferUsage::Dynamic: usageGL = GL_DYNAMIC_DRAW;
-        case BufferUsage::Stream: usageGL = GL_STREAM_DRAW;
-        }
-        glNamedBufferData(m_HandleID, size, data, usageGL);
+        HC_ASSERT(size + offset <= m_Size);
+        HC_ASSERT(data != nullptr);
+
+        glNamedBufferSubData(m_HandleID, offset, size, data);
     }
 }
