@@ -27,5 +27,13 @@ fi
 # Create bin directory if it doesn't exist
 mkdir -p "$BIN_DIR"
 # Copy binary to bin directory
-cp "$PROJECT_ROOT/build/Debug/Sandbox.exe" "$BIN_DIR"
+if [ "$(uname)" == "Darwin" ]; then
+    cp "$PROJECT_ROOT/build/Sandbox" "$BIN_DIR"
+elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+    cp "$PROJECT_ROOT/build/Sandbox" "$BIN_DIR"
+elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW32_NT" ]; then
+    cp "$PROJECT_ROOT/build/Debug/Sandbox.exe" "$BIN_DIR"
+elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW64_NT" ]; then
+    cp "$PROJECT_ROOT/build/Debug/Sandbox.exe" "$BIN_DIR"
+fi
 echo -e "${GREEN}\nDebug build complete.\n${NC}"

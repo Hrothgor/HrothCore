@@ -4,10 +4,6 @@
 
 namespace HrothCore
 {
-    Engine::Engine()
-    {
-    }
-
     void Engine::Init()
     {
 
@@ -18,7 +14,7 @@ namespace HrothCore
 
     }
 
-    void Engine::Update(float dt)
+    void Engine::Update(double dt)
     {
         std::cout << dt << std::endl;
         std::cout << 1.0/dt << std::endl;

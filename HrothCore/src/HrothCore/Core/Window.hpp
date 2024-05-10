@@ -45,16 +45,19 @@ namespace HrothCore
 
 		void SetWindowMode(WindowMode mode);
 
-		float GetDeltaTime() const { return m_DeltaTime; }
+		double GetDeltaTime() const { return m_DeltaTime; }
+
+		GLFWwindow *GetNativeWindow() const { return m_Window; }
 
 	private:
 		void Init(const WindowProps &props);
+		void SetupCallbacks();
 		void Shutdown();
 
     private:
         WindowProps m_Props;
-		float m_LastFrameTime = 0.0f;
-		float m_DeltaTime = 0.016f;
+		double m_LastFrameTime = 0.0f;
+		double m_DeltaTime = 0.016f;
 		GLFWwindow *m_Window;
 		GLFWmonitor *m_Monitor;
 		const GLFWvidmode *m_VideoMode;

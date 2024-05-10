@@ -9,11 +9,9 @@ namespace HrothCore
         public:
             virtual ~Engine() = default;
 
-
             void Init();
             void Shutdown();
-            void Update(float dt);
-
+            void Update(double dt);
         private:
     };
 }
