@@ -2,6 +2,8 @@
 
 #include "HrothCore/Core/Window.hpp"
 #include "HrothCore/Core/Application.hpp"
+#include "HrothCore/Events/WindowEvent.hpp"
+#include "HrothCore/Events/KeyMouseEvent.hpp"
 
 #include <GLFW/glfw3.h>
 
@@ -68,17 +70,7 @@ namespace HrothCore
         glfwSetWindowUserPointer(m_Window, &m_Props);
         EnableVSync(m_Props.VSync);
 
-        glfwSetWindowCloseCallback(m_Window, [](GLFWwindow* window)
-		{
-            Application::Get().Close();
-		});
-
-        glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height)
-		{
-			WindowProps& data = *(WindowProps*)glfwGetWindowUserPointer(window);
-			data.Width = width;
-			data.Height = height;
-		});
+        SetupCallbacks();
     }
 
     void Window::Shutdown()
@@ -137,7 +129,84 @@ namespace HrothCore
     {
         glfwPollEvents();
         glfwSwapBuffers(m_Window);
-        m_DeltaTime = (float)glfwGetTime() - m_LastFrameTime;
-        m_LastFrameTime = (float)glfwGetTime();
+        m_DeltaTime = glfwGetTime() - m_LastFrameTime;
+        m_LastFrameTime = glfwGetTime();
+    }
+
+    void Window::SetupCallbacks()
+    {
+        glfwSetWindowCloseCallback(m_Window, [](GLFWwindow* window)
+		{
+            HC_DISPATCH_EVENT(WindowCloseEvent());
+		});
+
+        glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height)
+		{
+			WindowProps& data = *(WindowProps*)glfwGetWindowUserPointer(window);
+			data.Width = width;
+			data.Height = height;
+
+            HC_DISPATCH_EVENT(WindowResizeEvent(width, height));
+		});
+
+        glfwSetWindowFocusCallback(m_Window, [](GLFWwindow* window, int focused)
+        {
+            if (focused)
+            {
+                HC_DISPATCH_EVENT(WindowFocusEvent());
+            }
+            else
+            {
+                HC_DISPATCH_EVENT(WindowLostFocusEvent());
+            }
+        });
+
+        glfwSetKeyCallback(m_Window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
+        {
+            switch (action)
+            {
+                case GLFW_PRESS:
+                {
+                    HC_DISPATCH_EVENT(KeyPressedEvent(key, mods));
+                    break;
+                }
+                case GLFW_RELEASE:
+                {
+                    HC_DISPATCH_EVENT(KeyReleasedEvent(key, mods));
+                    break;
+                }
+                case GLFW_REPEAT:
+                {
+                    HC_DISPATCH_EVENT(KeyRepeatedEvent(key, mods));
+                    break;
+                }
+                default:
+                    break;
+            }
+        });
+
+        glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* window, int button, int action, int mods)
+        {
+            switch (action)
+            {
+                case GLFW_PRESS:
+                {
+                    HC_DISPATCH_EVENT(MousePressedEvent(button, mods));
+                    break;
+                }
+                case GLFW_RELEASE:
+                {
+                    HC_DISPATCH_EVENT(MousePressedEvent(button, mods));
+                    break;
+                }
+                default:
+                    break;
+            }
+        });
+
+        glfwSetScrollCallback(m_Window, [](GLFWwindow* window, double xOffset, double yOffset)
+        {
+            HC_DISPATCH_EVENT(MouseScrolledEvent(xOffset, yOffset));
+        });
     }
 }
