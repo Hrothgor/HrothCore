@@ -14,6 +14,7 @@ namespace HrothCore
 
             void SetData(uint32_t size, const void *data, uint32_t offset = 0);
 
+            uint32_t GetID() const { return m_HandleID; }
         private:
             BufferUsage m_Usage;
             uint32_t m_Size;
