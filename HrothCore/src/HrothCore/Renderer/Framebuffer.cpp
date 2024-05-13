@@ -12,8 +12,8 @@ namespace HrothCore
     {
         glCreateFramebuffers(1, &m_HandleID);
 
-        m_AttachmentsNumber = textures.size();
-        for (int i = 0; i < m_AttachmentsNumber; i++)
+        m_AttachmentsNumber = static_cast<uint32_t>(textures.size());
+        for (uint32_t i = 0; i < m_AttachmentsNumber; i++)
         {
             if (!textures[i])
                 continue;
@@ -24,7 +24,7 @@ namespace HrothCore
             glNamedFramebufferTexture(m_HandleID, GL_DEPTH_ATTACHMENT, depthTexture->GetID(), 0);
 
         GLenum *attachments = new GLenum[m_AttachmentsNumber];
-        for (int i = 0; i < m_AttachmentsNumber; i++)
+        for (uint32_t i = 0; i < m_AttachmentsNumber; i++)
             attachments[i] = GL_COLOR_ATTACHMENT0 + i;
         glNamedFramebufferDrawBuffers(m_HandleID, m_AttachmentsNumber, attachments);
 
@@ -44,16 +44,16 @@ namespace HrothCore
 
     void Framebuffer::ClearColor(glm::vec4 color)
     {
-        for (int i = 0; i < m_AttachmentsNumber; i++)
+        for (uint32_t i = 0; i < m_AttachmentsNumber; i++)
             ClearColorAttachment(i, color);
     }
 
-    void Framebuffer::ClearColorAttachment(uint32_t attachmentIndex, glm::vec4 color = glm::vec4(1.0, 1.0, 1.0, 1.0))
+    void Framebuffer::ClearColorAttachment(uint32_t attachmentIndex, glm::vec4 color)
     {
         glClearNamedFramebufferfv(m_HandleID, GL_COLOR, GL_COLOR_ATTACHMENT0 + attachmentIndex, glm::value_ptr(color));
     }
 
-    void Framebuffer::ClearDepth(float depth = 1.0)
+    void Framebuffer::ClearDepth(float depth)
     {
         glClearNamedFramebufferfv(m_HandleID, GL_DEPTH, 0, &depth);
     }

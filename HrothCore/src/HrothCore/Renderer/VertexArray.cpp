@@ -7,7 +7,7 @@
 namespace HrothCore
 {
     VertexArray::VertexArray(std::vector<Vertex> vertices, std::vector<uint32_t> indices)
-        : m_VaoID(0), m_VboID(0), m_iboID(0), m_VerticesCount(vertices.size())
+        : m_VaoID(0), m_VboID(0), m_iboID(0), m_VerticesCount(static_cast<uint32_t>(vertices.size()))
     {
         glCreateVertexArrays(1, &m_VaoID);
 
