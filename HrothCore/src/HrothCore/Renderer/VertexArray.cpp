@@ -7,19 +7,18 @@
 namespace HrothCore
 {
     VertexArray::VertexArray(std::vector<Vertex> vertices, std::vector<uint32_t> indices)
-        : m_VaoID(0), m_VboID(0), m_iboID(0), m_VerticesCount(static_cast<uint32_t>(vertices.size()))
+        : m_VaoID(0)
+        , m_Vbo(vertices.data(), vertices.size() * sizeof(Vertex), BufferUsage::Dynamic)
+        , m_Ibo(indices.data(), indices.size() * sizeof(uint32_t), BufferUsage::Dynamic)
+        , m_VerticesCount(static_cast<uint32_t>(vertices.size()))
     {
         glCreateVertexArrays(1, &m_VaoID);
 
-        glCreateBuffers(1, &m_VboID);
-        glNamedBufferStorage(m_VboID, vertices.size() * sizeof(Vertex), vertices.data(), GL_DYNAMIC_STORAGE_BIT);
-        glVertexArrayVertexBuffer(m_VaoID, 0, m_VboID, 0, sizeof(Vertex));
+        glVertexArrayVertexBuffer(m_VaoID, 0, m_Vbo.GetID(), 0, sizeof(Vertex));
     
         if (indices.size() != 0)
         {
-            glCreateBuffers(1, &m_iboID);
-            glNamedBufferStorage(m_iboID, indices.size() * sizeof(uint32_t), indices.data(), GL_DYNAMIC_STORAGE_BIT);
-            glVertexArrayElementBuffer(m_VaoID, m_iboID);
+            glVertexArrayElementBuffer(m_VaoID, m_Ibo.GetID());
         }
 
         glEnableVertexArrayAttrib(m_VaoID, 0);
@@ -38,8 +37,6 @@ namespace HrothCore
     VertexArray::~VertexArray()
     {
         glDeleteVertexArrays(1, &m_VaoID);
-        glDeleteBuffers(1, &m_VboID);
-        glDeleteBuffers(1, &m_iboID);
     }
 
     void VertexArray::Bind() const

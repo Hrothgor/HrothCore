@@ -1,5 +1,7 @@
 #pragma once
 
+#include "HrothCore/Renderer/Buffer.hpp"
+
 namespace HrothCore
 {
     struct Vertex
@@ -24,8 +26,8 @@ namespace HrothCore
             void GenerateVertexArrayIndexed(std::vector<Vertex> vertices, std::vector<uint32_t> indices);
 
             uint32_t m_VaoID;
-            uint32_t m_VboID;
-            uint32_t m_iboID;
+            Buffer m_Vbo;
+            Buffer m_Ibo;
 
             uint32_t m_VerticesCount;
     };
