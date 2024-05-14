@@ -8,8 +8,8 @@ namespace HrothCore
 {
     VertexArray::VertexArray(std::vector<Vertex> vertices, std::vector<uint32_t> indices)
         : m_VaoID(0)
-        , m_Vbo(vertices.data(), vertices.size() * sizeof(Vertex), BufferUsage::Dynamic)
-        , m_Ibo(indices.data(), indices.size() * sizeof(uint32_t), BufferUsage::Dynamic)
+        , m_Vbo(vertices.data(), static_cast<uint32_t>(vertices.size()), BufferUsage::Dynamic)
+        , m_Ibo(indices.data(), static_cast<uint32_t>(indices.size()), BufferUsage::Dynamic)
         , m_VerticesCount(static_cast<uint32_t>(vertices.size()))
     {
         glCreateVertexArrays(1, &m_VaoID);

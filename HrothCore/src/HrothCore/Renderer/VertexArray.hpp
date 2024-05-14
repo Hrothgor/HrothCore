@@ -26,8 +26,8 @@ namespace HrothCore
             void GenerateVertexArrayIndexed(std::vector<Vertex> vertices, std::vector<uint32_t> indices);
 
             uint32_t m_VaoID;
-            Buffer m_Vbo;
-            Buffer m_Ibo;
+            Buffer<Vertex> m_Vbo;
+            Buffer<uint32_t> m_Ibo;
 
             uint32_t m_VerticesCount;
     };

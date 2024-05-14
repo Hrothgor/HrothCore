@@ -7,17 +7,18 @@ namespace HrothCore
         Dynamic
     };
 
+    template<typename T>
     class Buffer {
         public:
             Buffer(BufferUsage usage = BufferUsage::Dynamic);
             Buffer(uint32_t capacity, BufferUsage usage = BufferUsage::Dynamic);
-            Buffer(const void *data, uint32_t dataSize, BufferUsage usage = BufferUsage::Dynamic);
+            Buffer(const T *data, uint32_t dataLength, BufferUsage usage = BufferUsage::Dynamic);
             ~Buffer();
 
             // must fit in capacity
-            void SetData(const void *data, uint32_t size, uint32_t offset = 0);
+            void SetData(const T *data, uint32_t length, uint32_t offset = 0);
             // Push_back equivalent
-            void AddData(const void *data, uint32_t size);
+            void AddData(const T *data, uint32_t length);
             void Reserve(uint32_t capacity);
 
             uint32_t GetID() const { return m_HandleID; }
