@@ -14,8 +14,6 @@ namespace HrothCore
         m_FragmentShaderID = LoadShader(fragmentFile, GL_FRAGMENT_SHADER);
 
         m_ProgramID = LinkProgram(m_VertexShaderID, m_FragmentShaderID);
-
-        GetAllUniformLocation();
     }
 
     Shader::~Shader()
