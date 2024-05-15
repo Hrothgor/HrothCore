@@ -45,6 +45,7 @@
 *.vcxproj
 *.vcxproj.filters
 *.vcxproj.user
+.VSCodeCounter/
 
 # Text editor autosave files
 *~

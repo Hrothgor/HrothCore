@@ -1,5 +1,7 @@
 #pragma once
 
+#include "HrothCore/Renderer/RenderContext.hpp"
+
 struct GLFWwindow;
 struct GLFWmonitor;
 struct GLFWvidmode;
@@ -56,8 +58,11 @@ namespace HrothCore
 
     private:
         WindowProps m_Props;
+		std::unique_ptr<RenderContext> m_RenderContext;
+		
 		double m_LastFrameTime = 0.0f;
 		double m_DeltaTime = 0.016f;
+
 		GLFWwindow *m_Window;
 		GLFWmonitor *m_Monitor;
 		const GLFWvidmode *m_VideoMode;

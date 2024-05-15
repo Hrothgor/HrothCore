@@ -12,6 +12,7 @@ namespace HrothCore
     Window::Window(const WindowProps &props, WindowMode mode)
         : m_Props(props)
     {
+        m_RenderContext = std::make_unique<RenderContext>(this);
         Init(props);
         SetWindowMode(mode);
     }
@@ -65,7 +66,7 @@ namespace HrothCore
             return;
         }
 
-        glfwMakeContextCurrent(m_Window);
+        m_RenderContext->Init();
 
         glfwSetWindowUserPointer(m_Window, &m_Props);
         EnableVSync(m_Props.VSync);
@@ -77,6 +78,7 @@ namespace HrothCore
     {
         glfwDestroyWindow(m_Window);
         glfwTerminate();
+        m_RenderContext->Shutdown();
     }
 
     void Window::EnableVSync(bool enable)
@@ -128,7 +130,7 @@ namespace HrothCore
     void Window::Update()
     {
         glfwPollEvents();
-        glfwSwapBuffers(m_Window);
+        m_RenderContext->SwapBuffers();
         m_DeltaTime = glfwGetTime() - m_LastFrameTime;
         m_LastFrameTime = glfwGetTime();
     }

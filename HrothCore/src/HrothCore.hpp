@@ -14,7 +14,6 @@
 #include "HrothCore/Renderer/Buffer.hpp"
 #include "HrothCore/Renderer/Texture.hpp"
 #include "HrothCore/Renderer/Framebuffer.hpp"
-#include "HrothCore/Renderer/Renderer.hpp"
 #include "HrothCore/Renderer/Shader.hpp"
 #include "HrothCore/Renderer/VertexArray.hpp"
 // -----------------------------------
