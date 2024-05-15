@@ -16,8 +16,6 @@ namespace HrothCore
 
     void Renderer::BeginDrawing3D(int cameraPersp)
     {
-        HC_ASSERT(m_CurrentRenderMode == RenderMode::NONE);
-
         m_CurrentRenderMode = RenderMode::RENDER_3D;
     }
 
@@ -36,8 +34,6 @@ namespace HrothCore
 
     void Renderer::EndDrawing3D()
     {
-        HC_ASSERT(m_CurrentRenderMode == RenderMode::RENDER_3D);
-
         m_CurrentRenderMode = RenderMode::NONE;
     }
 
@@ -45,8 +41,6 @@ namespace HrothCore
 
     void Renderer::BeginDrawing2D(int cameraOrtho)
     {
-        HC_ASSERT(m_CurrentRenderMode == RenderMode::NONE);
-
         m_CurrentRenderMode = RenderMode::RENDER_2D;
     }
 
@@ -65,8 +59,6 @@ namespace HrothCore
 
     void Renderer::EndDrawing2D()
     {
-        HC_ASSERT(m_CurrentRenderMode == RenderMode::RENDER_2D);
-
         m_CurrentRenderMode = RenderMode::NONE;
     }
 }

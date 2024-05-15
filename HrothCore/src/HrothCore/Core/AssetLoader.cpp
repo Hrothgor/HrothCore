@@ -2,8 +2,6 @@
 
 #include "HrothCore/Core/AssetLoader.hpp"
 
-#include "HrothCore/Core/Macro.hpp"
-
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
@@ -90,12 +88,14 @@ namespace HrothCore
 
         if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) 
         {
-            HC_ASSERT(scene && !(scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE) && scene->mRootNode);
+            HC_LOG_WARNING("Failed to load model: {0}", path);
             return std::vector<MeshData>();
         }
 
         std::vector<MeshData> meshes;
         ProcessNode(scene->mRootNode, scene, meshes);
+
+        HC_LOG_INFO("Model loaded: {0}", path);
 
         return meshes;
     }

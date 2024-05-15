@@ -29,7 +29,7 @@ namespace HrothCore
         glNamedFramebufferDrawBuffers(m_HandleID, m_AttachmentsNumber, attachments);
 
         if (glCheckNamedFramebufferStatus(m_HandleID, GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-            HC_ASSERT(!"Framebuffer is not complete!");
+            HC_LOG_ERROR("Framebuffer is not complete");
     }
 
     Framebuffer::~Framebuffer()

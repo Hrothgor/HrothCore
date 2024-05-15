@@ -14,12 +14,13 @@ namespace HrothCore {
 	Application::Application(const ApplicationSpecification& specification)
 		: m_Specification(specification)
 	{
-		HC_ASSERT(s_Instance == nullptr);
-		s_Instance = this;
-
-		// Set working directory here
 		if (!m_Specification.WorkingDirectory.empty())
 			std::filesystem::current_path(m_Specification.WorkingDirectory);
+
+    	HrothCore::Logger::Init(m_Specification.LogFile);
+
+		HC_ASSERT(s_Instance == nullptr);
+		s_Instance = this;
 
 		m_Window = std::make_unique<Window>(WindowProps(m_Specification.Name));
 

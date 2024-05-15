@@ -43,7 +43,8 @@ namespace HrothCore
     void Buffer<T>::SetData(const T *data, uint32_t length, uint32_t offset)
     {
         HC_ASSERT(length + offset <= m_Capacity);
-        HC_ASSERT(data != nullptr);
+
+        HC_LOG_WARNING("Buffer::SetData: data is nullptr");
 
         if (length + offset > m_Size)
             m_Size = length + offset;

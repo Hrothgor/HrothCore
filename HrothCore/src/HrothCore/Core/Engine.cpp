@@ -16,7 +16,7 @@ namespace HrothCore
 
     void Engine::Update(double dt)
     {
-        std::cout << dt << std::endl;
-        std::cout << 1.0/dt << std::endl;
+        HC_LOG_DEBUG("Engine::Update: {0} ms", dt);
+        HC_LOG_DEBUG("Engine::Update: {0} fps", 1.0/dt);
     }
 }

@@ -35,7 +35,7 @@ namespace HrothCore
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         glfwSetErrorCallback([](int error, const char* description)
         {
-            // LOG ERROR
+            HC_LOG_ERROR("GLFW Error ({0}): {1}", error, description);
         });
 
         m_Monitor = glfwGetPrimaryMonitor();

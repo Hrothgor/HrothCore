@@ -38,11 +38,13 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/external/glad)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/external/glfw)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/external/glm)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/external/assimp)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/external/spdlog)
 
 target_link_libraries(HrothCore PUBLIC 
 						glfw 
 						glad
 						glm
-						assimp)
+						assimp
+						spdlog)
 
 ###########################################

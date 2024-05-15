@@ -1,7 +1,5 @@
 #pragma once
 
-#include "HrothCore/Core/Macro.hpp"
-
 #define HC_REGISTER_EVENT(eventType, fn) HrothCore::EventManager::Get().RegisterToEvent<eventType>(fn)
 #define HC_UNREGISTER_EVENT(eventType, handle) HrothCore::EventManager::Get().UnregisterToEvent<eventType>(handle)
 #define HC_DISPATCH_EVENT(event) HrothCore::EventManager::Get().DispatchEvent(event)
@@ -34,7 +32,8 @@ namespace HrothCore
                 static_assert(std::is_base_of_v<Event, T>, "T must be derived from Event");
                 
                 static EventHandle handle = 0;
-                HC_ASSERT(handle < UINT_MAX);
+                if (handle == UINT32_MAX)
+                    HC_LOG_WARNING("Too many event registrations, handle will overflow");
                 std::function<bool(const Event&)> fn = [fnT](const Event &event) -> bool
                 {
                     return fnT(static_cast<const T&>(event));

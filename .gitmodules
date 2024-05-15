@@ -7,3 +7,6 @@
 [submodule "HrothCore/external/assimp"]
 	path = HrothCore/external/assimp
 	url = https://github.com/assimp/assimp.git
+[submodule "HrothCore/external/spdlog"]
+	path = HrothCore/external/spdlog
+	url = https://github.com/gabime/spdlog.git

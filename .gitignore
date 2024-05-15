@@ -35,6 +35,9 @@
 /build/
 /bin/
 
+# Logs
+*.log
+
 # Visual Studio files
 .vs/
 .vscode/

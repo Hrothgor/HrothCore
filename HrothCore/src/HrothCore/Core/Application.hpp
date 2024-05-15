@@ -22,6 +22,7 @@ namespace HrothCore {
 	{
 		std::string Name = "HrothCore Application";
 		std::string WorkingDirectory = "./";
+		std::string LogFile = "./HrothCore.log";
 		ApplicationCommandLineArgs CommandLineArgs;
 	};
 

@@ -7,6 +7,8 @@
 #include <functional>
 #include <filesystem>
 #include <typeindex>
+#include <format>
+#include <string_view>
 
 #include <string>
 #include <vector>
@@ -18,3 +20,4 @@
 
 // FROM HROTHCORE
 #include "HrothCore/Core/Macro.hpp"
+#include "HrothCore/Core/Logger.hpp"

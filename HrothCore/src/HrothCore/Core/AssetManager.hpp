@@ -11,6 +11,8 @@ namespace HrothCore
         public:
             virtual ~AssetManager() = default;
 
+            uint32_t GetMeshIndexByPath(const std::string& path);
+
         private:
             std::vector<Mesh> m_Meshes;
     };
