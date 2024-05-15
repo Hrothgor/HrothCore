@@ -4,6 +4,7 @@ int main(int argc, char** argv);
 
 namespace HrothCore {
 	class Window;
+	class IClient;
 	
 	struct ApplicationCommandLineArgs
 	{
@@ -29,7 +30,7 @@ namespace HrothCore {
 	class Application
 	{
 	public:
-		Application(const ApplicationSpecification& specification);
+		Application(const ApplicationSpecification& specificationn, std::shared_ptr<IClient>& client);
 		virtual ~Application();
 
 		void Close();

@@ -1,14 +1,22 @@
 #include <HrothCore.hpp>
 
-class SandboxApplication : public HrothCore::Application
+class SandboxClient : public HrothCore::IClient
 {
     public:
-        SandboxApplication(const HrothCore::ApplicationSpecification& specification)
-            : HrothCore::Application(specification)
+        SandboxClient() = default;
+        virtual ~SandboxClient() = default;
+
+        void Init() override
         {
+            HC_LOG_INFO("SandboxClient::Init");
         }
 
-        virtual ~SandboxApplication()
+        void Shutdown() override
+        {
+            HC_LOG_INFO("SandboxClient::Shutdown");
+        }
+
+        void Update(double dt) override
         {
         }
 };
@@ -21,5 +29,7 @@ HrothCore::Application* HrothCore::CreateApplication(ApplicationCommandLineArgs 
     specification.LogFile = "./Sandbox.log";
     specification.CommandLineArgs = args;
 
-    return new SandboxApplication(specification);
+    std::shared_ptr<HrothCore::IClient> client = std::make_shared<SandboxClient>();
+
+    return new HrothCore::Application(specification, client);
 }

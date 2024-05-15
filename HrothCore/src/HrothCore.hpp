@@ -2,9 +2,21 @@
 
 // For use by HrothCore applications
 
-// ---A-------------------------------
+// -----------------------------------
 #include "HrothCore/Core/Application.hpp"
 #include "HrothCore/Core/Window.hpp"
+#include "HrothCore/Core/IClient.hpp"
+#include "HrothCore/Core/Engine.hpp"
+#include "HrothCore/Core/AssetManager.hpp"
+// -----------------------------------
+
+// ---Renderer------------------------
+#include "HrothCore/Renderer/Buffer.hpp"
+#include "HrothCore/Renderer/Texture.hpp"
+#include "HrothCore/Renderer/Framebuffer.hpp"
+#include "HrothCore/Renderer/Renderer.hpp"
+#include "HrothCore/Renderer/Shader.hpp"
+#include "HrothCore/Renderer/VertexArray.hpp"
 // -----------------------------------
 
 // ---Events--------------------------
@@ -13,8 +25,9 @@
 #include "HrothCore/Events/KeyMouseEvent.hpp"
 // -----------------------------------
 
-// ---Engine--------------------------
-#include "HrothCore/Core/Engine.hpp"
+// ---Types---------------------------
+#include "HrothCore/Types/Mesh.hpp"
+#include "HrothCore/Types/Model.hpp"
 // -----------------------------------
 
 // ---Entry Point---------------------

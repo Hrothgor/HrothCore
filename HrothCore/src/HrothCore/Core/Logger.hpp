@@ -10,7 +10,7 @@
     #define HC_LOG_CRITICAL(...) HrothCore::Logger::GetSpdLogger()->critical(__VA_ARGS__)
 #else
     #define HC_LOG_DEBUG(...) void(0)
-    #define HC_LOG_INFO(...) void(0)
+    #define HC_LOG_INFO(...) HrothCore::Logger::GetSpdLogger()->info(__VA_ARGS__)
     #define HC_LOG_WARNING(...) HrothCore::Logger::GetSpdLogger()->warn(__VA_ARGS__)
     #define HC_LOG_ERROR(...) HrothCore::Logger::GetSpdLogger()->error(__VA_ARGS__)
     #define HC_LOG_CRITICAL(...) HrothCore::Logger::GetSpdLogger()->critical(__VA_ARGS__)

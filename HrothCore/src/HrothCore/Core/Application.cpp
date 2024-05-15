@@ -3,6 +3,7 @@
 #include "HrothCore/Core/Application.hpp"
 #include "HrothCore/Core/Window.hpp"
 #include "HrothCore/Core/Engine.hpp"
+#include "HrothCore/Core/IClient.hpp"
 
 #include "HrothCore/Events/EventManager.hpp"
 #include "HrothCore/Events/WindowEvent.hpp"
@@ -11,7 +12,7 @@
 namespace HrothCore {
 	Application* Application::s_Instance = nullptr;
 
-	Application::Application(const ApplicationSpecification& specification)
+	Application::Application(const ApplicationSpecification& specification, std::shared_ptr<IClient>& client)
 		: m_Specification(specification)
 	{
 		if (!m_Specification.WorkingDirectory.empty())
@@ -23,16 +24,18 @@ namespace HrothCore {
 		s_Instance = this;
 
 		m_Window = std::make_unique<Window>(WindowProps(m_Specification.Name));
-
 		HC_REGISTER_EVENT(WindowCloseEvent, [](const WindowCloseEvent& event) -> bool
         {
             Application::Get().Close();
             return true;
         });
+
+		Engine::Get().Init(client);
 	}
 
 	Application::~Application()
 	{
+		Engine::Get().Shutdown();
 	}
 
 	void Application::Close()
