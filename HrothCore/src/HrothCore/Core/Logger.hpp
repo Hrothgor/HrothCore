@@ -3,17 +3,17 @@
 #include <spdlog/spdlog.h>
 
 #if DEBUG
-    #define HC_LOG_DEBUG(format, ...) HrothCore::Logger::GetSpdLogger()->debug(format, __VA_ARGS__)
-    #define HC_LOG_INFO(format, ...) HrothCore::Logger::GetSpdLogger()->info(format, __VA_ARGS__)
-    #define HC_LOG_WARNING(format, ...) HrothCore::Logger::GetSpdLogger()->warn(format, __VA_ARGS__)
-    #define HC_LOG_ERROR(format, ...) HrothCore::Logger::GetSpdLogger()->error(format, __VA_ARGS__)
-    #define HC_LOG_CRITICAL(format, ...) HrothCore::Logger::GetSpdLogger()->critical(format, __VA_ARGS__)
+    #define HC_LOG_DEBUG(...) HrothCore::Logger::GetSpdLogger()->debug(__VA_ARGS__)
+    #define HC_LOG_INFO(...) HrothCore::Logger::GetSpdLogger()->info(__VA_ARGS__)
+    #define HC_LOG_WARNING(...) HrothCore::Logger::GetSpdLogger()->warn(__VA_ARGS__)
+    #define HC_LOG_ERROR(...) HrothCore::Logger::GetSpdLogger()->error(__VA_ARGS__)
+    #define HC_LOG_CRITICAL(...) HrothCore::Logger::GetSpdLogger()->critical(__VA_ARGS__)
 #else
-    #define HC_LOG_DEBUG(format, ...) void(0)
-    #define HC_LOG_INFO(format, ...) void(0)
-    #define HC_LOG_WARNING(format, ...) HrothCore::Logger::GetSpdLogger()->warn(format, __VA_ARGS__)
-    #define HC_LOG_ERROR(format, ...) HrothCore::Logger::GetSpdLogger()->error(format, __VA_ARGS__)
-    #define HC_LOG_CRITICAL(format, ...) HrothCore::Logger::GetSpdLogger()->critical(format, __VA_ARGS__)
+    #define HC_LOG_DEBUG(...) void(0)
+    #define HC_LOG_INFO(...) void(0)
+    #define HC_LOG_WARNING(...) HrothCore::Logger::GetSpdLogger()->warn(__VA_ARGS__)
+    #define HC_LOG_ERROR(...) HrothCore::Logger::GetSpdLogger()->error(__VA_ARGS__)
+    #define HC_LOG_CRITICAL(...) HrothCore::Logger::GetSpdLogger()->critical(__VA_ARGS__)
 #endif
 
 namespace HrothCore
