@@ -42,6 +42,12 @@ namespace HrothCore
     template<typename T>
     void Buffer<T>::SetData(const T *data, uint32_t length, uint32_t offset)
     {
+        if (m_Usage == BufferUsage::Static)
+        {
+            HC_LOG_WARNING("Buffer::SetData: cannot modify data to static buffer");
+            return;
+        }
+
         HC_ASSERT(length + offset <= m_Capacity);
 
         HC_LOG_WARNING("Buffer::SetData: data is nullptr");
@@ -54,6 +60,12 @@ namespace HrothCore
     template<typename T>
     void Buffer<T>::AddData(const T *data, uint32_t length)
     {
+        if (m_Usage == BufferUsage::Static)
+        {
+            HC_LOG_WARNING("Buffer::SetData: cannot add data to static buffer");
+            return;
+        }
+
         if (m_Capacity <= 1)
             Resize(length);
         else if (m_Size + length > m_Capacity)
@@ -69,6 +81,12 @@ namespace HrothCore
     template<typename T>
     void Buffer<T>::Reserve(uint32_t capacity)
     {
+        if (m_Usage == BufferUsage::Static)
+        {
+            HC_LOG_WARNING("Buffer::SetData: cannot change size of static buffer");
+            return;
+        }
+
         if (capacity > m_Capacity)
             Resize(capacity);
     }

@@ -37,7 +37,13 @@ target_precompile_headers(HrothCore PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/Hroth
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/external/glad)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/external/glfw)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/external/glm)
+
+set(ASSIMP_NO_EXPORT ON CACHE BOOL "")
+set(ASSIMP_BUILD_ASSIMP_TOOLS OFF CACHE BOOL "")
+set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "")
+set(ASSIMP_INSTALL_PDB OFF CACHE BOOL "")
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/external/assimp)
+
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/external/spdlog)
 
 target_link_libraries(HrothCore PUBLIC 
