@@ -5,22 +5,8 @@
 
 namespace HrothCore
 {
-    template<typename T>
-    struct AssetRef
-    {
-        class AssetManager { private: template<typename T> T& GetAsset(uint32_t index); }; // FORWARD DECLARATION
-
-        T& Get() const
-        {
-            return AssetManager::Get().GetAsset<T>(Index);
-        }
-
-        AssetRef(uint32_t index)
-            : Index(index) {}
-            
-        private:
-            uint32_t Index;
-    };
+    template<typename>
+    struct AssetRef;
 
     class AssetManager
     {
@@ -41,5 +27,20 @@ namespace HrothCore
 
             friend struct AssetRef<Mesh>;
             friend struct AssetRef<Texture>;
+    };
+
+    template<typename T>
+    struct AssetRef
+    {
+        T& Get() const
+        {
+            return AssetManager::Get().GetAsset<T>(Index);
+        }
+
+        AssetRef(uint32_t index)
+            : Index(index) {}
+            
+        private:
+            uint32_t Index;
     };
 }
