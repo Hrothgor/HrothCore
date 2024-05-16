@@ -8,7 +8,7 @@ namespace HrothCore
     template<typename T>
     struct AssetRef
     {
-        class AssetManager { private: T& GetAsset(uint32_t index); }; // FORWARD DECLARATION
+        class AssetManager { private: template<typename T> T& GetAsset(uint32_t index); }; // FORWARD DECLARATION
 
         T& Get() const
         {
