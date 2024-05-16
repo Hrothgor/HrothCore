@@ -9,13 +9,17 @@ namespace HrothCore
     struct AssetRef
     {
         class AssetManager;
-        
-        uint32_t Index;
 
-        T Get() const
+        T& Get() const
         {
             return AssetManager::Get().GetAsset<T>(Index);
         }
+
+        AssetRef(uint32_t index)
+            : Index(index) {}
+            
+        private:
+            uint32_t Index;
     };
 
     class AssetManager
@@ -28,11 +32,14 @@ namespace HrothCore
             AssetRef<Mesh> GetMeshRef(const std::string& path);
             AssetRef<Texture> GetTextureRef(const std::string& path);
 
-            template<typename T>
-            T GetAsset(uint32_t index);
-
         private:
+            template<typename T>
+            T& GetAsset(uint32_t index);
+
             std::vector<std::pair<std::string, Mesh>> m_Meshes;
             std::vector<std::pair<std::string, Texture>> m_Textures;
+
+            friend struct AssetRef<Mesh>;
+            friend struct AssetRef<Texture>;
     };
 }

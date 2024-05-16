@@ -37,13 +37,13 @@ namespace HrothCore
     /* ----- GETTER ----- */
 
     template<>
-    Mesh AssetManager::GetAsset<Mesh>(uint32_t index)
+    Mesh& AssetManager::GetAsset<Mesh>(uint32_t index)
     {
         return m_Meshes[index].second;
     }
 
     template<>
-    Texture AssetManager::GetAsset<Texture>(uint32_t index)
+    Texture& AssetManager::GetAsset<Texture>(uint32_t index)
     {
         return m_Textures[index].second;
     }
