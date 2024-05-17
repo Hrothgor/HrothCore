@@ -35,8 +35,8 @@ namespace HrothCore
 			if (event.Code == KeyCode::Escape)
 			{
 				Application::Get().Close();
-				return true;
 			}
+			return true;
         });
 
 		Engine::Get().Init(client);

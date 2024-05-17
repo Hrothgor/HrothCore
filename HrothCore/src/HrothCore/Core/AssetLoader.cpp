@@ -6,6 +6,8 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
+#include <stb_image.h>
+
 namespace HrothCore
 {
     /* ----- Model ----- */
@@ -101,4 +103,31 @@ namespace HrothCore
     }
 
     /* ----------------- */
+
+    /* ----- Texture ----- */
+
+    TextureData AssetLoader::LoadTexture(const std::string& path)
+    {
+        TextureData texture;
+
+        int width, height, channels;
+        stbi_set_flip_vertically_on_load(true);
+        texture.Data = stbi_load(path.c_str(), &width, &height, &channels, 0);
+        if (!texture.Data)
+        {
+            HC_LOG_WARNING("Failed to load texture: {0}", path);
+            return texture;
+        }
+        
+        texture.Path = path;
+        texture.Width = width;
+        texture.Height = height;
+        texture.Channels = channels;
+
+        HC_LOG_INFO("Texture loaded: {0}", path);
+
+        return texture;
+    }
+
+    /* ------------------- */
 }

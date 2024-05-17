@@ -45,12 +45,14 @@ set(ASSIMP_INSTALL_PDB OFF CACHE BOOL "")
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/external/assimp)
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/external/spdlog)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/external/stb_image)
 
 target_link_libraries(HrothCore PUBLIC 
 						glfw 
 						glad
 						glm
-						assimp
-						spdlog)
+						assimp 	
+						spdlog
+						stb_image)
 
 ###########################################

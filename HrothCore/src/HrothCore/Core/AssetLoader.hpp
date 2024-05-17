@@ -25,6 +25,10 @@ namespace HrothCore
         };
 
         std::string Path;
+        const uint8_t* Data = nullptr;
+        uint32_t Width = 0;
+        uint32_t Height = 0;
+        uint32_t Channels = 0;
     };
 
     struct MeshData
@@ -36,6 +40,10 @@ namespace HrothCore
 
     class AssetLoader
     {
-        static std::vector<MeshData> LoadModel(const std::string& path);
+        public:
+            static std::vector<MeshData> LoadModel(const std::string& path);
+            static TextureData LoadTexture(const std::string& path);
+
+        private:
     };
 }
