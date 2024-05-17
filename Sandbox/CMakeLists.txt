@@ -24,6 +24,12 @@ else()
 	set(BIN_TYPE_DIR Release)
 endif()
 
+###########################################
+# SET WORKING DIRECTORY FOR ASSETS
+###########################################
+add_definitions(-DASSETS_DIR="${CMAKE_CURRENT_SOURCE_DIR}/../HrothCore")
+###########################################
+
 # Create the Sandbox executable
 add_executable(Sandbox ${SOURCE_FILES} ${HEADER_FILES})
 
@@ -40,3 +46,4 @@ target_link_libraries(Sandbox PRIVATE
 						HrothCore)
 
 ###########################################
+

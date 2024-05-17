@@ -8,25 +8,25 @@
 
 namespace HrothCore
 {
-    bool Input::IsKeyPressed(Key keyCode)
+    bool Input::IsKeyPressed(KeyCode keyCode)
     {
         GLFWwindow *window = Application::Get().GetWindow().GetNativeWindow();
         return glfwGetKey(window, keyCode) == GLFW_PRESS;
     }
 
-    bool Input::IsKeyReleased(Key keyCode)
+    bool Input::IsKeyReleased(KeyCode keyCode)
     {
         GLFWwindow *window = Application::Get().GetWindow().GetNativeWindow();
         return glfwGetKey(window, keyCode) == GLFW_RELEASE;
     }
 
-    bool Input::IsMouseButtonPressed(Mouse mouseCode)
+    bool Input::IsMouseButtonPressed(MouseButton mouseCode)
     {
         GLFWwindow *window = Application::Get().GetWindow().GetNativeWindow();
         return glfwGetMouseButton(window, mouseCode) == GLFW_PRESS;
     }
 
-    bool Input::IsMouseButtonReleased(Mouse mouseCode)
+    bool Input::IsMouseButtonReleased(MouseButton mouseCode)
     {
         GLFWwindow *window = Application::Get().GetWindow().GetNativeWindow();
         return glfwGetMouseButton(window, mouseCode) == GLFW_RELEASE;

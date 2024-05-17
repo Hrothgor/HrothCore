@@ -42,10 +42,6 @@ namespace HrothCore {
 
 	private:
 		ApplicationSpecification m_Specification;
-		bool m_Running = true;
-
-		float m_LastFrameTime = 0.0f;
-		
 		std::unique_ptr<Window> m_Window;
 
 	private:

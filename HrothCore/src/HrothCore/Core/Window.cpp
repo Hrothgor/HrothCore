@@ -135,6 +135,16 @@ namespace HrothCore
         m_LastFrameTime = glfwGetTime();
     }
 
+    bool Window::ShouldClose() const
+    {
+        return glfwWindowShouldClose(m_Window);
+    }
+
+    void Window::Close()
+    {
+        glfwSetWindowShouldClose(m_Window, GLFW_TRUE);
+    }
+
     void Window::SetupCallbacks()
     {
         glfwSetWindowCloseCallback(m_Window, [](GLFWwindow* window)
@@ -169,17 +179,17 @@ namespace HrothCore
             {
                 case GLFW_PRESS:
                 {
-                    HC_DISPATCH_EVENT(KeyPressedEvent(key, mods));
+                    HC_DISPATCH_EVENT(KeyPressedEvent((KeyCode)key, (ModCode)mods));
                     break;
                 }
                 case GLFW_RELEASE:
                 {
-                    HC_DISPATCH_EVENT(KeyReleasedEvent(key, mods));
+                    HC_DISPATCH_EVENT(KeyReleasedEvent((KeyCode)key, (ModCode)mods));
                     break;
                 }
                 case GLFW_REPEAT:
                 {
-                    HC_DISPATCH_EVENT(KeyRepeatedEvent(key, mods));
+                    HC_DISPATCH_EVENT(KeyRepeatedEvent((KeyCode)key, (ModCode)mods));
                     break;
                 }
                 default:
@@ -193,12 +203,12 @@ namespace HrothCore
             {
                 case GLFW_PRESS:
                 {
-                    HC_DISPATCH_EVENT(MousePressedEvent(button, mods));
+                    HC_DISPATCH_EVENT(MousePressedEvent((MouseButton)button, (ModCode)mods));
                     break;
                 }
                 case GLFW_RELEASE:
                 {
-                    HC_DISPATCH_EVENT(MousePressedEvent(button, mods));
+                    HC_DISPATCH_EVENT(MousePressedEvent((MouseButton)button, (ModCode)mods));
                     break;
                 }
                 default:

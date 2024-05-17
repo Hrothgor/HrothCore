@@ -1,6 +1,7 @@
 #pragma once
 
 #include "HrothCore/Events/EventManager.hpp"
+#include "HrothCore/Core/KeyCodes.hpp"
 
 namespace HrothCore
 {
@@ -8,43 +9,43 @@ namespace HrothCore
     {
         HC_STRINGIFY_CLASS(KeyPressedEvent);
         
-        uint32_t KeyCode;
-        uint32_t Modifier;
+        KeyCode Code;
+        ModCode Modifier;
 
-        KeyPressedEvent(uint32_t keyCode, uint32_t modifier)
-            : KeyCode(keyCode), Modifier(modifier) {}
+        KeyPressedEvent(KeyCode code, ModCode modifier)
+            : Code(code), Modifier(modifier) {}
     };
 
     struct KeyReleasedEvent : public Event
     {
         HC_STRINGIFY_CLASS(KeyReleasedEvent);
         
-        uint32_t KeyCode;
-        uint32_t Modifier;
+        KeyCode Code;
+        ModCode Modifier;
 
-        KeyReleasedEvent(uint32_t keyCode, uint32_t modifier)
-            : KeyCode(keyCode), Modifier(modifier) {}
+        KeyReleasedEvent(KeyCode code, ModCode modifier)
+            : Code(code), Modifier(modifier) {}
     };
 
     struct KeyRepeatedEvent : public Event
     {
         HC_STRINGIFY_CLASS(KeyRepeatedEvent);
         
-        uint32_t KeyCode;
-        uint32_t Modifier;
+        KeyCode Code;
+        ModCode Modifier;
 
-        KeyRepeatedEvent(uint32_t keyCode, uint32_t modifier)
-            : KeyCode(keyCode), Modifier(modifier) {}
+        KeyRepeatedEvent(KeyCode code, ModCode modifier)
+            : Code(code), Modifier(modifier) {}
     };
 
     struct MousePressedEvent : public Event
     {
         HC_STRINGIFY_CLASS(MousePressedEvent);
     
-        uint32_t Button;
-        uint32_t Modifier;
+        MouseButton Button;
+        ModCode Modifier;
 
-        MousePressedEvent(uint32_t button, uint32_t modifier)
+        MousePressedEvent(MouseButton button, ModCode modifier)
             : Button(button), Modifier(modifier) {}
     };
 
@@ -52,10 +53,10 @@ namespace HrothCore
     {
         HC_STRINGIFY_CLASS(MouseReleasedEvent);
     
-        uint32_t Button;
-        uint32_t Modifier;
+        MouseButton Button;
+        ModCode Modifier;
 
-        MouseReleasedEvent(uint32_t button, uint32_t modifier)
+        MouseReleasedEvent(MouseButton button, ModCode modifier)
             : Button(button), Modifier(modifier) {}
     };
 

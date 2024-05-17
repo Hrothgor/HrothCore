@@ -39,6 +39,9 @@ namespace HrothCore
 
         void Update();
 
+		bool ShouldClose() const;
+		void Close();
+
 		uint32_t GetWidth() const { return m_Props.Width; }
 		uint32_t GetHeight() const { return m_Props.Height; }
 

@@ -25,7 +25,7 @@ HrothCore::Application* HrothCore::CreateApplication(ApplicationCommandLineArgs 
 {
     HrothCore::ApplicationSpecification specification;
     specification.Name = "Sandbox";
-    specification.WorkingDirectory = "./";
+    specification.WorkingDirectory = ASSETS_DIR;
     specification.LogFile = "./Sandbox.log";
     specification.CommandLineArgs = args;
 

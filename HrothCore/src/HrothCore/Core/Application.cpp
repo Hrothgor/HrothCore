@@ -9,7 +9,8 @@
 #include "HrothCore/Events/WindowEvent.hpp"
 #include "HrothCore/Events/KeyMouseEvent.hpp"
 
-namespace HrothCore {
+namespace HrothCore
+{
 	Application* Application::s_Instance = nullptr;
 
 	Application::Application(const ApplicationSpecification& specification, std::shared_ptr<IClient>& client)
@@ -29,6 +30,14 @@ namespace HrothCore {
             Application::Get().Close();
             return true;
         });
+		HC_REGISTER_EVENT(KeyReleasedEvent, [](const KeyReleasedEvent& event) -> bool
+        {
+			if (event.Code == KeyCode::Escape)
+			{
+				Application::Get().Close();
+				return true;
+			}
+        });
 
 		Engine::Get().Init(client);
 	}
@@ -40,12 +49,12 @@ namespace HrothCore {
 
 	void Application::Close()
 	{
-		m_Running = false;
+		m_Window->Close();
 	}
 
 	void Application::Run()
 	{
-		while (m_Running)
+		while (m_Window->ShouldClose() == false)
 		{
 			double dt = m_Window->GetDeltaTime();
 

@@ -18,7 +18,6 @@ namespace HrothCore
             uint32_t LinkProgram(uint32_t vertexShaderID, uint32_t fragmentShaderID) const;
 
             uint32_t GetUniformLocation(const std::string &uniformName);
-            virtual void GetAllUniformLocation() = 0;
 
             void LoadFloat(uint32_t location, float value);
             void LoadBool(uint32_t location, bool value);
