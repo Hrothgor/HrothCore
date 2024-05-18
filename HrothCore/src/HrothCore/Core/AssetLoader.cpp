@@ -56,12 +56,12 @@ namespace HrothCore
         if (mesh->mMaterialIndex >= 0)
         {
             aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
-            meshData.Textures[TextureData::Type::Albedo] = ProcessMaterial(material, aiTextureType_DIFFUSE);
-            meshData.Textures[TextureData::Type::Metallic] = ProcessMaterial(material, aiTextureType_SPECULAR);
-            meshData.Textures[TextureData::Type::Normal] = ProcessMaterial(material, aiTextureType_NORMALS);
-            meshData.Textures[TextureData::Type::Height] = ProcessMaterial(material, aiTextureType_HEIGHT);
-            meshData.Textures[TextureData::Type::Occlusion] = ProcessMaterial(material, aiTextureType_AMBIENT);
-            meshData.Textures[TextureData::Type::Emissive] = ProcessMaterial(material, aiTextureType_EMISSIVE);
+            meshData.Textures[MeshData::TextureType::Albedo] = ProcessMaterial(material, aiTextureType_DIFFUSE);
+            meshData.Textures[MeshData::TextureType::Metallic] = ProcessMaterial(material, aiTextureType_SPECULAR);
+            meshData.Textures[MeshData::TextureType::Normal] = ProcessMaterial(material, aiTextureType_NORMALS);
+            meshData.Textures[MeshData::TextureType::Height] = ProcessMaterial(material, aiTextureType_HEIGHT);
+            meshData.Textures[MeshData::TextureType::Occlusion] = ProcessMaterial(material, aiTextureType_AMBIENT);
+            meshData.Textures[MeshData::TextureType::Emissive] = ProcessMaterial(material, aiTextureType_EMISSIVE);
         }
 
         return meshData;

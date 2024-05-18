@@ -13,7 +13,16 @@ namespace HrothCore
 
     struct TextureData
     {
-        enum Type : uint32_t
+        std::string Path;
+        const uint8_t* Data = nullptr;
+        uint32_t Width = 0;
+        uint32_t Height = 0;
+        uint32_t Channels = 0;
+    };
+
+    struct MeshData
+    {
+        enum TextureType : uint32_t
         {
             Albedo,
             Metallic,
@@ -24,18 +33,9 @@ namespace HrothCore
             NumTypes
         };
 
-        std::string Path;
-        const uint8_t* Data = nullptr;
-        uint32_t Width = 0;
-        uint32_t Height = 0;
-        uint32_t Channels = 0;
-    };
-
-    struct MeshData
-    {
         std::vector<Vertex> Vertices;
         std::vector<uint32_t> Indices;
-        std::array<TextureData, TextureData::Type::NumTypes> Textures;
+        std::array<TextureData, TextureType::NumTypes> Textures;
     };
 
     class AssetLoader
