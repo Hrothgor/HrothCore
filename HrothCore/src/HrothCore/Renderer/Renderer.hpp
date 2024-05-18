@@ -22,6 +22,8 @@ namespace HrothCore
         void Shutdown();
         void RenderScene(double dt);
 
+        std::shared_ptr<VertexArray> GetVao() const { return m_VAO; }
+
     private:
         std::shared_ptr<VertexArray> m_VAO;
         std::shared_ptr<Buffer<PerFrameData>> m_BufferFrameData;

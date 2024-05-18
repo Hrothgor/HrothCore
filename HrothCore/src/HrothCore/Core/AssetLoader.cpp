@@ -1,6 +1,8 @@
 #include "HrothCore_pch.hpp"
 
 #include "HrothCore/Core/AssetLoader.hpp"
+#include "HrothCore/Renderer/Renderer.hpp"
+#include "HrothCore/Renderer/VertexArray.hpp"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -12,20 +14,16 @@ namespace HrothCore
 {
     /* ----- Model ----- */
 
-    TextureData ProcessMaterial(aiMaterial *material, aiTextureType type)
+    std::string ProcessMaterial(aiMaterial *material, aiTextureType type)
     {
-        TextureData texture;
-
         if (material->GetTextureCount(type) > 0)
         {
             aiString str;
             material->GetTexture(type, 0, &str);
-            texture.Path = str.C_Str();
+            return std::string(str.C_Str());
         }
         else
-            texture.Path = "";
-
-        return texture;
+            return std::string();
     }
 
     MeshData ProcessMesh(aiMesh *mesh, const aiScene *scene)
@@ -37,8 +35,9 @@ namespace HrothCore
         {
             Vertex vertex;
             vertex.Position = glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
-            vertex.Normal = glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
-            if(mesh->mTextureCoords[0])
+            if (mesh->HasNormals())
+                vertex.Normal = glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
+            if (mesh->HasTextureCoords(0))
                 vertex.TexCoords = glm::vec2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
             else
                 vertex.TexCoords = glm::vec2(0.0f, 0.0f);
@@ -91,11 +90,14 @@ namespace HrothCore
         if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) 
         {
             HC_LOG_WARNING("Failed to load model: {0}", path);
+            importer.FreeScene();
             return std::vector<MeshData>();
         }
 
         std::vector<MeshData> meshes;
         ProcessNode(scene->mRootNode, scene, meshes);
+
+        importer.FreeScene();
 
         HC_LOG_INFO("Model loaded: {0}", path);
 
@@ -119,7 +121,6 @@ namespace HrothCore
             return texture;
         }
         
-        texture.Path = path;
         texture.Width = width;
         texture.Height = height;
         texture.Channels = channels;
@@ -130,4 +131,45 @@ namespace HrothCore
     }
 
     /* ------------------- */
+
+    /* ----- Load to GPU ----- */
+
+    Mesh AssetLoader::LoadMeshToGPU(const MeshData &meshData)
+    {
+        Mesh mesh;
+
+        mesh.VerticesCount = static_cast<uint32_t>(meshData.Vertices.size());
+        mesh.IndicesCount = static_cast<uint32_t>(meshData.Indices.size());
+
+        mesh.BaseVertex = 0;
+        mesh.BaseIndex = 0;
+
+        Renderer::Get().GetVao()->AddVertices(meshData.Vertices, meshData.Indices);
+
+        return mesh;
+    }
+
+    Texture AssetLoader::LoadTextureToGPU(const TextureData &textureData)
+    {
+        TextureInfo info;
+        info.wrapMode = TextureInfo::WrapMode::Repeat;
+        info.filterMode = TextureInfo::FilterMode::Linear;
+        switch (textureData.Channels)
+        {
+            case 1: info.format = TextureInfo::Format::R; break;
+            case 2: info.format = TextureInfo::Format::RG; break;
+            case 3: info.format = TextureInfo::Format::RGB; break;
+            case 4: info.format = TextureInfo::Format::RGBA; break;
+        }
+        info.dataType = TextureInfo::DataType::UByte;
+        
+        Texture texture(textureData.Width, textureData.Height, info);
+        texture.SetData(textureData.Data);
+
+        stbi_image_free((void *)textureData.Data);
+
+        return texture;
+    }
+
+    /* ----------------------- */
 }

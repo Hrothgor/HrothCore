@@ -10,6 +10,7 @@
 
 #include "HrothCore/Core/Application.hpp"
 #include "HrothCore/Core/Window.hpp"
+#include "HrothCore/Core/AssetManager.hpp"
 #include "HrothCore/Events/WindowEvent.hpp"
 
 #include <glad/glad.h>
@@ -32,34 +33,7 @@ namespace HrothCore
             return true;
         });
 
-        std::vector<Vertex> vertices = {
-            { {-1.0, -1.0, 1.0}, {1.0, 0.0, 0.0}, {0.0, 0.0} },
-            { { 1.0, -1.0, 1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0} },
-            { { 1.0,  1.0, 1.0}, {0.0, 0.0, 1.0}, {0.0, 0.0} },
-            { {-1.0,  1.0, 1.0}, {1.0, 1.0, 0.0}, {0.0, 0.0} },
-
-            { {-1.0, -1.0, -1.0}, {1.0, 1.0, 0.0}, {0.0, 0.0} },
-            { { 1.0, -1.0, -1.0}, {0.0, 0.0, 1.0}, {0.0, 0.0} },
-            { { 1.0,  1.0, -1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0} },
-            { {-1.0,  1.0, -1.0}, {1.0, 0.0, 0.0}, {0.0, 0.0} }
-        };
-
-        std::vector<uint32_t> indices = {
-            // front
-            0, 1, 2, 2, 3, 0,
-            // right
-            1, 5, 6, 6, 2, 1,
-            // back
-            7, 6, 5, 5, 4, 7,
-            // left
-            4, 0, 3, 3, 7, 4,
-            // bottom
-            4, 5, 1, 1, 0, 4,
-            // top
-            3, 2, 6, 6, 7, 3
-        };
-
-        m_VAO = std::make_shared<VertexArray>(vertices, indices);
+        m_VAO = std::make_shared<VertexArray>();
         m_VAO->Bind();
 
         m_BasicShader = std::make_shared<Shader>("./assets/shaders/Basic.vert", "./assets/shaders/Basic.frag");
@@ -67,13 +41,15 @@ namespace HrothCore
 
         m_BufferFrameData = std::make_shared<Buffer<PerFrameData>>(1);
         m_BufferFrameData->BindToShader(0, BufferShaderType::Uniform);
+
+        AssetManager::Get().GetMeshRef("./assets/models/bunny/bunny.obj");
     }
 
     void Renderer::Shutdown()
     {
     }
 
-    static Transform transform(glm::vec3(0.0f, 0.0f, -5.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+    static Transform transform(glm::vec3(0.0f, 0.0f, -4.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 
     void Renderer::RenderScene(double dt)
     {
@@ -91,9 +67,9 @@ namespace HrothCore
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		glDrawElements(GL_TRIANGLES, m_VAO->GetVerticesCount(), GL_UNSIGNED_INT, 0);
 
-        perFrameData.isWireframe = true;
-        m_BufferFrameData->SetData(1, &perFrameData);
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        glDrawElements(GL_TRIANGLES, m_VAO->GetVerticesCount(), GL_UNSIGNED_INT, 0);
+        // perFrameData.isWireframe = true;
+        // m_BufferFrameData->SetData(1, &perFrameData);
+        // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        // glDrawElements(GL_TRIANGLES, m_VAO->GetVerticesCount(), GL_UNSIGNED_INT, 0);
     }
 }

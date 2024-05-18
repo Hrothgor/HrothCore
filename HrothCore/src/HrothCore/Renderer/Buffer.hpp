@@ -60,7 +60,11 @@ namespace HrothCore
                     HC_LOG_WARNING("Buffer::SetData: cannot modify data to static buffer");
                     return;
                 }
-
+                if (count == 0)
+                {
+                    HC_LOG_WARNING("Buffer::SetData: count is 0");
+                    return;
+                }
                 if (data == nullptr)
                     HC_LOG_WARNING("Buffer::SetData: data is nullptr");
 
@@ -92,7 +96,7 @@ namespace HrothCore
                         newCapacity *= 2;
                     Resize(newCapacity);
                 }
-                SetData(data, count, m_Size);
+                SetData(count, data, m_Size);
             }
 
             void Reserve(uint32_t capacity)
