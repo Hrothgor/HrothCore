@@ -30,13 +30,13 @@ namespace HrothCore {
 	class Application
 	{
 	public:
-		Application(const ApplicationSpecification& specificationn, std::shared_ptr<IClient>& client);
+		Application(const ApplicationSpecification &specificationn, std::shared_ptr<IClient> &client);
 		virtual ~Application();
 
 		void Close();
 		Window &GetWindow() { return *m_Window; }
 
-		static Application& Get() { return *s_Instance; }
+		static Application &Get() { return *s_Instance; }
 	private:
 		void Run();
 

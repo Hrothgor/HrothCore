@@ -13,10 +13,6 @@ namespace HrothCore
 
             void Hotreload();
 
-        protected:
-            uint32_t LoadShader(const std::string &file, uint32_t type) const;
-            uint32_t LinkProgram(uint32_t vertexShaderID, uint32_t fragmentShaderID) const;
-
             uint32_t GetUniformLocation(const std::string &uniformName);
 
             void LoadFloat(uint32_t location, float value);
@@ -24,6 +20,10 @@ namespace HrothCore
             void LoadVector2(uint32_t location, const glm::vec2 &value);
             void LoadVector3(uint32_t location, const glm::vec3 &value);
             void LoadMatrix(uint32_t location, const glm::mat4 &value);
+
+        protected:
+            uint32_t LoadShader(const std::string &file, uint32_t type) const;
+            uint32_t LinkProgram(uint32_t vertexShaderID, uint32_t fragmentShaderID) const;
 
         private:
             uint32_t m_ProgramID;

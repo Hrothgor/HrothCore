@@ -83,7 +83,7 @@ namespace HrothCore
         }
     }
     
-    std::vector<MeshData> AssetLoader::LoadModel(const std::string& path)
+    std::vector<MeshData> AssetLoader::LoadModel(const std::string &path)
     {
         Assimp::Importer importer;
         const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
@@ -106,7 +106,7 @@ namespace HrothCore
 
     /* ----- Texture ----- */
 
-    TextureData AssetLoader::LoadTexture(const std::string& path)
+    TextureData AssetLoader::LoadTexture(const std::string &path)
     {
         TextureData texture;
 

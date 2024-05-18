@@ -13,7 +13,7 @@ namespace HrothCore
 {
 	Application* Application::s_Instance = nullptr;
 
-	Application::Application(const ApplicationSpecification& specification, std::shared_ptr<IClient>& client)
+	Application::Application(const ApplicationSpecification &specification, std::shared_ptr<IClient> &client)
 		: m_Specification(specification)
 	{
 		if (!m_Specification.WorkingDirectory.empty())
@@ -25,12 +25,12 @@ namespace HrothCore
 		s_Instance = this;
 
 		m_Window = std::make_unique<Window>(WindowProps(m_Specification.Name));
-		HC_REGISTER_EVENT(WindowCloseEvent, [](const WindowCloseEvent& event) -> bool
+		HC_REGISTER_EVENT(WindowCloseEvent, [](const WindowCloseEvent &event) -> bool
         {
             Application::Get().Close();
             return true;
         });
-		HC_REGISTER_EVENT(KeyReleasedEvent, [](const KeyReleasedEvent& event) -> bool
+		HC_REGISTER_EVENT(KeyReleasedEvent, [](const KeyReleasedEvent &event) -> bool
         {
 			if (event.Code == KeyCode::Escape)
 			{

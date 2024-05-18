@@ -9,14 +9,21 @@ namespace HrothCore
         Dynamic
     };
 
-    /* ----- BufferUsage to GL -----*/
+    enum class BufferShaderType {
+        Uniform,
+        ShaderStorage
+    };
+
+    /* ----- Buffer Struct to GL -----*/
     GLenum GetGLBufferUsage(BufferUsage usage);
+    GLenum GetGLBufferShaderType(BufferShaderType usage);
     /* -----------------------------*/
 
     template<typename T>
     class Buffer {
         public:
             /* ----- Ctr/Dtr ----- */
+
             Buffer(BufferUsage usage = BufferUsage::Dynamic)
                 : m_Usage(usage), m_Capacity(1)
             {
@@ -41,10 +48,12 @@ namespace HrothCore
             {
                 glDeleteBuffers(1, &m_HandleID);
             }
+
             /* --------------------*/
 
             /* ----- Data management ----- */
-            void SetData(const T *data, uint32_t length, uint32_t offset = 0)
+
+            void SetData(uint32_t count, const T *data, uint32_t offset = 0)
             {
                 if (m_Usage == BufferUsage::Static)
                 {
@@ -52,53 +61,62 @@ namespace HrothCore
                     return;
                 }
 
-                HC_LOG_WARNING("Buffer::SetData: data is nullptr");
+                if (data == nullptr)
+                    HC_LOG_WARNING("Buffer::SetData: data is nullptr");
 
-                if (length + offset <= m_Capacity)
+                if (count + offset > m_Capacity)
                 {
-                    uint32_t newCapacity = m_Capacity * 2;
-                    while (m_Size + length > newCapacity)
+                    uint32_t newCapacity = m_Capacity;
+                    while (m_Size + count > newCapacity)
                         newCapacity *= 2;
-                    Resize(length + offset);
+                    Resize(count + offset);
                 }
 
-                if (length + offset > m_Size)
-                    m_Size = length + offset;
-                glNamedBufferSubData(m_HandleID, offset * sizeof(T), length * sizeof(T), data);
+                if (count + offset > m_Size)
+                    m_Size = count + offset;
+                glNamedBufferSubData(m_HandleID, offset * sizeof(T), count * sizeof(T), data);
             }
 
-            void AddData(const T *data, uint32_t length)
+            void AddData(uint32_t count, const T *data)
             {
                 if (m_Usage == BufferUsage::Static)
                 {
-                    HC_LOG_WARNING("Buffer::SetData: cannot add data to static buffer");
+                    HC_LOG_WARNING("Buffer::AddData: cannot add data to static buffer");
                     return;
                 }
 
-                if (m_Capacity <= 1)
-                    Resize(length);
-                else if (m_Size + length > m_Capacity)
+                if (m_Size + count > m_Capacity)
                 {
-                    uint32_t newCapacity = m_Capacity * 2;
-                    while (m_Size + length > newCapacity)
+                    uint32_t newCapacity = m_Capacity;
+                    while (m_Size + count > newCapacity)
                         newCapacity *= 2;
                     Resize(newCapacity);
                 }
-                SetData(data, length, m_Size);
+                SetData(data, count, m_Size);
             }
 
             void Reserve(uint32_t capacity)
             {
                 if (m_Usage == BufferUsage::Static)
                 {
-                    HC_LOG_WARNING("Buffer::SetData: cannot change size of static buffer");
+                    HC_LOG_WARNING("Buffer::Reserve: cannot change size of static buffer");
                     return;
                 }
 
                 if (capacity > m_Capacity)
                     Resize(capacity);
             }
+
             /* --------------------------- */
+
+            /* ----- Binding ----- */
+
+            void BindToShader(uint32_t binding, BufferShaderType type)
+            {
+                glBindBufferBase(GetGLBufferShaderType(type), binding, m_HandleID);
+            }
+
+            /* ------------------- */
 
             uint32_t GetID() const { return m_HandleID; }
             uint32_t GetSize() const { return m_Size; }

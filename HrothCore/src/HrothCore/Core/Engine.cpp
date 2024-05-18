@@ -29,6 +29,6 @@ namespace HrothCore
         HC_LOG_DEBUG("Engine::Update: {0} ms", dt);
         HC_LOG_DEBUG("Engine::Update: {0} fps", 1.0/dt);
 
-        Renderer::Get().RenderScene();
+        Renderer::Get().RenderScene(dt);
     }
 }

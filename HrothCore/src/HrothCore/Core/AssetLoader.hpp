@@ -41,8 +41,8 @@ namespace HrothCore
     class AssetLoader
     {
         public:
-            static std::vector<MeshData> LoadModel(const std::string& path);
-            static TextureData LoadTexture(const std::string& path);
+            static std::vector<MeshData> LoadModel(const std::string &path);
+            static TextureData LoadTexture(const std::string &path);
 
         private:
     };

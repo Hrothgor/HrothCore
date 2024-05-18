@@ -15,8 +15,8 @@ namespace HrothCore
         public:
             virtual ~AssetManager() = default;
 
-            AssetRef<Mesh> GetMeshRef(const std::string& path);
-            AssetRef<Texture> GetTextureRef(const std::string& path);
+            AssetRef<Mesh> GetMeshRef(const std::string &path);
+            AssetRef<Texture> GetTextureRef(const std::string &path);
 
         private:
             template<typename T>

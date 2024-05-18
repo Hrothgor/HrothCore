@@ -1,0 +1,116 @@
+#include "HrothCore_pch.hpp"
+
+#include "HrothCore/Types/Transform.hpp"
+
+namespace HrothCore
+{
+    Transform::Transform(const glm::vec3 &position)
+        : m_Position(position), m_Rotation(0.0f), m_Scale(1.0f)
+    {
+        GetTransformMatrix();
+    }
+
+    Transform::Transform(const glm::vec3 &position, const glm::vec3 &rotation)
+        : m_Position(position), m_Rotation(rotation), m_Scale(1.0f)
+    {
+        GetTransformMatrix();
+    }
+
+    Transform::Transform(const glm::vec3 &position, const glm::vec3 &rotation, const glm::vec3 &scale)
+        : m_Position(position), m_Rotation(rotation), m_Scale(scale)
+    {
+        GetTransformMatrix();
+    }
+
+    Transform::Transform()
+        : m_Position(0.0f), m_Rotation(0.0f), m_Scale(1.0f)
+    {
+        GetTransformMatrix();
+    }
+
+    Transform::~Transform()
+    {
+    }
+
+    void Transform::SetPosition(const glm::vec3 &position)
+    {
+        m_Position = position;
+        m_Dirty = true;
+    }
+
+    void Transform::Translate(const glm::vec3 &translation)
+    {
+        m_Position += translation;
+        m_Dirty = true;
+    }
+
+    void Transform::SetRotation(const glm::vec3 &rotation)
+    {
+        m_Rotation = rotation;
+        m_Dirty = true;
+    }
+
+    void Transform::Rotate(const glm::vec3 &rotation)
+    {
+        m_Rotation += rotation;
+        m_Dirty = true;
+    }
+
+    void Transform::SetScale(const glm::vec3 &scale)
+    {
+        m_Scale = scale;
+        m_Dirty = true;
+    }
+
+    void Transform::Scale(const glm::vec3 &scale)
+    {
+        m_Scale *= scale;
+        m_Dirty = true;
+    }
+
+    glm::vec3 Transform::GetForward()
+    {
+        if (m_Dirty)
+        {
+            GetTransformMatrix();
+        }
+
+        return glm::vec3(m_TransformMatrix[2][0], m_TransformMatrix[2][1], m_TransformMatrix[2][2]);
+    }
+
+    glm::vec3 Transform::GetRight()
+    {
+        if (m_Dirty)
+        {
+            GetTransformMatrix();
+        }
+
+        return (glm::vec3(m_TransformMatrix[0][0], m_TransformMatrix[0][1], m_TransformMatrix[0][2]));
+    }
+
+    glm::vec3 Transform::GetUp()
+    {
+        if (m_Dirty)
+        {
+            GetTransformMatrix();
+        }
+
+        return (glm::vec3(m_TransformMatrix[1][0], m_TransformMatrix[1][1], m_TransformMatrix[1][2]));
+    }
+
+    const glm::mat4 &Transform::GetTransformMatrix()
+    {
+        if (m_Dirty)
+        {
+            m_TransformMatrix = glm::mat4(1.0f);
+            m_TransformMatrix = glm::translate(m_TransformMatrix, m_Position);
+            m_TransformMatrix = glm::rotate(m_TransformMatrix, m_Rotation.x, glm::vec3(1.0f, 0.0f, 0.0f));
+            m_TransformMatrix = glm::rotate(m_TransformMatrix, m_Rotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
+            m_TransformMatrix = glm::rotate(m_TransformMatrix, m_Rotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
+            m_TransformMatrix = glm::scale(m_TransformMatrix, m_Scale);
+            m_Dirty = false;
+        }
+
+        return m_TransformMatrix;
+    }
+}

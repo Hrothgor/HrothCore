@@ -19,3 +19,5 @@
 // FROM HROTHCORE
 #include "HrothCore/Core/Macro.hpp"
 #include "HrothCore/Core/Logger.hpp"
+
+#include "HrothCore/Utils/Math.hpp"

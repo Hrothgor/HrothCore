@@ -11,7 +11,7 @@ namespace HrothCore
         public:
             virtual ~Engine() = default;
 
-            void Init(std::shared_ptr<IClient>& client);
+            void Init(std::shared_ptr<IClient> &client);
             void Shutdown();
             void Update(double dt);
         private:

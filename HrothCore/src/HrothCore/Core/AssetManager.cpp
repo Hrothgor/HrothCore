@@ -4,10 +4,10 @@
 
 namespace HrothCore
 {
-    AssetRef<Mesh> AssetManager::GetMeshRef(const std::string& path)
+    AssetRef<Mesh> AssetManager::GetMeshRef(const std::string &path)
     {
         auto it = std::find_if(m_Meshes.begin(), m_Meshes.end(), 
-            [path](const std::pair<std::string, Mesh>& meshAsset) { return meshAsset.first == path; });
+            [path](const std::pair<std::string, Mesh> &meshAsset) { return meshAsset.first == path; });
 
         if (it == m_Meshes.end())
         {
@@ -19,10 +19,10 @@ namespace HrothCore
         return AssetRef<Mesh>(static_cast<uint32_t>(it - m_Meshes.begin()));
     }
 
-    AssetRef<Texture> AssetManager::GetTextureRef(const std::string& path)
+    AssetRef<Texture> AssetManager::GetTextureRef(const std::string &path)
     {
         auto it = std::find_if(m_Textures.begin(), m_Textures.end(),
-            [path](const std::pair<std::string, Texture>& textureAsset) { return textureAsset.first == path; });
+            [path](const std::pair<std::string, Texture> &textureAsset) { return textureAsset.first == path; });
 
         if (it == m_Textures.end())
         {

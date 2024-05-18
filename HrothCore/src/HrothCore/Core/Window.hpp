@@ -22,7 +22,7 @@ namespace HrothCore
 		uint32_t Height;
 		bool VSync;
 
-		WindowProps(const std::string& title = "Hazel Engine",
+		WindowProps(const std::string &title = "Hazel Engine",
 			        uint32_t width = 1600,
 			        uint32_t height = 900,
 					bool VSync = true)

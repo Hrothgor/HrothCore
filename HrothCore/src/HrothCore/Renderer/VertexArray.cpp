@@ -19,6 +19,7 @@ namespace HrothCore
         if (indices.size() != 0)
         {
             glVertexArrayElementBuffer(m_VaoID, m_Ibo.GetID());
+            m_VerticesCount = static_cast<uint32_t>(indices.size());
         }
 
         glEnableVertexArrayAttrib(m_VaoID, 0);
