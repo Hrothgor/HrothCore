@@ -24,7 +24,7 @@ namespace HrothCore
 		HC_ASSERT(s_Instance == nullptr);
 		s_Instance = this;
 
-		m_Window = std::make_unique<Window>(WindowProps(m_Specification.Name));
+		m_Window = std::make_unique<Window>(WindowProps(m_Specification.Name, 1280, 720, false));
 		HC_REGISTER_EVENT(WindowCloseEvent, [](const WindowCloseEvent &event) -> bool
         {
             Application::Get().Close();

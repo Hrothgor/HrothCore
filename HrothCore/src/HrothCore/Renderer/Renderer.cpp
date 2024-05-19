@@ -42,7 +42,7 @@ namespace HrothCore
         m_BufferFrameData = std::make_shared<Buffer<PerFrameData>>(1);
         m_BufferFrameData->BindToShader(0, BufferShaderType::Uniform);
 
-        AssetManager::Get().GetMeshRef("./assets/models/bunny/bunny.obj");
+        AssetManager::Get().GetMeshRef("./assets/models/dragon/dragon.obj");
     }
 
     void Renderer::Shutdown()
@@ -58,14 +58,24 @@ namespace HrothCore
 
         transform.Rotate(glm::vec3((float)dt));
         const float aspectRatio = m_FramebufferSize.x / (float)m_FramebufferSize.y;
-        PerFrameData perFrameData = {
-            .mvp = Math::CreateProjMatrix(45.0f, aspectRatio, 0.1f, 1000.0f) * transform.GetTransformMatrix(),
-            .isWireframe = false
-        };
+        glm::mat4 proj = Math::CreateProjMatrix(45.0f, aspectRatio, 0.1f, 1000.0f);
 
-        m_BufferFrameData->SetData(1, &perFrameData);
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		glDrawElements(GL_TRIANGLES, m_VAO->GetVerticesCount(), GL_UNSIGNED_INT, 0);
+        // draw as grid
+        for (int i = 0 ; i < 5; i++)
+        {
+            for (int j = 0 ; j < 5; j++)
+            {
+                transform.SetPosition(glm::vec3(-2.5 + i * 1.0f, -2.5 + j * 1.0f, -5.0f));
+                PerFrameData perFrameData = {
+                    .mvp = proj * transform.GetTransformMatrix(),
+                    .isWireframe = false
+                };
+
+                m_BufferFrameData->SetData(1, &perFrameData);
+                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+                glDrawElements(GL_TRIANGLES, m_VAO->GetVerticesCount(), GL_UNSIGNED_INT, 0);
+            }
+        }
 
         // perFrameData.isWireframe = true;
         // m_BufferFrameData->SetData(1, &perFrameData);

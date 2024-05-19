@@ -46,6 +46,7 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/external/assimp)
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/external/spdlog)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/external/stb_image)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/external/meshoptimizer)
 
 target_link_libraries(HrothCore PUBLIC 
 						glfw 
@@ -53,6 +54,7 @@ target_link_libraries(HrothCore PUBLIC
 						glm
 						assimp 	
 						spdlog
-						stb_image)
+						stb_image
+						meshoptimizer)
 
 ###########################################

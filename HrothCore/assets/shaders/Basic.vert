@@ -14,5 +14,5 @@ layout (location = 0) out vec3 color;
 
 void main() {
     gl_Position = MVP * vec4(pos, 1.0);
-    color = isWireframe > 0 ? vec3(0.0) : normal;
+    color = isWireframe > 0 ? vec3(0.0) : pos;
 }

@@ -2,11 +2,11 @@
 
 namespace HrothCore
 {
-    struct Vertex
+    struct VerticesData
     {
-        glm::vec3 Position;
-        glm::vec3 Normal;
-        glm::vec2 TexCoords;
+        std::vector<glm::vec3> Position;
+        std::vector<glm::vec3> Normal;
+        std::vector<glm::vec2> TexCoords;
     };
 
     struct TextureData
@@ -30,7 +30,7 @@ namespace HrothCore
             NumTypes
         };
 
-        std::vector<Vertex> Vertices;
+        VerticesData Vertices;
         std::vector<uint32_t> Indices;
         std::array<std::string, TextureType::NumTypes> Textures;
     };

@@ -8,7 +8,9 @@ namespace HrothCore
 {
     VertexArray::VertexArray(bool indexed)
         : m_VaoID(0)
-        , m_Vbo(BufferUsage::Dynamic)
+        , m_VboPosition(BufferUsage::Dynamic)
+        , m_VboNormal(BufferUsage::Dynamic)
+        , m_VboTexCoords(BufferUsage::Dynamic)
         , m_Ibo(BufferUsage::Dynamic)
         , m_VerticesCount(0)
         , m_Indexed(indexed)
@@ -19,13 +21,13 @@ namespace HrothCore
         glEnableVertexArrayAttrib(m_VaoID, 1);
         glEnableVertexArrayAttrib(m_VaoID, 2);
 
-        glVertexArrayAttribFormat(m_VaoID, 0, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, Position));
-        glVertexArrayAttribFormat(m_VaoID, 1, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, Normal));
-        glVertexArrayAttribFormat(m_VaoID, 2, 2, GL_FLOAT, GL_FALSE, offsetof(Vertex, TexCoords));
+        glVertexArrayAttribFormat(m_VaoID, 0, 3, GL_FLOAT, GL_FALSE, 0);
+        glVertexArrayAttribFormat(m_VaoID, 1, 3, GL_FLOAT, GL_FALSE, 0);
+        glVertexArrayAttribFormat(m_VaoID, 2, 2, GL_FLOAT, GL_FALSE, 0);
 
         glVertexArrayAttribBinding(m_VaoID, 0, 0);
-        glVertexArrayAttribBinding(m_VaoID, 1, 0);
-        glVertexArrayAttribBinding(m_VaoID, 2, 0);
+        glVertexArrayAttribBinding(m_VaoID, 1, 1);
+        glVertexArrayAttribBinding(m_VaoID, 2, 2);
     }
 
     VertexArray::~VertexArray()
@@ -38,7 +40,7 @@ namespace HrothCore
         glBindVertexArray(m_VaoID);
     }
 
-    void VertexArray::AddVertices(std::vector<Vertex> vertices, std::vector<uint32_t> indices)
+    void VertexArray::AddVertices(VerticesData vertices, std::vector<uint32_t> indices)
     {
         if (m_Indexed && indices.empty() || !m_Indexed && !indices.empty())
         {
@@ -46,14 +48,21 @@ namespace HrothCore
             return;
         }
         
-        m_VerticesCount += m_Indexed ? static_cast<uint32_t>(indices.size()) : static_cast<uint32_t>(vertices.size());
+        m_VerticesCount += m_Indexed ? static_cast<uint32_t>(indices.size()) : static_cast<uint32_t>(vertices.Position.size());
 
-        m_Vbo.AddData(static_cast<uint32_t>(vertices.size()), vertices.data());
+        m_VboPosition.AddData(static_cast<uint32_t>(vertices.Position.size()), vertices.Position.data());
+        glVertexArrayVertexBuffer(m_VaoID, 0, m_VboPosition.GetID(), 0, sizeof(glm::vec3));
+
+        m_VboNormal.AddData(static_cast<uint32_t>(vertices.Normal.size()), vertices.Normal.data());
+        glVertexArrayVertexBuffer(m_VaoID, 1, m_VboNormal.GetID(), 0, sizeof(glm::vec3));
+
+        m_VboTexCoords.AddData(static_cast<uint32_t>(vertices.TexCoords.size()), vertices.TexCoords.data());
+        glVertexArrayVertexBuffer(m_VaoID, 2, m_VboTexCoords.GetID(), 0, sizeof(glm::vec2));
+
         if (m_Indexed)
+        {
             m_Ibo.AddData(static_cast<uint32_t>(indices.size()), indices.data());
-
-        glVertexArrayVertexBuffer(m_VaoID, 0, m_Vbo.GetID(), 0, sizeof(Vertex));
-        if (m_Indexed)
             glVertexArrayElementBuffer(m_VaoID, m_Ibo.GetID());
+        }
     }
 }

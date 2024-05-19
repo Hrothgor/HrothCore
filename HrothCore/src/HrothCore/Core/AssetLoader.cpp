@@ -7,6 +7,7 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+#include <meshoptimizer.h>
 
 #include <stb_image.h>
 
@@ -30,18 +31,20 @@ namespace HrothCore
     {
         MeshData meshData;
         
-        meshData.Vertices.reserve(mesh->mNumVertices);
+        meshData.Vertices.Position.reserve(mesh->mNumVertices);
+        meshData.Vertices.Normal.reserve(mesh->mNumVertices);
+        meshData.Vertices.TexCoords.reserve(mesh->mNumVertices);
         for (uint32_t i = 0; i < mesh->mNumVertices; i++)
         {
-            Vertex vertex;
-            vertex.Position = glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
+            meshData.Vertices.Position.push_back(glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z));
             if (mesh->HasNormals())
-                vertex.Normal = glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
+                meshData.Vertices.Normal.push_back(glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z));
+            else 
+                meshData.Vertices.Normal.push_back(glm::vec3(0.0f));
             if (mesh->HasTextureCoords(0))
-                vertex.TexCoords = glm::vec2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
+                meshData.Vertices.TexCoords.push_back(glm::vec2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y));
             else
-                vertex.TexCoords = glm::vec2(0.0f, 0.0f);
-            meshData.Vertices.push_back(vertex);
+                meshData.Vertices.TexCoords.push_back(glm::vec2(0.0f));
         }
 
         for (uint32_t i = 0; i < mesh->mNumFaces; i++)
@@ -81,6 +84,47 @@ namespace HrothCore
             ProcessNode(node->mChildren[i], scene, meshes);
         }
     }
+
+    void OptimizeMesh(std::vector<MeshData> &meshes)
+    {
+        for (MeshData &mesh : meshes)
+        {
+            std::vector<unsigned int> remap(mesh.Indices.size());
+            meshopt_Stream streams[] = {
+                {mesh.Vertices.Position.data(), sizeof(glm::vec3), sizeof(glm::vec3)},
+                {mesh.Vertices.Normal.data(), sizeof(glm::vec3), sizeof(glm::vec3)},
+                {mesh.Vertices.TexCoords.data(), sizeof(glm::vec2), sizeof(glm::vec2)},
+            };
+            const size_t vertexCount = meshopt_generateVertexRemapMulti(remap.data(), mesh.Indices.data(), mesh.Indices.size(),
+                                                mesh.Vertices.Position.size(), streams, sizeof(streams) / sizeof(streams[0]));
+
+            std::vector<unsigned int> remappedIndices(mesh.Indices.size());
+            std::vector<glm::vec3> remappedPos(vertexCount);
+            std::vector<glm::vec3> remappedNormal(vertexCount);
+            std::vector<glm::vec2> remappedTexCoords(vertexCount);
+
+            meshopt_remapIndexBuffer(remappedIndices.data(), mesh.Indices.data(), mesh.Indices.size(), remap.data());
+            meshopt_remapVertexBuffer(remappedPos.data(), mesh.Vertices.Position.data(), mesh.Vertices.Position.size(), sizeof(glm::vec3), remap.data());
+            meshopt_remapVertexBuffer(remappedNormal.data(), mesh.Vertices.Normal.data(), mesh.Vertices.Normal.size(), sizeof(glm::vec3), remap.data());
+            meshopt_remapVertexBuffer(remappedTexCoords.data(), mesh.Vertices.TexCoords.data(), mesh.Vertices.TexCoords.size(), sizeof(glm::vec2), remap.data());
+
+            meshopt_optimizeVertexCache(remappedIndices.data(), remappedIndices.data(), remappedIndices.size(), vertexCount);
+            meshopt_optimizeOverdraw(remappedIndices.data(), remappedIndices.data(), remappedIndices.size(), glm::value_ptr(remappedPos[0]), vertexCount, sizeof(glm::vec3), 1.05f);
+
+            meshopt_optimizeVertexFetchRemap(remap.data(), remappedIndices.data(), remappedIndices.size(), vertexCount);
+
+            meshopt_remapIndexBuffer(remappedIndices.data(), remappedIndices.data(), remappedIndices.size(), remap.data());
+            meshopt_remapVertexBuffer(remappedPos.data(), remappedPos.data(), vertexCount, sizeof(glm::vec3), remap.data());
+            meshopt_remapVertexBuffer(remappedNormal.data(), remappedNormal.data(), vertexCount, sizeof(glm::vec3), remap.data());
+            meshopt_remapVertexBuffer(remappedTexCoords.data(), remappedTexCoords.data(), vertexCount, sizeof(glm::vec2), remap.data());
+
+            mesh.Indices = remappedIndices;
+            mesh.Vertices.Position = remappedPos;
+            mesh.Vertices.Normal = remappedNormal;
+            mesh.Vertices.TexCoords = remappedTexCoords;
+        }
+
+    }
     
     std::vector<MeshData> AssetLoader::LoadModel(const std::string &path)
     {
@@ -96,10 +140,13 @@ namespace HrothCore
 
         std::vector<MeshData> meshes;
         ProcessNode(scene->mRootNode, scene, meshes);
-
         importer.FreeScene();
 
         HC_LOG_INFO("Model loaded: {0}", path);
+
+        OptimizeMesh(meshes);
+
+        HC_LOG_INFO("Model optimzed: {0}", path);
 
         return meshes;
     }
@@ -138,7 +185,7 @@ namespace HrothCore
     {
         Mesh mesh;
 
-        mesh.VerticesCount = static_cast<uint32_t>(meshData.Vertices.size());
+        mesh.VerticesCount = static_cast<uint32_t>(meshData.Vertices.Position.size());
         mesh.IndicesCount = static_cast<uint32_t>(meshData.Indices.size());
 
         mesh.BaseVertex = 0;

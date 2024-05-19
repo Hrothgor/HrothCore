@@ -17,17 +17,25 @@ namespace HrothCore
         m_Client->Init();
     }
 
+    static int averagefps =0;
+    static int frames = 0;
+
     void Engine::Shutdown()
     {
+        HC_LOG_WARNING("Average FPS: {0}", averagefps/frames);
         m_Client->Shutdown();
         Renderer::Get().Shutdown();
     }
 
+
     void Engine::Update(double dt)
     {
         m_Client->Update(dt);
-        HC_LOG_DEBUG("Engine::Update: {0} ms", dt);
-        HC_LOG_DEBUG("Engine::Update: {0} fps", 1.0/dt);
+        HC_LOG_INFO("Engine::Update: {0} ms", dt);
+        HC_LOG_INFO("Engine::Update: {0} fps", 1.0/dt);
+
+        averagefps += 1.0/dt;
+        frames++;
 
         Renderer::Get().RenderScene(dt);
     }
