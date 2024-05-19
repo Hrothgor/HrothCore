@@ -188,8 +188,8 @@ namespace HrothCore
         mesh.VerticesCount = static_cast<uint32_t>(meshData.Vertices.Position.size());
         mesh.IndicesCount = static_cast<uint32_t>(meshData.Indices.size());
 
-        mesh.BaseVertex = 0;
-        mesh.BaseIndex = 0;
+        mesh.BaseVertex = Renderer::Get().GetVao()->GetVerticesCount();
+        mesh.BaseIndex = Renderer::Get().GetVao()->GetIndicesCount();
 
         Renderer::Get().GetVao()->AddVertices(meshData.Vertices, meshData.Indices);
 

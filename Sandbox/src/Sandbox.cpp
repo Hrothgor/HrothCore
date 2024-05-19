@@ -19,6 +19,11 @@ class SandboxClient : public HrothCore::IClient
         void Update(double dt) override
         {
         }
+
+        void ImGuiRender() override
+        {
+            ImGui::ShowDemoWindow();
+        }
 };
 
 HrothCore::Application* HrothCore::CreateApplication(ApplicationCommandLineArgs args)

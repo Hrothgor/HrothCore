@@ -13,7 +13,7 @@ namespace HrothCore
         , m_VboTexCoords(BufferUsage::Dynamic)
         , m_Ibo(BufferUsage::Dynamic)
         , m_VerticesCount(0)
-        , m_Indexed(indexed)
+        , m_IndicesCount(0)
     {
         glCreateVertexArrays(1, &m_VaoID);
 
@@ -42,13 +42,14 @@ namespace HrothCore
 
     void VertexArray::AddVertices(VerticesData vertices, std::vector<uint32_t> indices)
     {
-        if (m_Indexed && indices.empty() || !m_Indexed && !indices.empty())
+        if (indices.empty())
         {
-            HC_LOG_WARNING("VertexArray::AddVertices: vertex array is indexed, but no indices provided or vice versa");
+            HC_LOG_WARNING("VertexArray::AddVertices: vertex array is indexed, but no indices provided");
             return;
         }
         
-        m_VerticesCount += m_Indexed ? static_cast<uint32_t>(indices.size()) : static_cast<uint32_t>(vertices.Position.size());
+        m_VerticesCount += static_cast<uint32_t>(vertices.Position.size());
+        m_IndicesCount += static_cast<uint32_t>(indices.size());
 
         m_VboPosition.AddData(static_cast<uint32_t>(vertices.Position.size()), vertices.Position.data());
         glVertexArrayVertexBuffer(m_VaoID, 0, m_VboPosition.GetID(), 0, sizeof(glm::vec3));
@@ -59,10 +60,7 @@ namespace HrothCore
         m_VboTexCoords.AddData(static_cast<uint32_t>(vertices.TexCoords.size()), vertices.TexCoords.data());
         glVertexArrayVertexBuffer(m_VaoID, 2, m_VboTexCoords.GetID(), 0, sizeof(glm::vec2));
 
-        if (m_Indexed)
-        {
-            m_Ibo.AddData(static_cast<uint32_t>(indices.size()), indices.data());
-            glVertexArrayElementBuffer(m_VaoID, m_Ibo.GetID());
-        }
+        m_Ibo.AddData(static_cast<uint32_t>(indices.size()), indices.data());
+        glVertexArrayElementBuffer(m_VaoID, m_Ibo.GetID());
     }
 }

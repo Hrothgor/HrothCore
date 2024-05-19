@@ -16,6 +16,10 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
+
 // FROM HROTHCORE
 #include "HrothCore/Core/Macro.hpp"
 #include "HrothCore/Core/Logger.hpp"
