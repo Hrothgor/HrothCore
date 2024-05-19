@@ -1,5 +1,7 @@
 #pragma once
 
+#include "HrothCore/Core/FPSCounter.hpp"
+
 namespace HrothCore
 {
     class IClient;
@@ -14,7 +16,10 @@ namespace HrothCore
             void Init(std::shared_ptr<IClient> &client);
             void Shutdown();
             void Update(double dt);
+
+            float GetFPS() const { return m_FPSCounter.GetFPS(); }
         private:
+            FPSCounter m_FPSCounter;
             std::shared_ptr<IClient> m_Client;
     };
 }
