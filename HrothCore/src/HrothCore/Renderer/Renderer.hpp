@@ -3,13 +3,16 @@
 namespace HrothCore
 {
     struct PerFrameData {
-        glm::mat4 mvp;
+        glm::mat4 model;
+        glm::mat4 view;
+        glm::mat4 proj;
         int isWireframe;
     };
 
     class VertexArray;
     template <typename T> class Buffer;
     class Shader;
+    class Camera;
 
     class Renderer
     {
@@ -28,6 +31,8 @@ namespace HrothCore
         std::shared_ptr<VertexArray> m_VAO;
         std::shared_ptr<Buffer<PerFrameData>> m_BufferFrameData;
         std::shared_ptr<Shader> m_BasicShader;
+
+        std::shared_ptr<Camera> m_Camera;
 
         glm::ivec2 m_FramebufferSize;
     };

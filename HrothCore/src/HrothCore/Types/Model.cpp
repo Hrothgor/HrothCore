@@ -12,13 +12,13 @@ namespace HrothCore
     {
     }
 
-    void Model::AddMeshIndex(uint32_t index)
+    void Model::AddMesh(const Mesh &mesh)
     {
-        m_MeshIndexes.push_back(index);
+        m_Meshes.push_back(mesh);
     }
 
     size_t Model::GetMeshesCount() const
     {
-        return m_MeshIndexes.size();
+        return m_Meshes.size();
     }
 }

@@ -6,12 +6,12 @@ namespace HrothCore
 {
     class Input 
     {
+        public:
+            static bool IsKeyPressed(KeyCode keyCode);
+            static bool IsKeyReleased(KeyCode keyCode);
 
-        static bool IsKeyPressed(KeyCode keyCode);
-        static bool IsKeyReleased(KeyCode keyCode);
-
-        static bool IsMouseButtonPressed(MouseButton mouseCode);
-        static bool IsMouseButtonReleased(MouseButton mouseCode);
-        static glm::vec2 GetMousePosition();
+            static bool IsMouseButtonPressed(MouseButton mouseCode);
+            static bool IsMouseButtonReleased(MouseButton mouseCode);
+            static glm::vec2 GetMousePosition();
     };
 }

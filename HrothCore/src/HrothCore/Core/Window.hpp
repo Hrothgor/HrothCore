@@ -48,6 +48,10 @@ namespace HrothCore
 		void EnableVSync(bool enable = true);
 		bool IsVSync() const { return m_Props.VSync; }
 
+		void HideCursor();
+		void ShowCursor();
+		void SetCursorPos(double xpos, double ypos);
+		
 		void SetWindowMode(WindowMode mode);
 
 		double GetDeltaTime() const { return m_DeltaTime; }

@@ -87,6 +87,21 @@ namespace HrothCore
         m_Props.VSync = enable;
     }
 
+    void Window::HideCursor()
+    {
+        glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    }
+
+    void Window::ShowCursor()
+    {
+        glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    }
+
+    void Window::SetCursorPos(double xpos, double ypos)
+    {
+        glfwSetCursorPos(m_Window, xpos, ypos);
+    }
+
     void Window::SetWindowMode(WindowMode mode)
     {
         if (m_CurrentWindowMode == mode)

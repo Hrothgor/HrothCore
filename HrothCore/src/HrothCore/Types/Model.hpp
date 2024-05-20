@@ -16,10 +16,12 @@ namespace HrothCore
             Model();
             ~Model();
 
-            void AddMeshIndex(uint32_t index);
-            size_t GetMeshesCount() const;
+            void AddMesh(const Mesh &mesh);
 
+            const Mesh& GetMesh(size_t index) const { return m_Meshes[index]; }
+            const std::vector<Mesh>& GetMeshes() const { return m_Meshes; }
+            size_t GetMeshesCount() const;
         private:
-            std::vector<uint32_t> m_MeshIndexes;
+            std::vector<Mesh> m_Meshes;
     };
 }

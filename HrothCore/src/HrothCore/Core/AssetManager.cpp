@@ -5,20 +5,23 @@
 
 namespace HrothCore
 {
-    AssetRef<Mesh> AssetManager::GetMeshRef(const std::string &path)
+    AssetRef<Model> AssetManager::GetModelRef(const std::string &path)
     {
-        auto it = std::find_if(m_Meshes.begin(), m_Meshes.end(), 
-            [path](const std::pair<std::string, Mesh> &meshAsset) { return meshAsset.first == path; });
+        auto it = std::find_if(m_Models.begin(), m_Models.end(), 
+            [path](const std::pair<std::string, Model> &modelAsset) { return modelAsset.first == path; });
 
-        if (it == m_Meshes.end())
+        if (it == m_Models.end())
         {
             std::vector<MeshData> modelData = AssetLoader::LoadModel(path); // Load file
-            for (const MeshData &meshData : modelData)
-                m_Meshes.push_back({path, AssetLoader::LoadMeshToGPU(meshData)}); // Load mesh to GPU
-            return AssetRef<Mesh>(static_cast<uint32_t>(m_Meshes.size() - 1));
+            Model model;
+            for (const MeshData &meshData : modelData) {
+                model.AddMesh(AssetLoader::LoadMeshToGPU(meshData)); // Load mesh to GPU
+            }
+            m_Models.push_back({path, model});
+            return AssetRef<Model>(static_cast<uint32_t>(m_Models.size() - 1));
         }
 
-        return AssetRef<Mesh>(static_cast<uint32_t>(it - m_Meshes.begin()));
+        return AssetRef<Model>(static_cast<uint32_t>(it - m_Models.begin()));
     }
 
     AssetRef<Texture> AssetManager::GetTextureRef(const std::string &path)
@@ -39,10 +42,10 @@ namespace HrothCore
     /* ----- GETTER ----- */
 
     template<>
-    Mesh& AssetManager::GetAsset<Mesh>(uint32_t index)
+    Model& AssetManager::GetAsset<Model>(uint32_t index)
     {
-        HC_ASSERT(index < m_Meshes.size());
-        return m_Meshes[index].second;
+        HC_ASSERT(index < m_Models.size());
+        return m_Models[index].second;
     }
 
     template<>

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "HrothCore/Types/Mesh.hpp"
+#include "HrothCore/Types/Model.hpp"
 #include "HrothCore/Renderer/Texture.hpp"
 
 namespace HrothCore
@@ -15,17 +15,17 @@ namespace HrothCore
         public:
             virtual ~AssetManager() = default;
 
-            AssetRef<Mesh> GetMeshRef(const std::string &path);
+            AssetRef<Model> GetModelRef(const std::string &path);
             AssetRef<Texture> GetTextureRef(const std::string &path);
 
         private:
             template<typename T>
             T& GetAsset(uint32_t index);
 
-            std::vector<std::pair<std::string, Mesh>> m_Meshes;
+            std::vector<std::pair<std::string, Model>> m_Models;
             std::vector<std::pair<std::string, Texture>> m_Textures;
 
-            friend struct AssetRef<Mesh>;
+            friend struct AssetRef<Model>;
             friend struct AssetRef<Texture>;
     };
 

@@ -31,6 +31,8 @@ namespace HrothCore
             const glm::mat4 &GetTransformMatrix();
 
         private:
+            void UpdateTransformMatrix();
+
             glm::vec3 m_Position;
             glm::vec3 m_Rotation;
             glm::vec3 m_Scale;

@@ -7,6 +7,7 @@
 #include "HrothCore/Renderer/Shader.hpp"
 
 #include "HrothCore/Types/Transform.hpp"
+#include "HrothCore/Types/Camera.hpp"
 
 #include "HrothCore/Core/Application.hpp"
 #include "HrothCore/Core/Window.hpp"
@@ -17,6 +18,8 @@
 
 namespace HrothCore
 {
+    static CameraPositionerFirstPerson cameraPositionerFP;
+
     void Renderer::Init()
     {
         RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1.0f});
@@ -41,16 +44,20 @@ namespace HrothCore
 
         m_BufferFrameData = std::make_shared<Buffer<PerFrameData>>(1);
         m_BufferFrameData->BindToShader(0, BufferShaderType::Uniform);
+
+        m_Camera = std::make_shared<Camera>(cameraPositionerFP);
     }
 
     void Renderer::Shutdown()
     {
     }
 
-    static Transform transform(glm::vec3(0.0f, 0.0f, -4.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.1f, 0.1f, 0.1f));
+    static Transform transform(glm::vec3(0.0f, 0.0f, -4.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(4.0f, 4.0f, 4.0f));
 
     void Renderer::RenderScene(double dt)
     {
+        cameraPositionerFP.Update(dt);
+
         RenderCommand::SetViewport(m_FramebufferSize);
         RenderCommand::Clear();
 
@@ -58,7 +65,8 @@ namespace HrothCore
         const float aspectRatio = m_FramebufferSize.x / (float)m_FramebufferSize.y;
         glm::mat4 proj = Math::CreateProjMatrix(45.0f, aspectRatio, 0.1f, 1000.0f);
 
-        AssetRef<Mesh> bunnyref = AssetManager::Get().GetMeshRef("./assets/models/teapot/teapot.obj");
+        AssetRef<Model> bunnyref = AssetManager::Get().GetModelRef("./assets/models/bunny/bunny.obj");
+        // AssetRef<Model> modelref = AssetManager::Get().GetModelRef("./assets/models/helmet/source/HEML1.fbx");
 
         // draw as grid
         for (int i = 0 ; i < 5; i++)
@@ -67,13 +75,15 @@ namespace HrothCore
             {
                 transform.SetPosition(glm::vec3(-25.0 + i * 10.0f, -25.0 + j * 10.0f, -50.0f));
                 PerFrameData perFrameData = {
-                    .mvp = proj * transform.GetTransformMatrix(),
+                    .model = transform.GetTransformMatrix(),
+                    .view = m_Camera->GetViewMatrix(),
+                    .proj = proj,
                     .isWireframe = false
                 };
 
                 m_BufferFrameData->SetData(1, &perFrameData);
                 glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-                glDrawElements(GL_TRIANGLES, bunnyref.Get().IndicesCount, GL_UNSIGNED_INT, 0);
+                glDrawElements(GL_TRIANGLES, bunnyref.Get().GetMesh(0).IndicesCount, GL_UNSIGNED_INT, 0);
             }
         }
 
