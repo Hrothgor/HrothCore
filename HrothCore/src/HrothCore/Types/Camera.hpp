@@ -48,26 +48,33 @@ namespace HrothCore
     {
     public:
         struct Movement {
-            float Speed = 30.0f;
-            float RotationSpeed = 90.0f;
+            float Speed;
+            float RotationSpeed;
 
-            float FastMultiplier = 4.0f;
+            float FastMultiplier;
+
+            Movement() : Speed(30.0f), RotationSpeed(90.0f), FastMultiplier(4.0f) {}
         };
 
         struct KeyBinding {
-            KeyCode Forward = KeyCode::W;
-            KeyCode Backward = KeyCode::S;
-            KeyCode Left = KeyCode::A;
-            KeyCode Right = KeyCode::D;
-            KeyCode Up = KeyCode::E;
-            KeyCode Down = KeyCode::Q;
-            KeyCode Fast = KeyCode::LeftShift;
+            KeyCode Forward;
+            KeyCode Backward;
+            KeyCode Left;
+            KeyCode Right;
+            KeyCode Up;
+            KeyCode Down;
+            KeyCode Fast;
 
-            MouseButton Rotate = MouseButton::ButtonLeft;
+            MouseButton Rotate;
+
+            KeyBinding() : Forward(KeyCode::W), Backward(KeyCode::S)
+                        , Left(KeyCode::A), Right(KeyCode::D)
+                        , Up(KeyCode::E), Down(KeyCode::Q)
+                        , Fast(KeyCode::LeftShift), Rotate(MouseButton::ButtonLeft) {}
         };
 
     public:
-        CameraPositionerEditor(const Movement &movement = Movement{}, const KeyBinding &keyBinding = KeyBinding{});
+        CameraPositionerEditor(const Movement &movement = Movement(), const KeyBinding &keyBinding = KeyBinding());
 
         void Update(float dt);
 
