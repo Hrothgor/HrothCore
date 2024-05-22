@@ -16,7 +16,7 @@ class SandboxClient : public HrothCore::IClient
             HC_LOG_INFO("SandboxClient::Shutdown");
         }
 
-        void Update(double dt) override
+        void Update(float dt) override
         {
         }
 

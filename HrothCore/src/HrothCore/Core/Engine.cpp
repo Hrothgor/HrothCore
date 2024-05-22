@@ -26,7 +26,7 @@ namespace HrothCore
         Renderer::Get().Shutdown();
     }
 
-    void Engine::Update(double dt)
+    void Engine::Update(float dt)
     {
         m_Client->Update(dt);
         HC_LOG_INFO("Engine::Update: {0} ms", dt);

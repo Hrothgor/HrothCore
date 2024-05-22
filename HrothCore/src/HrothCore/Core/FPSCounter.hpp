@@ -8,7 +8,7 @@ namespace HrothCore
             FPSCounter(float FPSUpdateInterval = 0.5f);
             ~FPSCounter() = default;
 
-            void Tick(double dt);
+            void Tick(float dt);
             
             float GetFPS() const { return m_FPS; };
 

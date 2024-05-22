@@ -1,7 +1,7 @@
 #pragma once
 
 #include "HrothCore/Renderer/Buffer.hpp"
-#include "HrothCore/Types/Mesh.hpp"
+#include "HrothCore/Core/AssetLoader.hpp"
 
 namespace HrothCore
 {

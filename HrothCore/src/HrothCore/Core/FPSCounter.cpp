@@ -10,7 +10,7 @@ namespace HrothCore
         HC_ASSERT(FPSUpdateInterval > 0);
     }
 
-    void FPSCounter::Tick(double dt)
+    void FPSCounter::Tick(float dt)
     {
         m_FrameCount++;
         m_AccumulatedTime += dt;

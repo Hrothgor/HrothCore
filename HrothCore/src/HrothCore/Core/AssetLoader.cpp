@@ -15,16 +15,45 @@ namespace HrothCore
 {
     /* ----- Model ----- */
 
-    std::string ProcessMaterial(aiMaterial *material, aiTextureType type)
+    std::string ProcessMaterialTexture(aiMaterial *material, aiTextureType type)
     {
-        if (material->GetTextureCount(type) > 0)
+        // Get the path to the texture
+        aiString path;
+        if (AI_SUCCESS != aiGetMaterialString(material, AI_MATKEY_TEXTURE(type, 0), &path))
+            return std::string(path.C_Str());
+        return "";
+    }
+
+    MaterialData ProcessMaterial(aiMaterial *material, const aiScene *scene)
+    {
+        MaterialData materialData;
+
+        materialData.Textures[MaterialData::TextureType::Albedo] = ProcessMaterialTexture(material, aiTextureType_DIFFUSE);
+        materialData.Textures[MaterialData::TextureType::Metallic] = ProcessMaterialTexture(material, aiTextureType_SPECULAR);
+        materialData.Textures[MaterialData::TextureType::Normal] = ProcessMaterialTexture(material, aiTextureType_NORMALS);
+        materialData.Textures[MaterialData::TextureType::Occlusion] = ProcessMaterialTexture(material, aiTextureType_AMBIENT);
+        materialData.Textures[MaterialData::TextureType::Emissive] = ProcessMaterialTexture(material, aiTextureType_EMISSIVE);
+
+        materialData.AlbedoValue = glm::vec3(1.0f);
+        materialData.MetallicValue = 0.0f;
+        materialData.AmbientOcclusionValue = 1.0f;
+
+        // Retrieve the diffuse color (albedo)
+        aiColor3D diffuseColor;
+        if (material->Get(AI_MATKEY_COLOR_DIFFUSE, diffuseColor) == AI_SUCCESS)
+            materialData.AlbedoValue = glm::vec3(diffuseColor.r, diffuseColor.g, diffuseColor.b);
+
+        return materialData;
+    }
+
+    void ProcessMaterials(const aiScene *scene, ModelData &modelData)
+    {
+        modelData.Materials.reserve(scene->mNumMaterials);
+        for (uint32_t i = 0; i < scene->mNumMaterials; i++)
         {
-            aiString str;
-            material->GetTexture(type, 0, &str);
-            return std::string(str.C_Str());
+            aiMaterial *material = scene->mMaterials[i];
+            modelData.Materials.push_back(ProcessMaterial(material, scene));
         }
-        else
-            return std::string();
     }
 
     MeshData ProcessMesh(aiMesh *mesh, const aiScene *scene)
@@ -55,33 +84,24 @@ namespace HrothCore
                 meshData.Indices.push_back(face.mIndices[j]);
         }
 
-        if (mesh->mMaterialIndex >= 0)
-        {
-            aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
-            meshData.Textures[MeshData::TextureType::Albedo] = ProcessMaterial(material, aiTextureType_DIFFUSE);
-            meshData.Textures[MeshData::TextureType::Metallic] = ProcessMaterial(material, aiTextureType_SPECULAR);
-            meshData.Textures[MeshData::TextureType::Normal] = ProcessMaterial(material, aiTextureType_NORMALS);
-            meshData.Textures[MeshData::TextureType::Height] = ProcessMaterial(material, aiTextureType_HEIGHT);
-            meshData.Textures[MeshData::TextureType::Occlusion] = ProcessMaterial(material, aiTextureType_AMBIENT);
-            meshData.Textures[MeshData::TextureType::Emissive] = ProcessMaterial(material, aiTextureType_EMISSIVE);
-        }
+        meshData.MaterialIndex = mesh->mMaterialIndex;
 
         return meshData;
     }  
 
-    void ProcessNode(aiNode *node, const aiScene *scene, std::vector<MeshData> &meshes)
+    void ProcessMeshNode(aiNode *node, const aiScene *scene, ModelData &modelData)
     {
         // process all the node's meshes (if any)
-        meshes.reserve(scene->mNumMeshes);
+        modelData.Meshes.reserve(scene->mNumMeshes);
         for (uint32_t i = 0; i < node->mNumMeshes; i++)
         {
             aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
-            meshes.push_back(ProcessMesh(mesh, scene));
+            modelData.Meshes.push_back(ProcessMesh(mesh, scene));
         }
         // then do the same for each of its children
         for (uint32_t i = 0; i < node->mNumChildren; i++)
         {
-            ProcessNode(node->mChildren[i], scene, meshes);
+            ProcessMeshNode(node->mChildren[i], scene, modelData);
         }
     }
 
@@ -126,7 +146,7 @@ namespace HrothCore
 
     }
     
-    std::vector<MeshData> AssetLoader::LoadModel(const std::string &path)
+    ModelData AssetLoader::LoadModel(const std::string &path)
     {
         Assimp::Importer importer;
         const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
@@ -135,20 +155,21 @@ namespace HrothCore
         {
             HC_LOG_WARNING("Failed to load model: {0}", path);
             importer.FreeScene();
-            return std::vector<MeshData>();
+            return ModelData();
         }
 
-        std::vector<MeshData> meshes;
-        ProcessNode(scene->mRootNode, scene, meshes);
+        ModelData modelData;
+        ProcessMeshNode(scene->mRootNode, scene, modelData);
+        ProcessMaterials(scene, modelData);
         importer.FreeScene();
 
         HC_LOG_INFO("Model loaded: {0}", path);
 
-        OptimizeMesh(meshes);
+        OptimizeMesh(modelData.Meshes);
 
         HC_LOG_INFO("Model optimzed: {0}", path);
 
-        return meshes;
+        return modelData;
     }
 
     /* ----------------- */

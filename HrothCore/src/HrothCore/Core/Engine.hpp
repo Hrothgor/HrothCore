@@ -15,7 +15,7 @@ namespace HrothCore
 
             void Init(std::shared_ptr<IClient> &client);
             void Shutdown();
-            void Update(double dt);
+            void Update(float dt);
 
             float GetFPS() const { return m_FPSCounter.GetFPS(); }
         private:

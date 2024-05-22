@@ -32,6 +32,9 @@ namespace HrothCore
         void SetNear(const float near) { m_Near = near; }
         void SetFar(const float far) { m_Far = far; }
         void SetFOV(const float fov) { m_FOV = fov; }
+        float GetNear() const { return m_Near; }
+        float GetFar() const { return m_Far; }
+        float GetFOV() const { return m_FOV; }
         glm::mat4 GetProjMatrix(const float aspectRatio) const { return glm::perspective(m_FOV, aspectRatio, m_Near, m_Far); }
 
         private:
@@ -66,7 +69,7 @@ namespace HrothCore
     public:
         CameraPositionerEditor(const Movement &movement = {}, const KeyBinding &keyBinding = {});
 
-        void Update(double dt);
+        void Update(float dt);
 
         void SetPosition(const glm::vec3 &position);
         void LookAt(const glm::vec3 &target);

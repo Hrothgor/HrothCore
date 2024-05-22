@@ -14,10 +14,8 @@ namespace HrothCore
         UpdateViewMatrix();
     }
 
-    void CameraPositionerEditor::Update(double dt)
+    void CameraPositionerEditor::Update(float dt)
     {   
-        float fdt = static_cast<float>(dt);
-
         if (Input::IsMouseButtonPressed(m_KeyBinding.Rotate)) {
             Window &window = Application::Get().GetWindow();
             if (m_IsMouseClicked == false) {
@@ -30,10 +28,10 @@ namespace HrothCore
 
             if (glm::length(delta) > 0.0f)
             {
-                m_Rotation.y += delta.x * m_Movement.RotationSpeed * fdt;
+                m_Rotation.y += delta.x * m_Movement.RotationSpeed * dt;
                 m_Rotation.y = glm::mod(m_Rotation.y, 360.0f);
 
-                m_Rotation.x += delta.y * m_Movement.RotationSpeed * fdt;
+                m_Rotation.x += delta.y * m_Movement.RotationSpeed * dt;
                 m_Rotation.x = glm::clamp(m_Rotation.x, -80.0f, 80.0f);
 
                 m_Dirty = true;
@@ -61,7 +59,7 @@ namespace HrothCore
 
         if (glm::length(velocity) > 0.0f)
         {
-            m_Position += glm::normalize(velocity) * ActualMaxSpeed * fdt;
+            m_Position += glm::normalize(velocity) * ActualMaxSpeed * dt;
             m_Dirty = true;
         }
     }

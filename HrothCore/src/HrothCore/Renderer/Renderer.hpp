@@ -13,6 +13,7 @@ namespace HrothCore
     template <typename T> class Buffer;
     class Shader;
     class Camera;
+    class CameraPositionerEditor;
 
     class Renderer
     {
@@ -23,7 +24,7 @@ namespace HrothCore
 
         void Init();
         void Shutdown();
-        void RenderScene(double dt);
+        void RenderScene(float dt);
 
         std::shared_ptr<VertexArray> GetVao() const { return m_VAO; }
 
@@ -33,7 +34,7 @@ namespace HrothCore
         std::shared_ptr<Shader> m_BasicShader;
 
         std::shared_ptr<Camera> m_Camera;
-        CameraPositionerEditor m_CameraPositionerEditor;
+        std::shared_ptr<CameraPositionerEditor> m_CameraPositionerEditor;
 
         glm::ivec2 m_FramebufferSize;
     };

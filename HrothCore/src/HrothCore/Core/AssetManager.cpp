@@ -12,9 +12,9 @@ namespace HrothCore
 
         if (it == m_Models.end())
         {
-            std::vector<MeshData> modelData = AssetLoader::LoadModel(path); // Load file
+            ModelData modelData = AssetLoader::LoadModel(path); // Load file
             Model model;
-            for (const MeshData &meshData : modelData) {
+            for (const MeshData &meshData : modelData.Meshes) {
                 model.AddMesh(AssetLoader::LoadMeshToGPU(meshData)); // Load mesh to GPU
             }
             m_Models.push_back({path, model});

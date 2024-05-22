@@ -45,25 +45,26 @@ namespace HrothCore
         m_BufferFrameData = std::make_shared<Buffer<PerFrameData>>(1);
         m_BufferFrameData->BindToShader(0, BufferShaderType::Uniform);
 
-        m_Camera = std::make_shared<Camera>(m_CameraPositionerEditor);
+        m_CameraPositionerEditor = std::make_shared<CameraPositionerEditor>();
+        m_Camera = std::make_shared<Camera>(*m_CameraPositionerEditor);
     }
 
     void Renderer::Shutdown()
     {
     }
 
-    void Renderer::RenderScene(double dt)
+    void Renderer::RenderScene(float dt)
     {
-        m_CameraPositionerEditor.Update(dt);
+        m_CameraPositionerEditor->Update(dt);
 
         RenderCommand::SetViewport(m_FramebufferSize);
         RenderCommand::Clear();
 
-        transform.Rotate(glm::vec3((float)dt) * 60.0f);
+        transform.Rotate(glm::vec3(dt) * 60.0f);
         const float aspectRatio = m_FramebufferSize.x / (float)m_FramebufferSize.y;
 
-        AssetRef<Model> bunnyref = AssetManager::Get().GetModelRef("./assets/models/bunny/bunny.obj");
-        // AssetRef<Model> modelref = AssetManager::Get().GetModelRef("./assets/models/helmet/source/HEML1.fbx");
+        // AssetRef<Model> bunnyref = AssetManager::Get().GetModelRef("./assets/models/bunny/bunny.obj");
+        AssetRef<Model> modelref = AssetManager::Get().GetModelRef("./assets/models/helmet/source/HEML1.fbx");
 
         // draw as grid
         for (int i = 0 ; i < 5; i++)
@@ -80,7 +81,7 @@ namespace HrothCore
 
                 m_BufferFrameData->SetData(1, &perFrameData);
                 glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-                glDrawElements(GL_TRIANGLES, bunnyref.Get().GetMesh(0).IndicesCount, GL_UNSIGNED_INT, 0);
+                glDrawElements(GL_TRIANGLES, modelref.Get().GetMesh(0).IndicesCount, GL_UNSIGNED_INT, 0);
             }
         }
 
