@@ -51,6 +51,8 @@ namespace HrothCore
             float RotationSpeed = 90.0f;
 
             float FastMultiplier = 4.0f;
+
+            Movement() = default;
         };
 
         struct KeyBinding {
@@ -63,6 +65,8 @@ namespace HrothCore
             KeyCode Fast = KeyCode::LeftShift;
 
             MouseButton Rotate = MouseButton::ButtonLeft;
+
+            KeyBinding() = default;
         };
 
     public:
