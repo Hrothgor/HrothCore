@@ -1,5 +1,7 @@
 #pragma once
 
+#include "HrothCore/Core/Input.hpp"
+
 namespace HrothCore
 {
     class ICameraPostioner
@@ -17,7 +19,8 @@ namespace HrothCore
     class Camera
     {
     public:
-        Camera(ICameraPostioner &positioner)
+        Camera(ICameraPostioner &positioner, const float fov = 45.0f, const float near = 0.1f, const float far = 1000.0f)
+            : m_FOV(fov), m_Near(near), m_Far(far)
         {
             m_Positioner = &positioner;
         }
@@ -26,49 +29,68 @@ namespace HrothCore
         glm::mat4 GetViewMatrix() const { return m_Positioner->GetViewMatrix(); }
         glm::vec3 GetPosition() const { return m_Positioner->GetPosition(); }
 
+        void SetNear(const float near) { m_Near = near; }
+        void SetFar(const float far) { m_Far = far; }
+        void SetFOV(const float fov) { m_FOV = fov; }
+        glm::mat4 GetProjMatrix(const float aspectRatio) const { return glm::perspective(m_FOV, aspectRatio, m_Near, m_Far); }
+
         private:
             ICameraPostioner *m_Positioner;
+            float m_FOV = 45.0f;
+            float m_Near = 0.1f;
+            float m_Far = 1000.0f;
     };
 
-    struct FirstPersonMovement {
-        float MaxSpeed = 30.0f;
-        float Acceleration = 150.0f;
 
-        float RotationSpeed = 20.0;
-
-        float FastMultiplier = 4.0;
-    };
-
-    class CameraPositionerFirstPerson : public ICameraPostioner
+    class CameraPositionerEditor : public ICameraPostioner
     {
+        struct Movement {
+            float Speed = 30.0f;
+            float RotationSpeed = 90.0f;
+
+            float FastMultiplier = 4.0f;
+        };
+
+        struct KeyBinding {
+            KeyCode Forward = KeyCode::W;
+            KeyCode Backward = KeyCode::S;
+            KeyCode Left = KeyCode::A;
+            KeyCode Right = KeyCode::D;
+            KeyCode Up = KeyCode::E;
+            KeyCode Down = KeyCode::Q;
+            KeyCode Fast = KeyCode::LeftShift;
+
+            MouseButton Rotate = MouseButton::ButtonLeft;
+        };
+
     public:
-        CameraPositionerFirstPerson(const FirstPersonMovement &movement = {});
+        CameraPositionerEditor(const Movement &movement = {}, const KeyBinding &keyBinding = {});
 
         void Update(double dt);
 
         void SetPosition(const glm::vec3 &position);
-        void SetUpVector(const glm::vec3 &up);
         void LookAt(const glm::vec3 &target);
-
 
     private:
         glm::mat4 GetViewMatrix() override;
         glm::vec3 GetPosition() override { return m_Position; }
 
+        glm::vec3 GetForward();
+        glm::vec3 GetRight();
+        glm::vec3 GetUp();
+
         void UpdateViewMatrix();
         
-        glm::vec3 m_Up = glm::vec3(0.0f, 1.0f, 0.0f);
         glm::vec3 m_Position = glm::vec3(0.0f);
-        glm::quat m_Orientation = glm::quat(glm::vec3(0.0f));
-
-        glm::vec3 m_Velocity = glm::vec3(0.0f);
-
-        bool m_IsMouseClicked = false;
-        glm::vec2 m_MousePos;
+        glm::vec3 m_Rotation = glm::vec3(0.0f);
 
         glm::mat4 m_ViewMatrix;
-        bool m_Dirty = true;
+        bool m_Dirty = false;
 
-        FirstPersonMovement m_Movement;
+        bool m_IsMouseClicked = false;
+        glm::vec2 m_PrevMousePos;
+
+        Movement m_Movement;
+        KeyBinding m_KeyBinding;
     };
 }

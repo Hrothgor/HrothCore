@@ -33,6 +33,7 @@ namespace HrothCore
         std::shared_ptr<Shader> m_BasicShader;
 
         std::shared_ptr<Camera> m_Camera;
+        CameraPositionerEditor m_CameraPositionerEditor;
 
         glm::ivec2 m_FramebufferSize;
     };

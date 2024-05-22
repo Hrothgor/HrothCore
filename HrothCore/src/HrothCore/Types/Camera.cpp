@@ -8,113 +8,115 @@
 
 namespace HrothCore
 {
-    CameraPositionerFirstPerson::CameraPositionerFirstPerson(const FirstPersonMovement &movement)
-        : m_Movement(movement)
+    CameraPositionerEditor::CameraPositionerEditor(const Movement &movement, const KeyBinding &keyBinding)
+        : m_Movement(movement), m_KeyBinding(keyBinding)
     {
         UpdateViewMatrix();
     }
 
-    void CameraPositionerFirstPerson::Update(double dt)
+    void CameraPositionerEditor::Update(double dt)
     {   
         float fdt = static_cast<float>(dt);
 
-        if (Input::IsMouseButtonPressed(MouseButton::ButtonLeft)) {
+        if (Input::IsMouseButtonPressed(m_KeyBinding.Rotate)) {
             Window &window = Application::Get().GetWindow();
             if (m_IsMouseClicked == false) {
                 m_IsMouseClicked = true;
                 window.HideCursor();
-                m_MousePos = Input::GetMousePosition();
+                m_PrevMousePos = Input::GetMousePosition();
             }
             glm::vec2 currentMousePos = Input::GetMousePosition();
-            const glm::vec2 delta = currentMousePos - m_MousePos;
+            const glm::vec2 delta = currentMousePos - m_PrevMousePos;
 
-            const glm::quat deltaQuat = glm::quat(glm::vec3(m_Movement.RotationSpeed * delta.y * fdt, 
-                                                            m_Movement.RotationSpeed * delta.x * fdt,
-                                                            0.0f));
+            if (glm::length(delta) > 0.0f)
+            {
+                m_Rotation.y += delta.x * m_Movement.RotationSpeed * fdt;
+                m_Rotation.y = glm::mod(m_Rotation.y, 360.0f);
 
-            m_Orientation = deltaQuat * m_Orientation;
-            m_Orientation = glm::normalize(m_Orientation);
-            m_Dirty = true;
+                m_Rotation.x += delta.y * m_Movement.RotationSpeed * fdt;
+                m_Rotation.x = glm::clamp(m_Rotation.x, -80.0f, 80.0f);
 
-            window.SetCursorPos(m_MousePos.x, m_MousePos.y);
-        } else if (Input::IsMouseButtonReleased(MouseButton::ButtonLeft)) {
+                m_Dirty = true;
+                window.SetCursorPos(m_PrevMousePos.x, m_PrevMousePos.y);
+            }
+        } else if (Input::IsMouseButtonReleased(m_KeyBinding.Rotate)) {
             m_IsMouseClicked = false;
             Window &window = Application::Get().GetWindow();
             window.ShowCursor();
         }
         
-        const glm::mat4 view = GetViewMatrix();
+        glm::vec3 velocity(0.0f);
 
-        const glm::vec3 forward = glm::vec3(view[0][2], view[1][2], view[2][2]);
-        const glm::vec3 right = glm::vec3(view[0][0], view[1][0], view[2][0]);
-        const glm::vec3 up = glm::vec3(view[0][1], view[1][1], view[2][1]);
+        if (Input::IsKeyPressed(m_KeyBinding.Forward)) velocity -= GetForward();
+        if (Input::IsKeyPressed(m_KeyBinding.Backward)) velocity += GetForward();
 
-        glm::vec3 accel = glm::vec3(0.0f);
+        if (Input::IsKeyPressed(m_KeyBinding.Left)) velocity -= GetRight();
+        if (Input::IsKeyPressed(m_KeyBinding.Right)) velocity += GetRight();
 
-        if (Input::IsKeyPressed(KeyCode::W)) accel += forward;
-        if (Input::IsKeyPressed(KeyCode::S)) accel -= forward;
+        if (Input::IsKeyPressed(m_KeyBinding.Up)) velocity += GetUp();
+        if (Input::IsKeyPressed(m_KeyBinding.Down)) velocity -= GetUp();
 
-        if (Input::IsKeyPressed(KeyCode::D)) accel += right;
-        if (Input::IsKeyPressed(KeyCode::Q)) accel -= right;
+        float ActualMaxSpeed = m_Movement.Speed;
+        if (Input::IsKeyPressed(m_KeyBinding.Fast)) ActualMaxSpeed *= m_Movement.FastMultiplier;
 
-        if (Input::IsKeyPressed(KeyCode::E)) accel += up;
-        if (Input::IsKeyPressed(KeyCode::A)) accel -= up;
-
-        float ActualMaxSpeed = m_Movement.MaxSpeed;
-        if (Input::IsKeyPressed(KeyCode::LeftShift))
+        if (glm::length(velocity) > 0.0f)
         {
-            accel *= m_Movement.FastMultiplier;
-            ActualMaxSpeed *= m_Movement.FastMultiplier;
-        }
-
-        if (glm::length(accel) > 0.0f)
-        {
-            m_Velocity += glm::normalize(accel) * m_Movement.Acceleration * fdt;
-            if (glm::length(m_Velocity) > ActualMaxSpeed)
-                m_Velocity = glm::normalize(m_Velocity) * ActualMaxSpeed;
-            m_Position += m_Velocity * fdt;
+            m_Position += glm::normalize(velocity) * ActualMaxSpeed * fdt;
             m_Dirty = true;
         }
     }
 
-    void CameraPositionerFirstPerson::SetPosition(const glm::vec3 &position)
+    void CameraPositionerEditor::SetPosition(const glm::vec3 &position)
     {
         m_Position = position;
         m_Dirty = true;
     }
 
-    void CameraPositionerFirstPerson::SetUpVector(const glm::vec3 &up)
+    void CameraPositionerEditor::LookAt(const glm::vec3 &target)
     {
-        m_Up = up;
-        const glm::mat4 view = GetViewMatrix();
-        const glm::vec3 dir = glm::vec3(view[0][2], view[1][2], view[2][2]);
-        m_Orientation = glm::lookAt(m_Position, m_Position + dir, m_Up);
+        const glm::vec3 direction = glm::normalize(target - m_Position);
+        m_Rotation.x = glm::degrees(asin(-direction.y));
+        m_Rotation.y = glm::degrees(atan2(direction.z, direction.x)) + 90.0f;
+
         m_Dirty = true;
     }
 
-    void CameraPositionerFirstPerson::LookAt(const glm::vec3 &target)
+    glm::vec3 CameraPositionerEditor::GetForward()
     {
-        m_Orientation = glm::lookAt(m_Position, target, m_Up);
-        m_Dirty = true;
+        auto view = GetViewMatrix();
+
+        return glm::vec3(view[0][2], view[1][2], view[2][2]);
     }
 
-    glm::mat4 CameraPositionerFirstPerson::GetViewMatrix()
+    glm::vec3 CameraPositionerEditor::GetRight()
+    {
+        auto view = GetViewMatrix();
+
+        return glm::vec3(view[0][0], view[1][0], view[2][0]);
+    }
+
+    glm::vec3 CameraPositionerEditor::GetUp()
+    {
+        return glm::vec3(0.0f, 1.0f, 0.0f);
+    }
+
+    glm::mat4 CameraPositionerEditor::GetViewMatrix()
     {
         if (m_Dirty)
-        {
             UpdateViewMatrix();
-            m_Dirty = false;
-        }
 
         return m_ViewMatrix;
     }
 
-    void CameraPositionerFirstPerson::UpdateViewMatrix()
+    void CameraPositionerEditor::UpdateViewMatrix()
     {
-        glm::mat4 matrix(1.0f);
-        matrix = glm::translate(matrix, -m_Position);
-        matrix = glm::mat4_cast(m_Orientation) * matrix;
-        m_ViewMatrix = matrix;
+        glm::quat qPitch = glm::angleAxis(glm::radians(m_Rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
+        glm::quat qYaw = glm::angleAxis(glm::radians(m_Rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+        glm::quat orientation = glm::normalize(qPitch * qYaw);
+
+        m_ViewMatrix = glm::translate(glm::mat4_cast(orientation), -m_Position);
+
+        m_Dirty = false;
     }
 }
 

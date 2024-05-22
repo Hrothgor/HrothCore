@@ -18,7 +18,7 @@
 
 namespace HrothCore
 {
-    static CameraPositionerFirstPerson cameraPositionerFP;
+    static Transform transform(glm::vec3(0.0f, 0.0f, -4.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(4.0f, 4.0f, 4.0f));
 
     void Renderer::Init()
     {
@@ -45,25 +45,22 @@ namespace HrothCore
         m_BufferFrameData = std::make_shared<Buffer<PerFrameData>>(1);
         m_BufferFrameData->BindToShader(0, BufferShaderType::Uniform);
 
-        m_Camera = std::make_shared<Camera>(cameraPositionerFP);
+        m_Camera = std::make_shared<Camera>(m_CameraPositionerEditor);
     }
 
     void Renderer::Shutdown()
     {
     }
 
-    static Transform transform(glm::vec3(0.0f, 0.0f, -4.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(4.0f, 4.0f, 4.0f));
-
     void Renderer::RenderScene(double dt)
     {
-        cameraPositionerFP.Update(dt);
+        m_CameraPositionerEditor.Update(dt);
 
         RenderCommand::SetViewport(m_FramebufferSize);
         RenderCommand::Clear();
 
-        transform.Rotate(glm::vec3((float)dt));
+        transform.Rotate(glm::vec3((float)dt) * 60.0f);
         const float aspectRatio = m_FramebufferSize.x / (float)m_FramebufferSize.y;
-        glm::mat4 proj = Math::CreateProjMatrix(45.0f, aspectRatio, 0.1f, 1000.0f);
 
         AssetRef<Model> bunnyref = AssetManager::Get().GetModelRef("./assets/models/bunny/bunny.obj");
         // AssetRef<Model> modelref = AssetManager::Get().GetModelRef("./assets/models/helmet/source/HEML1.fbx");
@@ -77,7 +74,7 @@ namespace HrothCore
                 PerFrameData perFrameData = {
                     .model = transform.GetTransformMatrix(),
                     .view = m_Camera->GetViewMatrix(),
-                    .proj = proj,
+                    .proj = m_Camera->GetProjMatrix(aspectRatio),
                     .isWireframe = false
                 };
 
