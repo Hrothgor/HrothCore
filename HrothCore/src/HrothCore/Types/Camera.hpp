@@ -4,10 +4,10 @@
 
 namespace HrothCore
 {
-    class ICameraPostioner
+    class ICameraPositioner
     {
     public:
-        virtual ~ICameraPostioner() = default;
+        virtual ~ICameraPositioner() = default;
 
     private:
         virtual glm::mat4 GetViewMatrix() = 0;
@@ -19,12 +19,15 @@ namespace HrothCore
     class Camera
     {
     public:
-        Camera(ICameraPostioner &positioner, const float fov = 45.0f, const float near = 0.1f, const float far = 1000.0f)
+        Camera(ICameraPositioner *positioner, const float fov = 45.0f, const float near = 0.1f, const float far = 1000.0f)
             : m_FOV(fov), m_Near(near), m_Far(far)
         {
-            m_Positioner = &positioner;
+            m_Positioner = positioner;
         }
         ~Camera() = default;
+
+        void SetPositioner(ICameraPositioner *positioner) { m_Positioner = positioner; }
+        bool HasPositioner() { return m_Positioner != nullptr; }
 
         glm::mat4 GetViewMatrix() const { return m_Positioner->GetViewMatrix(); }
         glm::vec3 GetPosition() const { return m_Positioner->GetPosition(); }
@@ -38,13 +41,13 @@ namespace HrothCore
         glm::mat4 GetProjMatrix(const float aspectRatio) const { return glm::perspective(m_FOV, aspectRatio, m_Near, m_Far); }
 
         private:
-            ICameraPostioner *m_Positioner;
+            ICameraPositioner *m_Positioner;
             float m_FOV = 45.0f;
             float m_Near = 0.1f;
             float m_Far = 1000.0f;
     };
 
-    class CameraPositionerEditor : public ICameraPostioner
+    class CameraPositionerEditor : public ICameraPositioner
     {
     public:
         struct Movement {

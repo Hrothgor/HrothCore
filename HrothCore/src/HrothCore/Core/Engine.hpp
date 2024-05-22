@@ -1,6 +1,7 @@
 #pragma once
 
 #include "HrothCore/Core/FPSCounter.hpp"
+#include "HrothCore/Types/Camera.hpp"
 
 namespace HrothCore
 {
@@ -18,8 +19,12 @@ namespace HrothCore
             void Update(float dt);
 
             float GetFPS() const { return m_FPSCounter.GetFPS(); }
+
+            void SetCameraPositioner(ICameraPositioner *cameraPositioner);
         private:
             FPSCounter m_FPSCounter;
             std::shared_ptr<IClient> m_Client;
+
+            std::shared_ptr<Camera> m_Camera;
     };
 }

@@ -18,7 +18,7 @@
 
 namespace HrothCore
 {
-    static Transform transform(glm::vec3(0.0f, 0.0f, -4.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(4.0f, 4.0f, 4.0f));
+    static Transform transform;
 
     void Renderer::Init()
     {
@@ -44,27 +44,21 @@ namespace HrothCore
 
         m_BufferFrameData = std::make_shared<Buffer<PerFrameData>>(1);
         m_BufferFrameData->BindToShader(0, BufferShaderType::Uniform);
-
-        m_CameraPositionerEditor = std::make_shared<CameraPositionerEditor>();
-        m_Camera = std::make_shared<Camera>(*m_CameraPositionerEditor);
     }
 
     void Renderer::Shutdown()
     {
     }
 
-    void Renderer::RenderScene(float dt)
+    void Renderer::RenderScene(std::shared_ptr<Camera> &camera)
     {
-        m_CameraPositionerEditor->Update(dt);
-
         RenderCommand::SetViewport(m_FramebufferSize);
         RenderCommand::Clear();
 
-        transform.Rotate(glm::vec3(dt) * 60.0f);
         const float aspectRatio = m_FramebufferSize.x / (float)m_FramebufferSize.y;
 
-        // AssetRef<Model> bunnyref = AssetManager::Get().GetModelRef("./assets/models/bunny/bunny.obj");
-        AssetRef<Model> modelref = AssetManager::Get().GetModelRef("C:/Users/hrothgor/Downloads/game_ready_scifi_helmet/scene.gltf");
+        AssetRef<Model> bunnyref = AssetManager::Get().GetModelRef("./assets/models/bunny/bunny.obj");
+        // AssetRef<Model> modelref = AssetManager::Get().GetModelRef("C:/Users/hrothgor/Downloads/game_ready_scifi_helmet/scene.gltf");
         
         // draw as grid
         for (int i = 0 ; i < 5; i++)
@@ -74,14 +68,14 @@ namespace HrothCore
                 transform.SetPosition(glm::vec3(-25.0 + i * 10.0f, -25.0 + j * 10.0f, -50.0f));
                 PerFrameData perFrameData = {
                     .model = transform.GetTransformMatrix(),
-                    .view = m_Camera->GetViewMatrix(),
-                    .proj = m_Camera->GetProjMatrix(aspectRatio),
+                    .view = camera->GetViewMatrix(),
+                    .proj = camera->GetProjMatrix(aspectRatio),
                     .isWireframe = false
                 };
 
                 m_BufferFrameData->SetData(1, &perFrameData);
                 glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-                glDrawElements(GL_TRIANGLES, modelref.Get().GetMesh(0).IndicesCount, GL_UNSIGNED_INT, 0);
+                glDrawElements(GL_TRIANGLES, bunnyref.Get().GetMesh(0).IndicesCount, GL_UNSIGNED_INT, 0);
             }
         }
 

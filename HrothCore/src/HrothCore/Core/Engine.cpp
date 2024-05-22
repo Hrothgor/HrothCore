@@ -32,12 +32,23 @@ namespace HrothCore
         HC_LOG_INFO("Engine::Update: {0} ms", dt);
         HC_LOG_INFO("Engine::Update: {0} fps", GetFPS());
 
-        Renderer::Get().RenderScene(dt);
+        if (m_Camera && m_Camera->HasPositioner())
+            Renderer::Get().RenderScene(m_Camera);
+        else 
+            HC_LOG_ERROR("Engine::Update: Camera has no positioner can't render scene!");
 
         ImGuiLayer::Get().BeginFrame();
         m_Client->ImGuiRender();
         ImGuiLayer::Get().EndFrame();
 
         m_FPSCounter.Tick(dt);
+    }
+
+    void Engine::SetCameraPositioner(ICameraPositioner *cameraPositioner)
+    {
+        if (m_Camera)
+            m_Camera->SetPositioner(cameraPositioner);
+        else
+            m_Camera = std::make_shared<Camera>(cameraPositioner);
     }
 }
