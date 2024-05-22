@@ -46,13 +46,12 @@ namespace HrothCore
 
     class CameraPositionerEditor : public ICameraPostioner
     {
+    public:
         struct Movement {
             float Speed = 30.0f;
             float RotationSpeed = 90.0f;
 
             float FastMultiplier = 4.0f;
-
-            Movement() = default;
         };
 
         struct KeyBinding {
@@ -65,12 +64,10 @@ namespace HrothCore
             KeyCode Fast = KeyCode::LeftShift;
 
             MouseButton Rotate = MouseButton::ButtonLeft;
-
-            KeyBinding() = default;
         };
 
     public:
-        CameraPositionerEditor(const Movement &movement = Movement(), const KeyBinding &keyBinding = KeyBinding());
+        CameraPositionerEditor(const Movement &movement = Movement{}, const KeyBinding &keyBinding = KeyBinding{});
 
         void Update(float dt);
 
