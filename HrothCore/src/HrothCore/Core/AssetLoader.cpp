@@ -15,29 +15,25 @@ namespace HrothCore
 {
     /* ----- Model ----- */
 
-    std::string ProcessMaterialTexture(aiMaterial *material, aiTextureType type)
+    std::string ProcessMaterialTexture(aiMaterial *material, aiTextureType type, int index = 0)
     {
         // Get the path to the texture
         aiString path;
-        if (AI_SUCCESS != aiGetMaterialString(material, AI_MATKEY_TEXTURE(type, 0), &path))
-            return std::string(path.C_Str());
-        return "";
+        material->GetTexture(type, index, &path);
+        return std::string(path.C_Str());
     }
 
     MaterialData ProcessMaterial(aiMaterial *material, const aiScene *scene)
     {
         MaterialData materialData;
 
-        materialData.Textures[MaterialData::TextureType::Albedo] = ProcessMaterialTexture(material, aiTextureType_DIFFUSE);
-        materialData.Textures[MaterialData::TextureType::Metallic] = ProcessMaterialTexture(material, aiTextureType_SPECULAR);
+        materialData.Textures[MaterialData::TextureType::Albedo] = ProcessMaterialTexture(material, aiTextureType_BASE_COLOR);
+        materialData.Textures[MaterialData::TextureType::Metallic] = ProcessMaterialTexture(material, aiTextureType_METALNESS);
         materialData.Textures[MaterialData::TextureType::Normal] = ProcessMaterialTexture(material, aiTextureType_NORMALS);
         materialData.Textures[MaterialData::TextureType::Occlusion] = ProcessMaterialTexture(material, aiTextureType_AMBIENT);
         materialData.Textures[MaterialData::TextureType::Emissive] = ProcessMaterialTexture(material, aiTextureType_EMISSIVE);
 
         materialData.AlbedoValue = glm::vec3(1.0f);
-        materialData.MetallicValue = 0.0f;
-        materialData.AmbientOcclusionValue = 1.0f;
-
         // Retrieve the diffuse color (albedo)
         aiColor3D diffuseColor;
         if (material->Get(AI_MATKEY_COLOR_DIFFUSE, diffuseColor) == AI_SUCCESS)

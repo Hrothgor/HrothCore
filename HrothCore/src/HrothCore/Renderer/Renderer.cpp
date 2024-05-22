@@ -64,8 +64,8 @@ namespace HrothCore
         const float aspectRatio = m_FramebufferSize.x / (float)m_FramebufferSize.y;
 
         // AssetRef<Model> bunnyref = AssetManager::Get().GetModelRef("./assets/models/bunny/bunny.obj");
-        AssetRef<Model> modelref = AssetManager::Get().GetModelRef("./assets/models/helmet/source/HEML1.fbx");
-
+        AssetRef<Model> modelref = AssetManager::Get().GetModelRef("C:/Users/hrothgor/Downloads/game_ready_scifi_helmet/scene.gltf");
+        
         // draw as grid
         for (int i = 0 ; i < 5; i++)
         {

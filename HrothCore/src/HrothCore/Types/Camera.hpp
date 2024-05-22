@@ -44,7 +44,6 @@ namespace HrothCore
             float m_Far = 1000.0f;
     };
 
-
     class CameraPositionerEditor : public ICameraPostioner
     {
         struct Movement {
@@ -67,7 +66,7 @@ namespace HrothCore
         };
 
     public:
-        CameraPositionerEditor(const Movement &movement = {}, const KeyBinding &keyBinding = {});
+        CameraPositionerEditor(const Movement &movement = Movement(), const KeyBinding &keyBinding = KeyBinding());
 
         void Update(float dt);
 

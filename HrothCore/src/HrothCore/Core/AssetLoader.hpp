@@ -35,8 +35,6 @@ namespace HrothCore
         std::array<std::string, TextureType::NumTypes> Textures;
 
         glm::vec3 AlbedoValue;
-        float MetallicValue;
-        float AmbientOcclusionValue;
     };
 
     struct MeshData
