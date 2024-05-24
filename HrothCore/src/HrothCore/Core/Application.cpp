@@ -56,7 +56,7 @@ namespace HrothCore
 	{
 		while (m_Window->ShouldClose() == false)
 		{
-			float dt = m_Window->GetDeltaTime();
+			float dt = static_cast<float>(m_Window->GetDeltaTime());
 
 			Engine::Get().Update(dt);
 

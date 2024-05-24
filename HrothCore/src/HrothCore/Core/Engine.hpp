@@ -1,11 +1,13 @@
 #pragma once
 
 #include "HrothCore/Core/FPSCounter.hpp"
-#include "HrothCore/Types/Camera.hpp"
 
 namespace HrothCore
 {
     class IClient;
+    class ICameraPositioner;
+    class Camera;
+    class Scene;
 
     class Engine
     {
@@ -26,5 +28,7 @@ namespace HrothCore
             std::shared_ptr<IClient> m_Client;
 
             std::shared_ptr<Camera> m_Camera;
+
+            std::shared_ptr<Scene> m_Scene;
     };
 }

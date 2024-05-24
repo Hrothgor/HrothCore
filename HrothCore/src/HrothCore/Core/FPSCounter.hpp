@@ -15,7 +15,7 @@ namespace HrothCore
         private:
             const float m_FPSUpdateInterval;
             float m_FPS = 0;
-            double m_AccumulatedTime = 0;
+            float m_AccumulatedTime = 0;
             uint32_t m_FrameCount = 0;
     };
 }
