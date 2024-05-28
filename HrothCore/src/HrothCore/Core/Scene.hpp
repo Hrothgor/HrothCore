@@ -1,7 +1,7 @@
 #pragma once
 
 #include "HrothCore/Core/AssetManager.hpp"
-
+#include "HrothCore/Types/GameObject.hpp"
 
 namespace HrothCore
 {
@@ -9,11 +9,27 @@ namespace HrothCore
 
     struct SceneNode
     {
+        GameObject Object;
+
+        int Position = 0;
         int Parent = 0;
         int FirstChild = -1;
         int NextSibling = -1;
         int LastSibling = -1;
         int Level = 0;
+
+        bool IsMarkForDeletion = false;
+    };
+
+    struct NodeView
+    {
+        public:
+            GameObject &GetGameObject() { return Node.Object; }
+        private:
+            SceneNode &Node;
+            NodeView(SceneNode &node) : Node(node) {}
+
+        friend class Scene;
     };
 
     class Scene
@@ -28,12 +44,13 @@ namespace HrothCore
 
             void DumpToDot(const std::string &path) const;
 
-            int AddNode(int parent = 0);
-            void RemoveNode(int node);
+            NodeView AddNode();
+            NodeView AddNode(NodeView parent);
+            void RemoveNode(NodeView nodeView);
 
-            int FindNode(const std::string &name);
-            int GetNodeLevel(int node) const;
-            int GetParentNode(int node) const;
+            NodeView FindNode(const std::string &name);
+            NodeView GetParentNode(NodeView nodeView) const;
+            std::vector<NodeView> GetChildNodes(NodeView nodeView) const;
 
             // Matrixes (maybe component ?)
             void RecalculateGlobalTransforms();
@@ -43,15 +60,14 @@ namespace HrothCore
             void SetNodeMesh(int node, const AssetRef<Mesh> &mesh);
             // Name (component): Which name is assigned to the node
             int GetNodeName(int node) const;
-            void SetNodeName(int node, const std::string &name);
+            void SetNodeName(NodeView nodeView, const std::string &name);
 
         private:
-            void MarkNodeDirty(int node);
+            void MarkNodeTransformDirty(int node);
 
             std::vector<SceneNode> Nodes;
 
             std::vector<int> DirtyNodes[MAX_NODE_LEVEL];
-
             // Matrixes (maybe component ?)
             std::vector<glm::mat4> LocalTransforms;
             std::vector<glm::mat4> GlobalTransforms;

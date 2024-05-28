@@ -10,6 +10,7 @@ namespace HrothCore
     {
         // root node
         Nodes.push_back(SceneNode{
+            .Position = 0,
             .Parent = -1,
             .FirstChild = -1,
             .NextSibling = -1,
@@ -44,6 +45,8 @@ namespace HrothCore
         file << "digraph G\n{\n";
         for (int i = 0; i < Nodes.size(); i++)
         {
+            if (Nodes[i].IsMarkForDeletion)
+                continue;
             std::string name = "";
             if (Names.contains(i))
             {
@@ -54,6 +57,8 @@ namespace HrothCore
         }
         for (int i = 0; i < Nodes.size(); i++)
         {
+            if (Nodes[i].IsMarkForDeletion)
+                continue;
             int p = Nodes[i].Parent;
             if (p > -1)
                 file << "\t n" << p << " -> n" << i << "\n";
@@ -62,51 +67,69 @@ namespace HrothCore
         file.close();
     }
 
-    int Scene::AddNode(int parent)
+    NodeView Scene::AddNode()
     {
-        HC_ASSERT(parent < Nodes.size());
+        return AddNode(NodeView(Nodes[0]));
+    }
 
-        int node = (int)Nodes.size();
-        {
-            // TODO: resize aux arrays (local/global etc.)
-            LocalTransforms.push_back(glm::mat4(1.0f));
-            GlobalTransforms.push_back(glm::mat4(1.0f));
-        }
+    NodeView Scene::AddNode(NodeView parentView)
+    {
+        HC_ASSERT(parent.Position < Nodes.size());
 
-        Nodes.push_back(SceneNode{ .Parent = parent });
+        SceneNode &parent = parentView.Node;
 
-        // find first item (sibling)
-        int child = Nodes[parent].FirstChild;
+        SceneNode node;
+        node.Position = (int)Nodes.size();
+        node.Parent = parent.Position;
+        node.Level = parent.Level + 1;
+        node.NextSibling = -1;
+        node.FirstChild  = -1;
+        node.LastSibling = -1;
+
+        // refresh siblings hierarchy
+        int child = parent.FirstChild;
         if (child == -1)
         {
-            Nodes[parent].FirstChild = node;
-            Nodes[node].LastSibling = node;
+            parent.FirstChild = node.Position;
+            node.LastSibling = node.Position;
         }
         else
         {
             for (; Nodes[child].NextSibling != -1; child = Nodes[child].NextSibling);
             {
-                Nodes[child].LastSibling = node;
+                Nodes[child].LastSibling = node.Position;
             }
-            Nodes[child].NextSibling = node;
-            Nodes[child].LastSibling = node;
+            Nodes[child].NextSibling = node.Position;
+            Nodes[child].LastSibling = node.Position;
         }
-        Nodes[node].Level = Nodes[parent].Level + 1;
-        Nodes[node].NextSibling = -1;
-        Nodes[node].FirstChild  = -1;
-        return node;
+
+        Nodes.push_back(node);
+        LocalTransforms.push_back(glm::mat4(1.0f));
+        GlobalTransforms.push_back(glm::mat4(1.0f));
+
+        return Nodes[node.Position];
     }
 
-    void Scene::RemoveNode(int node)
+    void Scene::RemoveNode(NodeView nodeView)
     {
+        SceneNode &node = nodeView.Node;
+
+        node.IsMarkForDeletion = true;
+
+        for (int child = node.FirstChild; child != -1; child = Nodes[child].NextSibling)
+            RemoveNode(Nodes[child]);
     }
 
-    int Scene::FindNode(const std::string &name)
+    NodeView Scene::FindNode(const std::string &name)
     {
-        return 0;
+        return Nodes[0];
     }
 
     void Scene::RecalculateGlobalTransforms()
+    {
+    }
+
+    void Scene::MarkNodeTransformDirty(int node)
     {
     }
 
@@ -124,12 +147,8 @@ namespace HrothCore
         return 0;
     }
 
-    void Scene::SetNodeName(int node, const std::string &name)
+    void Scene::SetNodeName(NodeView nodeView, const std::string &name)
     {
-        Names[node] = name;
-    }
-
-    void Scene::MarkNodeDirty(int node)
-    {
+        Names[nodeView.Node.Position] = name;
     }
 }

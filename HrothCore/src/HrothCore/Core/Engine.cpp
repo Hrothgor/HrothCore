@@ -24,17 +24,17 @@ namespace HrothCore
         m_Client->Init();
 
         // TEST SCENE
-        int a = m_Scene->AddNode(0);
-        m_Scene->AddNode(0);
-        m_Scene->AddNode(0);
-        m_Scene->AddNode(0);
-        m_Scene->AddNode(0);
-        m_Scene->AddNode(0);
+        NodeView a = m_Scene->AddNode();
+        m_Scene->AddNode();
+        m_Scene->AddNode();
+        m_Scene->AddNode();
+        m_Scene->AddNode();
+        m_Scene->AddNode();
 
         m_Scene->SetNodeName(a, "A");
 
         m_Scene->AddNode(a);
-        int b = m_Scene->AddNode(a);
+        NodeView b = m_Scene->AddNode(a);
         m_Scene->AddNode(a);
         m_Scene->AddNode(a);
         m_Scene->AddNode(a);
@@ -45,12 +45,12 @@ namespace HrothCore
         m_Scene->AddNode(b);
         m_Scene->AddNode(b);
         m_Scene->AddNode(b);
-        int c = m_Scene->AddNode(b);
+        NodeView c = m_Scene->AddNode(b);
 
         m_Scene->SetNodeName(c, "C");
 
         m_Scene->AddNode(c);
-        int d = m_Scene->AddNode(c);
+        NodeView d = m_Scene->AddNode(c);
         m_Scene->AddNode(c);
 
         m_Scene->SetNodeName(d, "D");
@@ -59,10 +59,23 @@ namespace HrothCore
 
         m_Scene->AddNode(a);
         m_Scene->AddNode(a);
-        m_Scene->AddNode(0);
+        m_Scene->AddNode();
         m_Scene->AddNode(c);
 
+        auto start = std::chrono::high_resolution_clock::now();
+        for (int i = 0; i < 10000000; i++)
+        {
+            m_Scene->RemoveNode(c);
+        }
+        auto elapsed = std::chrono::high_resolution_clock::now() - start;
+
         m_Scene->DumpToDot("./scene.dot");
+        long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(
+                elapsed).count();
+
+        HC_LOG_WARNING("Engine::Init: {0} microseconds", microseconds);
+
+        abort();
     }
 
     void Engine::Shutdown()

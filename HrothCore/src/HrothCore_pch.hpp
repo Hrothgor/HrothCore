@@ -12,6 +12,7 @@
 #include <vector>
 #include <array>
 #include <unordered_map>
+#include <stack>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
