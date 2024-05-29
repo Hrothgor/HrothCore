@@ -2,80 +2,58 @@
 
 #include "HrothCore/Core/Engine.hpp"
 #include "HrothCore/Core/IClient.hpp"
-#include "HrothCore/Core/Scene.hpp"
-
-#include "HrothCore/Types/Camera.hpp"
 
 #include "HrothCore/Renderer/Renderer.hpp"
 #include "HrothCore/Renderer/ImGuiLayer.hpp"
 
+#include "HrothCore/Scene/Scene.hpp"
+#include "HrothCore/Scene/GameObject.hpp"
+
+#include "HrothCore/Types/Camera.hpp"
+
 namespace HrothCore
 {
+    static ICameraPositioner *s_CameraPositioner = nullptr;
     void Engine::Init(std::shared_ptr<IClient> &client)
     {
-        HC_ASSERT(client != nullptr);
+        HC_ASSERT(client != nullptr, "Engine: Need a client to run!");
 
         Renderer::Get().Init();
         ImGuiLayer::Get().Init();
 
         m_Scene = std::make_shared<Scene>();
 
+        GameObject *a = m_Scene->Instantiate("a");
+        m_Scene->Instantiate();
+        m_Scene->Instantiate();
+        m_Scene->Instantiate();
+        m_Scene->Instantiate();
+        m_Scene->Instantiate();
+        m_Scene->Instantiate();
+
+        m_Scene->Instantiate(a);
+        m_Scene->Instantiate(a);
+        GameObject *b = m_Scene->Instantiate("b", a);
+        m_Scene->Instantiate(a);
+        m_Scene->Instantiate(a);
+        m_Scene->Instantiate(a);
+
+        GameObject *c = m_Scene->Instantiate("c", b);
+        m_Scene->Instantiate(b);
+        m_Scene->Instantiate(b);
+
+        m_Scene->Instantiate(a);
+        m_Scene->Instantiate(b);
+        m_Scene->Instantiate(c);
+        m_Scene->Instantiate("r1");
+        m_Scene->Instantiate("r2");
+        m_Scene->Instantiate("r3");
+
+        s_CameraPositioner = new CameraPositionerEditor();
+        SetCameraPositioner(s_CameraPositioner);
+
         m_Client = client;
         m_Client->Init();
-
-        // TEST SCENE
-        NodeView a = m_Scene->AddNode();
-        m_Scene->AddNode();
-        m_Scene->AddNode();
-        m_Scene->AddNode();
-        m_Scene->AddNode();
-        m_Scene->AddNode();
-
-        m_Scene->SetNodeName(a, "A");
-
-        m_Scene->AddNode(a);
-        NodeView b = m_Scene->AddNode(a);
-        m_Scene->AddNode(a);
-        m_Scene->AddNode(a);
-        m_Scene->AddNode(a);
-
-        m_Scene->SetNodeName(b, "B");
-
-        m_Scene->AddNode(b);
-        m_Scene->AddNode(b);
-        m_Scene->AddNode(b);
-        m_Scene->AddNode(b);
-        NodeView c = m_Scene->AddNode(b);
-
-        m_Scene->SetNodeName(c, "C");
-
-        m_Scene->AddNode(c);
-        NodeView d = m_Scene->AddNode(c);
-        m_Scene->AddNode(c);
-
-        m_Scene->SetNodeName(d, "D");
-
-        m_Scene->AddNode(d);
-
-        m_Scene->AddNode(a);
-        m_Scene->AddNode(a);
-        m_Scene->AddNode();
-        m_Scene->AddNode(c);
-
-        auto start = std::chrono::high_resolution_clock::now();
-        for (int i = 0; i < 10000000; i++)
-        {
-            m_Scene->RemoveNode(c);
-        }
-        auto elapsed = std::chrono::high_resolution_clock::now() - start;
-
-        m_Scene->DumpToDot("./scene.dot");
-        long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(
-                elapsed).count();
-
-        HC_LOG_WARNING("Engine::Init: {0} microseconds", microseconds);
-
-        abort();
     }
 
     void Engine::Shutdown()
@@ -97,7 +75,7 @@ namespace HrothCore
             HC_LOG_ERROR("Engine::Update: Camera has no positioner can't render scene!");
 
         ImGuiLayer::Get().BeginFrame();
-        m_Client->ImGuiRender();
+        ImGuiLayer::Get().Render();
         ImGuiLayer::Get().EndFrame();
 
         m_FPSCounter.Tick(dt);

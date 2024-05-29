@@ -104,9 +104,7 @@ namespace HrothCore
     {
         glm::mat4 matrix = glm::mat4(1.0f);
         matrix = glm::translate(matrix, m_Position);
-        matrix = glm::rotate(matrix, glm::radians(m_Rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
-        matrix = glm::rotate(matrix, glm::radians(m_Rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
-        matrix = glm::rotate(matrix, glm::radians(m_Rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
+        matrix = matrix * glm::mat4_cast(glm::quat(glm::radians(m_Rotation)));
         matrix = glm::scale(matrix, m_Scale);
         m_TransformMatrix = matrix;
 

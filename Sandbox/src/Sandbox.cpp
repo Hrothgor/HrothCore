@@ -1,6 +1,10 @@
 #include <HrothCore.hpp>
 
-class SandboxClient : public HrothCore::IClient
+#include "Panels/SceneHierarchyPanel.hpp"
+
+using namespace HrothCore;
+
+class SandboxClient : public IClient
 {
     public:
         SandboxClient() = default;
@@ -9,6 +13,7 @@ class SandboxClient : public HrothCore::IClient
         void Init() override
         {
             HC_LOG_INFO("SandboxClient::Init");
+            ImGuiLayer::Get().RegisterPanel<SceneHierarchyPanel>(Engine::Get().GetScene());
         }
 
         void Shutdown() override
@@ -18,11 +23,6 @@ class SandboxClient : public HrothCore::IClient
 
         void Update(float dt) override
         {
-        }
-
-        void ImGuiRender() override
-        {
-            ImGui::ShowDemoWindow();
         }
 };
 

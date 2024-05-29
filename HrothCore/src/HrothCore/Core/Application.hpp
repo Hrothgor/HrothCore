@@ -13,8 +13,8 @@ namespace HrothCore {
 
 		const char* operator[](int index) const
 		{
-			HC_ASSERT(index < Count);
-			HC_ASSERT(Args != nullptr);
+			HC_ASSERT(index < Count, "Index out of range!");
+			HC_ASSERT(Args != nullptr, "Args is nullptr!");
 			return Args[index];
 		}
 	};

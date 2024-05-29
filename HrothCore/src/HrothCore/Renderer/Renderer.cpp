@@ -44,6 +44,8 @@ namespace HrothCore
 
         m_BufferFrameData = std::make_shared<Buffer<PerFrameData>>(1);
         m_BufferFrameData->BindToShader(0, BufferShaderType::Uniform);
+
+        transform.SetScale(glm::vec3(5.0f));
     }
 
     void Renderer::Shutdown()
@@ -60,6 +62,8 @@ namespace HrothCore
         AssetRef<Model> bunnyref = AssetManager::Get().GetModelRef("./assets/models/bunny/bunny.obj");
         // AssetRef<Model> modelref = AssetManager::Get().GetModelRef("C:/Users/hrothgor/Downloads/game_ready_scifi_helmet/scene.gltf");
         
+        transform.Rotate(glm::vec3(0.05f, 0.05f, 0.05f));
+
         // draw as grid
         for (int i = 0 ; i < 5; i++)
         {

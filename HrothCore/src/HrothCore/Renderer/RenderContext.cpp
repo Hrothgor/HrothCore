@@ -11,7 +11,7 @@ namespace HrothCore
     RenderContext::RenderContext(Window *windowHandle)
         : m_WindowHandle(windowHandle)
     {
-        HC_ASSERT(m_WindowHandle);
+        HC_ASSERT(m_WindowHandle, "RenderContext: Window handle is null!");
     }
 
     void RenderContext::Init()
@@ -19,7 +19,7 @@ namespace HrothCore
         glfwMakeContextCurrent(m_WindowHandle->GetNativeWindow());
 
         if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-            HC_ASSERT(!"Failed to initialize GLAD");
+            HC_ASSERT(false, "Failed to initialize GLAD");
             return;
         }
 
@@ -28,7 +28,7 @@ namespace HrothCore
         HC_LOG_INFO("  Renderer: {0}", (const char *)glGetString(GL_RENDERER));
         HC_LOG_INFO("  Version: {0}", (const char *)glGetString(GL_VERSION));
 
-        HC_ASSERT(GLVersion.major > 4 || (GLVersion.major == 4 && GLVersion.minor >= 5));
+        HC_ASSERT(GLVersion.major > 4 || (GLVersion.major == 4 && GLVersion.minor >= 5), "HrothCore requires at least OpenGL version 4.5!");
     }
 
     void RenderContext::Shutdown()

@@ -47,6 +47,8 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/external/assimp)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/external/spdlog)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/external/stb_image)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/external/meshoptimizer)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/external/entt)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/external/uuid_v4)
 
 add_library(imgui STATIC
     ${CMAKE_CURRENT_SOURCE_DIR}/external/imgui/imgui.cpp
@@ -69,6 +71,8 @@ target_link_libraries(HrothCore PUBLIC
 						spdlog
 						stb_image
 						meshoptimizer
-						imgui)
+						imgui
+						entt
+						uuid_v4)
 
 ###########################################

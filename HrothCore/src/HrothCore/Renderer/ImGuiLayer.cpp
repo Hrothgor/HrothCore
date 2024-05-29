@@ -1,8 +1,10 @@
 #include "HrothCore_pch.hpp"
 
 #include "HrothCore/Renderer/ImGuiLayer.hpp"
+
 #include "HrothCore/Core/Application.hpp"
 #include "HrothCore/Core/Window.hpp"
+#include "HrothCore/Core/IClient.hpp"
 
 namespace HrothCore
 {
@@ -23,6 +25,9 @@ namespace HrothCore
 
     void ImGuiLayer::Shutdown()
     {
+        for (const auto &panel : m_Panels)
+            panel->OnDetach();
+
         ImGui_ImplOpenGL3_Shutdown();
         ImGui_ImplGlfw_Shutdown();
         ImGui::DestroyContext();
@@ -35,6 +40,12 @@ namespace HrothCore
         ImGui::NewFrame();
 
         // SetupDocking();
+    }
+
+    void ImGuiLayer::Render()
+    {
+        for (const auto &panel : m_Panels)
+            panel->OnUpdate();
     }
 
     void ImGuiLayer::EndFrame()

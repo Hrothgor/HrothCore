@@ -7,7 +7,7 @@ namespace HrothCore
     FPSCounter::FPSCounter(float FPSUpdateInterval)
         : m_FPSUpdateInterval(FPSUpdateInterval)
     {
-        HC_ASSERT(FPSUpdateInterval > 0);
+        HC_ASSERT(FPSUpdateInterval > 0, "FPSCounter: FPSUpdateInterval must be greater than 0!");
     }
 
     void FPSCounter::Tick(float dt)

@@ -21,7 +21,7 @@ namespace HrothCore
 
     	HrothCore::Logger::Init(m_Specification.LogFile);
 
-		HC_ASSERT(s_Instance == nullptr);
+		HC_ASSERT(s_Instance == nullptr, "Application already exists!");
 		s_Instance = this;
 
 		m_Window = std::make_unique<Window>(WindowProps(m_Specification.Name, 1280, 720, false));

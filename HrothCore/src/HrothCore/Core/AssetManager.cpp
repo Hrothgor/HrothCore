@@ -44,14 +44,14 @@ namespace HrothCore
     template<>
     Model& AssetManager::GetAsset<Model>(uint32_t index)
     {
-        HC_ASSERT(index < m_Models.size());
+        HC_ASSERT(index < m_Models.size(), "Index out of bounds!");
         return m_Models[index].second;
     }
 
     template<>
     Texture& AssetManager::GetAsset<Texture>(uint32_t index)
     {
-        HC_ASSERT(index < m_Textures.size());
+        HC_ASSERT(index < m_Textures.size(), "Index out of bounds!");
         return m_Textures[index].second;
     }
 }

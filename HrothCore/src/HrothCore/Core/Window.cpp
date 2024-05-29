@@ -30,7 +30,7 @@ namespace HrothCore
         m_Props.VSync = props.VSync;
 
         int success = glfwInit();
-        HC_ASSERT(success == GLFW_TRUE);
+        HC_ASSERT(success == GLFW_TRUE, "Failed to initialize GLFW!");
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -42,14 +42,14 @@ namespace HrothCore
         m_Monitor = glfwGetPrimaryMonitor();
         if (!m_Monitor)
         {
-            HC_ASSERT(m_Monitor);
+            HC_ASSERT(m_Monitor, "Failed to get primary monitor!");
             Application::Get().Close();
             return;
         }
         m_VideoMode = glfwGetVideoMode(m_Monitor);
         if (!m_VideoMode)
         {
-            HC_ASSERT(m_VideoMode);
+            HC_ASSERT(m_VideoMode, "Failed to get video mode!");
             Application::Get().Close();
             return;
         }
@@ -61,7 +61,7 @@ namespace HrothCore
         m_Window = glfwCreateWindow(m_Props.Width, m_Props.Height, m_Props.Title.c_str(), nullptr, nullptr);
         if (!m_Window)
         {
-            HC_ASSERT(m_Window);
+            HC_ASSERT(m_Window, "Failed to create window!");
             Application::Get().Close();
             return;
         }
