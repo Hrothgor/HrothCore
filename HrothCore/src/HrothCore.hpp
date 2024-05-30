@@ -2,6 +2,8 @@
 
 // For use by HrothCore applications
 
+#include "HrothCore_pch.hpp"
+
 // -----------------------------------
 #include "HrothCore/Core/Application.hpp"
 #include "HrothCore/Core/Window.hpp"

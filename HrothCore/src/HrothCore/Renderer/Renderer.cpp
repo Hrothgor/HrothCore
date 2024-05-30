@@ -59,7 +59,7 @@ namespace HrothCore
 
         const float aspectRatio = m_FramebufferSize.x / (float)m_FramebufferSize.y;
 
-        AssetRef<Model> bunnyref = AssetManager::Get().GetModelRef("./assets/models/bunny/bunny.obj");
+        AssetRef<Model> bunnyref = AssetManager::Get().GetModelRef("./assets/models/teapot/teapot.obj");
         // AssetRef<Model> modelref = AssetManager::Get().GetModelRef("C:/Users/hrothgor/Downloads/game_ready_scifi_helmet/scene.gltf");
         
         transform.Rotate(glm::vec3(0.05f, 0.05f, 0.05f));
@@ -79,7 +79,7 @@ namespace HrothCore
 
                 m_BufferFrameData->SetData(1, &perFrameData);
                 glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-                glDrawElements(GL_TRIANGLES, bunnyref.Get().GetMesh(0).IndicesCount, GL_UNSIGNED_INT, 0);
+                // glDrawElements(GL_TRIANGLES, modelref.Get().GetMesh(0).IndicesCount, GL_UNSIGNED_INT, 0);
             }
         }
 

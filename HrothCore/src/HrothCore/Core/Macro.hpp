@@ -12,8 +12,8 @@
 
     #define HC_ASSERT(check, ...) if (!(check)) { HC_LOG_CRITICAL("Assertion '{0}' failed at {1}:{2}", #check, std::filesystem::path(__FILE__).filename().string(), __LINE__); HC_LOG_CRITICAL(__VA_ARGS__); HC_DEBUGBREAK(); }
 #else
-    #define HC_DEBUGBREAK() void(0)
-    #define HC_ASSERT(check, ...) void(0)
+    #define HC_DEBUGBREAK() abort()
+    #define HC_ASSERT(check, ...) if (!(check)) { HC_LOG_CRITICAL("Assertion '{0}' failed at {1}:{2}", #check, std::filesystem::path(__FILE__).filename().string(), __LINE__); HC_LOG_CRITICAL(__VA_ARGS__); HC_DEBUGBREAK(); }
 #endif
 
 #define HC_SINGLETON(className)                                                  \
