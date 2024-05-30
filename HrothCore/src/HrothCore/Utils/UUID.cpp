@@ -36,7 +36,9 @@ namespace HrothCore
 
     std::string UUID::ToStr() const
     {
-        return std::format("{:08X}-{:04X}-{:04X}-{:04X}-{:04X}{:04X}{:04X}",
+        char buffer[37] = { 0 };
+
+        sprintf(buffer, "%08X-%04X-%04X-%04X-%04X%04X%04X",
             m_UuidValue.data1,
             m_UuidValue.data2,
             m_UuidValue.data3,
@@ -44,6 +46,8 @@ namespace HrothCore
             m_UuidValue.data4[1],
             m_UuidValue.data4[2],
             m_UuidValue.data4[3]);
+
+        return std::string(buffer, 36);
     }
 
     uint64_t UUID::GetStartValue() const
