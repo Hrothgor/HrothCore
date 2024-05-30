@@ -26,17 +26,17 @@ namespace HrothCore
             }
     };
 
-    HrothCore::Application* HrothCore::CreateApplication(ApplicationCommandLineArgs args)
+    Application *CreateApplication(ApplicationCommandLineArgs args)
     {
-        HrothCore::ApplicationSpecification specification;
+        ApplicationSpecification specification;
         specification.Name = "Sandbox";
         specification.WorkingDirectory = ASSETS_DIR;
         specification.LogFile = "./Sandbox.log";
         specification.CommandLineArgs = args;
 
-        std::shared_ptr<HrothCore::IClient> client = std::make_shared<SandboxClient>();
+        std::shared_ptr<IClient> client = std::make_shared<SandboxClient>();
 
-        return new HrothCore::Application(specification, client);
+        return new Application(specification, client);
     }
 }
 
