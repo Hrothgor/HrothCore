@@ -4,6 +4,7 @@
 #include "HrothCore/Scene/GameObject.hpp"
 
 #include "HrothCore/Components/IDComponent.hpp"
+#include "HrothCore/Components/TransformComponent.hpp"
 
 #include "HrothCore/Utils/UUID.hpp"
 
@@ -15,7 +16,9 @@ namespace HrothCore
     {
         m_Root = new GameObject(m_Registry.create(), this);
         m_Root->AddComponent<IDComponent>("Root");
-        // m_Root->AddComponent<Transform>();
+        m_Root->AddComponent<TransformComponent>(
+            [this]() { m_Root->AddComponent<TransformIsDirtyComponent>(); }
+        );
     }
 
     Scene::~Scene()
@@ -35,7 +38,9 @@ namespace HrothCore
         entt::entity entity = m_Registry.create();
         GameObject *object = new GameObject(entity, this);
         object->AddComponent<IDComponent>(name);
-        // object.AddComponent<Transform>();
+        object->AddComponent<TransformComponent>(
+            [object]() { object->AddComponent<TransformIsDirtyComponent>(); }
+        );
 
         object->AttachToParent(parent ? parent : m_Root);
 
