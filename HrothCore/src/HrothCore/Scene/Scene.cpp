@@ -5,6 +5,8 @@
 
 #include "HrothCore/Components/IDComponent.hpp"
 
+#include "HrothCore/Utils/UUID.hpp"
+
 #include <fstream>
 
 namespace HrothCore
@@ -72,14 +74,14 @@ namespace HrothCore
         return nullptr;
     }
 
-    GameObject *Scene::Find(const UUIDv4::UUID &uuid)
+    GameObject *Scene::Find(const UUID &uuid)
     {
         auto view = m_Registry.view<IDComponent>();
 
         for (auto entity : view)
         {
             auto &id = view.get<IDComponent>(entity);
-            if (id.UUID == uuid)
+            if (id.Uuid == uuid)
                 return m_ObjectMap[entity];
         }
 

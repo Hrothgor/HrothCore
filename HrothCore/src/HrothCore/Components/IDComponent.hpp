@@ -1,12 +1,12 @@
 #pragma once
 
-#include <uuid_v4.h>
+#include "HrothCore/Utils/UUID.hpp"
 
 namespace HrothCore
 {
     struct IDComponent
     {
-        UUIDv4::UUID UUID;
+        UUID Uuid;
         std::string Name = "";
 
         IDComponent() = default;
@@ -18,7 +18,7 @@ namespace HrothCore
 
         bool operator==(const IDComponent &other) const
         {
-            return UUID == other.UUID;
+            return Uuid == other.Uuid;
         }
 
         bool operator!=(const IDComponent &other) const

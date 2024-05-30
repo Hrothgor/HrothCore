@@ -1,11 +1,11 @@
 #pragma once
 
 #include <entt.hpp>
-#include <uuid_v4.h>
 
 namespace HrothCore
 {
     class GameObject;
+    class UUID;
 
     class Scene
     {
@@ -19,7 +19,7 @@ namespace HrothCore
             GameObject *Duplicate(GameObject *object);
 
             GameObject *Find(const std::string &name);
-            GameObject *Find(const UUIDv4::UUID &uuid);
+            GameObject *Find(const UUID &uuid);
 
             GameObject *GetRoot() { return m_Root; }
 

@@ -62,7 +62,7 @@ namespace HrothCore
             if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("_SCENE_HIERARCHY_ENTITY_DRAG"))
             {
                 GameObject *cpy = static_cast<GameObject *>(payload->Data);
-                GameObject *ent = m_Scene->Find(cpy->GetComponent<IDComponent>().UUID);
+                GameObject *ent = m_Scene->Find(cpy->GetComponent<IDComponent>().Uuid);
                 ent->DetachFromParent();
             }
             ImGui::EndDragDropTarget();
@@ -106,7 +106,7 @@ namespace HrothCore
             if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("_SCENE_HIERARCHY_ENTITY_DRAG"))
             {
                 GameObject *cpy = static_cast<GameObject *>(payload->Data);
-                GameObject *ent = m_Scene->Find(cpy->GetComponent<IDComponent>().UUID);
+                GameObject *ent = m_Scene->Find(cpy->GetComponent<IDComponent>().Uuid);
                 ent->AttachToParent(parent);
             }
             ImGui::EndDragDropTarget();

@@ -7,6 +7,7 @@
 #include <functional>
 #include <filesystem>
 #include <typeindex>
+#include <format>
 
 #include <string>
 #include <vector>

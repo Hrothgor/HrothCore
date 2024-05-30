@@ -17,6 +17,3 @@
 	path = HrothCore/external/imgui
 	url = https://github.com/ocornut/imgui.git
 	branch = docking
-[submodule "HrothCore/external/uuid_v4"]
-	path = HrothCore/external/uuid_v4
-	url = https://github.com/crashoz/uuid_v4.git
