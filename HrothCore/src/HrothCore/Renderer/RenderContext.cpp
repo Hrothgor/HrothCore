@@ -24,9 +24,17 @@ namespace HrothCore
         }
 
         HC_LOG_INFO("OpenGL Info:");
-        HC_LOG_INFO("  Vendor: {0}", (const char *)glGetString(GL_VENDOR));
+        m_Vendor = reinterpret_cast<const char*>(glGetString(GL_VENDOR));
+        HC_LOG_INFO("  Vendor: {0}", m_Vendor.c_str());
         HC_LOG_INFO("  Renderer: {0}", (const char *)glGetString(GL_RENDERER));
         HC_LOG_INFO("  Version: {0}", (const char *)glGetString(GL_VERSION));
+
+        GLint availableKb = -1;
+        if (m_Vendor.find("NVIDIA") != std::string::npos)
+            glGetIntegerv(GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX, &availableKb);
+        if (m_Vendor.find("AMD") != std::string::npos)
+            glGetIntegerv(GL_TEXTURE_FREE_MEMORY_ATI, &availableKb);
+        m_VramAvailableKb = availableKb;
 
         HC_ASSERT(GLVersion.major > 4 || (GLVersion.major == 4 && GLVersion.minor >= 5), "HrothCore requires at least OpenGL version 4.5!");
     }
@@ -38,5 +46,20 @@ namespace HrothCore
     void RenderContext::SwapBuffers()
     {
         glfwSwapBuffers(m_WindowHandle->GetNativeWindow());
+    }
+
+    int32_t RenderContext::VramAvailableKb()
+    {
+        return m_VramAvailableKb;
+    }
+
+    int32_t RenderContext::VramUsedKb()
+    {
+        GLint availableKb = -1;
+        if (m_Vendor.find("NVIDIA") != std::string::npos)
+            glGetIntegerv(GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX, &availableKb);
+        if (m_Vendor.find("AMD") != std::string::npos)
+            glGetIntegerv(GL_TEXTURE_FREE_MEMORY_ATI, &availableKb);
+        return std::max(m_VramAvailableKb - availableKb, 0);
     }
 }

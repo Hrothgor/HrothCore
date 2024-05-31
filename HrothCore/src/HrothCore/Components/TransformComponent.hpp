@@ -20,22 +20,15 @@ namespace HrothCore
             void Scale(const glm::vec3 &scale);
             void Rotate(const glm::vec3 &rotation);
 
-            TransformComponent(std::function<void()> onTransformChange)
-                : OnTransformChange(onTransformChange)
-            {
-                OnTransformChange();
-            }
-
         private:
-            std::function<void()> OnTransformChange;
+            void UpdateLocal();
 
             glm::vec3 Position = glm::vec3(0.0f);
             glm::vec3 ScaleFactor = glm::vec3(1.0f);
             glm::vec3 Rotation = glm::vec3(0.0f);
-    };
 
-    struct TransformIsDirtyComponent
-    {
-        bool IsDirty;
+            bool IsDirty = true;
+
+        friend class Scene;
     };
 }

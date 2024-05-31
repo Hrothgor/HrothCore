@@ -49,6 +49,8 @@ namespace HrothCore
         TraverseScene(nullptr);
         
         ImGui::BeginChild("Blank Space");
+        if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && ImGui::IsWindowHovered())
+            m_Scene->SetSelectedEntity(nullptr);
         if (ImGui::BeginPopupContextWindow("_SCENE_HIERARCHY_CONTEXTMENU"))
         {
             if (ImGui::MenuItem("Create Empty Entity"))
@@ -72,9 +74,9 @@ namespace HrothCore
     }
 
     //returns the node's rectangle for tree lines drawing
-    ImVec4 SceneHierarchyPanel::TraverseScene(GameObject *parent)
+    ImVec4 SceneHierarchyPanel::TraverseScene(GameObject *object)
     {
-        if (!parent)
+        if (!object)
         {
             for (auto &child : m_Scene->GetRoot()->GetChilds())
                 TraverseScene(child);
@@ -82,22 +84,24 @@ namespace HrothCore
         }
 
         ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanFullWidth;
-        if (parent->GetChilds().empty())
+        if (object->GetChilds().empty())
             flags |= ImGuiTreeNodeFlags_Leaf;
+        if (m_Scene->GetSelectedEntity() == object)
+            flags |= ImGuiTreeNodeFlags_Selected;
 
-        bool expanded = ImGui::TreeNodeEx((void *)parent, flags, "%s", parent->GetComponent<IDComponent>().Name.c_str());
+        bool expanded = ImGui::TreeNodeEx((void *)object, flags, "%s", object->GetComponent<IDComponent>().Name.c_str());
 
-        if (ImGui::BeginPopupContextItem((char *)parent))
+        if (ImGui::BeginPopupContextItem((char *)object))
         {
             if (ImGui::MenuItem("Create Empty Entity"))
-                m_Scene->Instantiate(parent);
+                m_Scene->Instantiate(object);
             ImGui::EndPopup();
         }
 
         if (ImGui::BeginDragDropSource())
         {
-            ImGui::SetDragDropPayload("_SCENE_HIERARCHY_ENTITY_DRAG", parent, sizeof(GameObject));
-            ImGui::TextUnformatted(parent->GetComponent<IDComponent>().Name.c_str());
+            ImGui::SetDragDropPayload("_SCENE_HIERARCHY_ENTITY_DRAG", object, sizeof(GameObject));
+            ImGui::TextUnformatted(object->GetComponent<IDComponent>().Name.c_str());
             ImGui::EndDragDropSource();
         }
 
@@ -107,10 +111,13 @@ namespace HrothCore
             {
                 GameObject *cpy = static_cast<GameObject *>(payload->Data);
                 GameObject *ent = m_Scene->Find(cpy->GetComponent<IDComponent>().Uuid);
-                ent->AttachToParent(parent);
+                ent->AttachToParent(object);
             }
             ImGui::EndDragDropTarget();
         }
+
+        if (ImGui::IsItemClicked())
+            m_Scene->SetSelectedEntity(object);
 
         const ImVec4 nodeRect = ImVec4(ImGui::GetItemRectMin().x, ImGui::GetItemRectMin().y, ImGui::GetItemRectMax().x, ImGui::GetItemRectMax().y);
 
@@ -126,7 +133,7 @@ namespace HrothCore
             verticalLineStart.y -= SmallOffsetY; //to nicely line up with the arrow symbol
             ImVec2 verticalLineEnd = verticalLineStart;
 
-            for (auto &child : parent->GetChilds())
+            for (auto &child : object->GetChilds())
             {
                 const float HorizontalTreeLineSize = 15.0f; //chosen arbitrarily
                 const ImVec4 childRect = TraverseScene(child);

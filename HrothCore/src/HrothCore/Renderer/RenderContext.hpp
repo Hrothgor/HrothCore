@@ -14,7 +14,12 @@ namespace HrothCore
             void Shutdown();
             void SwapBuffers();
 
+            int32_t VramAvailableKb();
+            int32_t VramUsedKb();
+
         private:
             Window *m_WindowHandle;
+            std::string m_Vendor;
+            int32_t m_VramAvailableKb = -1;
     };
 }

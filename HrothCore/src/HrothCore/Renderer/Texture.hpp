@@ -52,6 +52,7 @@ namespace HrothCore
             void Resize(uint32_t width, uint32_t height);
 
             uint32_t GetID() const { return m_HandleID; }
+            uint32_t GetBindlessID() const { return m_BindlessID; }
         private:
             void CreateTexture();
 

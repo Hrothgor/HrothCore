@@ -22,6 +22,7 @@ namespace HrothCore
 
     Texture::~Texture()
     {
+        glMakeTextureHandleNonResidentARB(m_BindlessID);
         glDeleteTextures(1, &m_HandleID);
     }
 
@@ -37,10 +38,10 @@ namespace HrothCore
 
         glTextureStorage2D(m_HandleID, 1, ComputeGLInternalFormat(m_Info.format, m_Info.dataType), m_Width, m_Height);
         
-        // {
-        //     m_BindlessID = glGetTextureHandleARB(m_HandleID);
-        //     glMakeTextureHandleResidentARB(m_BindlessID);
-        // }
+        {
+            m_BindlessID = glGetTextureHandleARB(m_HandleID);
+            glMakeTextureHandleResidentARB(m_BindlessID);
+        }
     }
 
     void Texture::SetData(const void *data)

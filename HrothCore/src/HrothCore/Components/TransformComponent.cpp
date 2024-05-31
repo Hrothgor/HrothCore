@@ -22,33 +22,45 @@ namespace HrothCore
     void TransformComponent::SetPosition(const glm::vec3 &position)
     {
         Position = position;
-        OnTransformChange();
+        IsDirty = true;
     }
 
     void TransformComponent::SetScale(const glm::vec3 &scale)
     {
         ScaleFactor = scale;
-        OnTransformChange();
+        IsDirty = true;
     }
 
     void TransformComponent::SetRotation(const glm::vec3 &rotation)
     {
         Rotation = rotation;
-        OnTransformChange();
+        IsDirty = true;
     }
 
     void TransformComponent::Translate(const glm::vec3 &translation)
     {
         SetPosition(translation + GetPosition());
+        IsDirty = true;
     }
 
     void TransformComponent::Scale(const glm::vec3 &scale)
     {
         SetScale(scale * GetScale());
+        IsDirty = true;
     }
 
     void TransformComponent::Rotate(const glm::vec3 &rotation)
     {
         SetRotation(rotation + GetRotation());
+        IsDirty = true;
+    }
+
+    void TransformComponent::UpdateLocal()
+    {
+        glm::mat4 matrix = glm::mat4(1.0f);
+        matrix = glm::translate(matrix, Position);
+        matrix = matrix * glm::mat4_cast(glm::quat(glm::radians(Rotation)));
+        matrix = glm::scale(matrix, ScaleFactor);
+        Local = matrix;
     }
 }

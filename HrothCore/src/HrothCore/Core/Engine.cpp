@@ -13,12 +13,12 @@
 
 namespace HrothCore
 {
-    static ICameraPositioner *s_CameraPositioner = nullptr;
+    static CameraPositionerEditor *s_CameraPositioner = nullptr;
     void Engine::Init(std::shared_ptr<IClient> &client)
     {
         HC_ASSERT(client != nullptr, "Engine: Need a client to run!");
 
-        Renderer::Get().Init();
+        Renderer::Init();
         ImGuiLayer::Get().Init();
 
         m_Scene = std::make_shared<Scene>();
@@ -60,7 +60,7 @@ namespace HrothCore
     {
         m_Client->Shutdown();
         ImGuiLayer::Get().Shutdown();
-        Renderer::Get().Shutdown();
+        Renderer::Shutdown();
     }
 
     void Engine::Update(float dt)
@@ -69,8 +69,10 @@ namespace HrothCore
         HC_LOG_INFO("Engine::Update: {0} ms", dt);
         HC_LOG_INFO("Engine::Update: {0} fps", GetFPS());
 
+        s_CameraPositioner->Update(dt);
+
         if (m_Camera && m_Camera->HasPositioner())
-            Renderer::Get().RenderScene(m_Camera);
+            m_Scene->Render(*m_Camera);
         else 
             HC_LOG_ERROR("Engine::Update: Camera has no positioner can't render scene!");
 

@@ -25,16 +25,13 @@ namespace HrothCore
             /* ----- Ctr/Dtr ----- */
 
             Buffer(BufferUsage usage = BufferUsage::Dynamic)
-                : m_Usage(usage), m_Capacity(1)
+                : Buffer(1, usage)
             {
-                glCreateBuffers(1, &m_HandleID);
             }
             
             Buffer(uint32_t capacity, BufferUsage usage = BufferUsage::Dynamic)
-                : m_Usage(usage), m_Capacity(capacity)
+                : Buffer(nullptr, capacity, usage)
             {
-                glCreateBuffers(1, &m_HandleID);
-                glNamedBufferStorage(m_HandleID, m_Capacity * sizeof(T), nullptr, GetGLBufferUsage(m_Usage));
             }
 
             Buffer(const T *data, uint32_t dataLength, BufferUsage usage = BufferUsage::Dynamic)

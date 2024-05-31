@@ -8,6 +8,8 @@
 
 #include "HrothCore/Utils/UUID.hpp"
 
+#include "HrothCore/Renderer/Renderer.hpp"
+
 #include <fstream>
 
 namespace HrothCore
@@ -16,9 +18,7 @@ namespace HrothCore
     {
         m_Root = new GameObject(m_Registry.create(), this);
         m_Root->AddComponent<IDComponent>("Root");
-        m_Root->AddComponent<TransformComponent>(
-            [this]() { m_Root->AddComponent<TransformIsDirtyComponent>(); }
-        );
+        m_Root->AddComponent<TransformComponent>();
     }
 
     Scene::~Scene()
@@ -38,9 +38,7 @@ namespace HrothCore
         entt::entity entity = m_Registry.create();
         GameObject *object = new GameObject(entity, this);
         object->AddComponent<IDComponent>(name);
-        object->AddComponent<TransformComponent>(
-            [object]() { object->AddComponent<TransformIsDirtyComponent>(); }
-        );
+        object->AddComponent<TransformComponent>();
 
         object->AttachToParent(parent ? parent : m_Root);
 
@@ -91,5 +89,29 @@ namespace HrothCore
         }
 
         return nullptr;
+    }
+
+    void Scene::UpdateDirtyTransforms(GameObject *object, glm::mat4 parentTransform, bool parentDirty)
+    {
+        auto &transform = object->GetComponent<TransformComponent>();
+        if (transform.IsDirty || parentDirty)
+        {
+            transform.UpdateLocal();
+            transform.Global = parentTransform * transform.Local;
+            transform.IsDirty = false;
+            for (GameObject *child : object->GetChilds())
+                UpdateDirtyTransforms(child, transform.Global, true);
+            return;
+        }
+        for (GameObject *child : object->GetChilds())
+                UpdateDirtyTransforms(child, transform.Global, false);
+    }
+
+    void Scene::Render(Camera &camera)
+    {
+        UpdateDirtyTransforms(GetRoot());
+
+        Renderer::BeginScene(camera);
+        Renderer::EndScene();
     }
 }

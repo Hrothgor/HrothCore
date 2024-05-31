@@ -1,37 +1,29 @@
 #pragma once
 
+#include "HrothCore/Types/Mesh.hpp"
+
 namespace HrothCore
 {
-    struct PerFrameData {
-        glm::mat4 model;
-        glm::mat4 view;
-        glm::mat4 proj;
-        int isWireframe;
-    };
-
-    class VertexArray;
-    template <typename T> class Buffer;
-    class Shader;
     class Camera;
+    class Texture;
 
     class Renderer
     {
-        HC_SINGLETON(Renderer)
+        public:
+            static void Init();
+            static void Shutdown();
 
-    public:
-        virtual ~Renderer() = default;
+            static void BeginScene(const Camera &camera);
+            static void EndScene();
 
-        void Init();
-        void Shutdown();
-        void RenderScene(std::shared_ptr<Camera> &camera);
+            static void DrawMesh(const Mesh &mesh, const glm::mat4 &transform = glm::mat4(1.0f));
 
-        std::shared_ptr<VertexArray> GetVao() const { return m_VAO; }
-
-    private:
-        std::shared_ptr<VertexArray> m_VAO;
-        std::shared_ptr<Buffer<PerFrameData>> m_BufferFrameData;
-        std::shared_ptr<Shader> m_BasicShader;
-
-        glm::ivec2 m_FramebufferSize;
+            // return Mesh base vertex and index
+            static std::pair<int, int> LoadVertexData(VerticesData vertices, std::vector<uint32_t> indices);
+            static void LoadBindlessTexture(const Texture &texture);
+        private:
+            static void StartBatch();
+            static void NextBatch();
+            static void Flush();
     };
 }

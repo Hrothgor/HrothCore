@@ -1,5 +1,6 @@
 #include <HrothCore.hpp>
 
+#include "Panels/InfoPanel.hpp"
 #include "Panels/SceneHierarchyPanel.hpp"
 
 namespace HrothCore
@@ -13,6 +14,7 @@ namespace HrothCore
             void Init() override
             {
                 HC_LOG_INFO("SandboxClient::Init");
+                ImGuiLayer::Get().RegisterPanel<InfoPanel>();
                 ImGuiLayer::Get().RegisterPanel<SceneHierarchyPanel>(Engine::Get().GetScene());
             }
 

@@ -57,6 +57,9 @@ namespace HrothCore
 		double GetDeltaTime() const { return m_DeltaTime; }
 
 		GLFWwindow *GetNativeWindow() const { return m_Window; }
+		
+		int32_t GetVramAvailableKb() { return m_RenderContext->VramAvailableKb(); }
+		int32_t GetVramUsedKb() { return m_RenderContext->VramUsedKb(); }
 
 	private:
 		void Init(const WindowProps &props);

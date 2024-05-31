@@ -13,6 +13,7 @@ namespace HrothCore
         : m_Props(props)
     {
         m_RenderContext = std::make_unique<RenderContext>(this);
+        HC_ASSERT(m_RenderContext, "Failed to create render context!");
         Init(props);
         SetWindowMode(mode);
     }

@@ -56,7 +56,7 @@ namespace HrothCore
 
             float FastMultiplier;
 
-            Movement() : Speed(30.0f), RotationSpeed(90.0f), FastMultiplier(4.0f) {}
+            Movement() : Speed(30.0f), RotationSpeed(180.0f), FastMultiplier(4.0f) {}
         };
 
         struct KeyBinding {

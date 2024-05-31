@@ -1,6 +1,7 @@
 #pragma once
 
 #include <entt.hpp>
+#include "HrothCore/Types/Camera.hpp"
 
 namespace HrothCore
 {
@@ -22,12 +23,19 @@ namespace HrothCore
             GameObject *Find(const UUID &uuid);
 
             GameObject *GetRoot() { return m_Root; }
+            GameObject *GetSelectedEntity() { return m_SelectedEntity; }
+            void SetSelectedEntity(GameObject *object) { m_SelectedEntity = object; }
+
+            void Render(Camera &camera);
 
         private:
+            void UpdateDirtyTransforms(GameObject *object, glm::mat4 parentTransform = glm::mat4(1.0f), bool parentDirty = false);
+
             entt::registry m_Registry;
 
             GameObject *m_Root = nullptr;
             std::unordered_map<entt::entity, GameObject *> m_ObjectMap;
+            GameObject *m_SelectedEntity = nullptr;
 
         friend class GameObject;
     };

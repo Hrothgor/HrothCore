@@ -202,13 +202,13 @@ namespace HrothCore
     {
         Mesh mesh;
 
+        std::pair<int, int> offsets = Renderer::LoadVertexData(meshData.Vertices, meshData.Indices);
+
         mesh.VerticesCount = static_cast<uint32_t>(meshData.Vertices.Position.size());
         mesh.IndicesCount = static_cast<uint32_t>(meshData.Indices.size());
 
-        mesh.BaseVertex = Renderer::Get().GetVao()->GetVerticesCount();
-        mesh.BaseIndex = Renderer::Get().GetVao()->GetIndicesCount();
-
-        Renderer::Get().GetVao()->AddVertices(meshData.Vertices, meshData.Indices);
+        mesh.BaseVertex = offsets.first;
+        mesh.BaseIndex = offsets.second;
 
         return mesh;
     }
@@ -231,6 +231,8 @@ namespace HrothCore
         texture.SetData(textureData.Data);
 
         stbi_image_free((void *)textureData.Data);
+
+        Renderer::LoadBindlessTexture(texture);
 
         return texture;
     }
