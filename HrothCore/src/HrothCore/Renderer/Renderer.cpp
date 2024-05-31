@@ -20,7 +20,7 @@
 namespace HrothCore
 {
     struct RenderData {
-        static const uint32_t MaxMeshes = 1000;
+        static constexpr uint32_t MaxMeshes = 1000;
 
         std::shared_ptr<VertexArray> MeshVAO;
         std::shared_ptr<Shader> MeshShader;

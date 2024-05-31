@@ -38,7 +38,7 @@ namespace HrothCore
     {
         char buffer[37] = { 0 };
 
-        sprintf(buffer, "%08X-%04X-%04X-%04X-%04X%04X%04X",
+        snprintf(buffer, 37, "%08X-%04X-%04X-%04X-%04X%04X%04X",
             m_UuidValue.data1,
             m_UuidValue.data2,
             m_UuidValue.data3,
