@@ -112,6 +112,10 @@ namespace HrothCore
         UpdateDirtyTransforms(GetRoot());
 
         Renderer::BeginScene(camera);
+        for (int x = 0; x < 16; x++)
+            for (int y = 0; y < 16; y++)
+                for (int z = 0; z < 16; z++)
+                    Renderer::DrawMesh(Mesh(), glm::translate(glm::mat4(1.0f), glm::vec3(x * -3.5f, y * -3.5f, z * -3.5f)));
         Renderer::EndScene();
     }
 }

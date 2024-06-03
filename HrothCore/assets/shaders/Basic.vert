@@ -15,7 +15,7 @@ struct PerMeshData_t
     mat4 model;
 };
 
-layout(std430, binding = 1) readonly buffer perMeshData {
+layout(std430, binding = 0) readonly buffer perMeshData {
     PerMeshData_t PerMeshData[];
 };
 
@@ -49,7 +49,7 @@ const int indices[36] = int[36](
 layout (location = 0) out vec3 color;
 
 void main() {
-    mat4 MVP = proj * view * PerMeshData[0].model;
+    mat4 MVP = proj * view * PerMeshData[gl_InstanceID].model;
     gl_Position = MVP * vec4(posT[indices[gl_VertexID]], 1.0);
 
     color = posT[indices[gl_VertexID]];

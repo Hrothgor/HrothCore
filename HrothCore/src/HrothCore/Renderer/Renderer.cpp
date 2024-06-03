@@ -26,13 +26,19 @@ namespace HrothCore
     }
 
     struct RenderData {
-        static constexpr uint32_t MaxMeshes = 1000;
+        /* Constexpr */
+        static constexpr uint32_t MaxMeshes = 4096;
+        static constexpr uint32_t MaxTextures = 4 * MaxMeshes;
+        /* --------- */
 
+        /* VAO/SHADER/SSBO */
         std::shared_ptr<VertexArray> MeshVAO;
-        std::shared_ptr<Shader> MeshShader;
+        std::array<std::shared_ptr<Shader>, NumShaders> Shaders;
 
         std::shared_ptr<Buffer<uint32_t>> BufferBindlessSamplers;
+        /* --------------- */
 
+        /* PerMeshData */
         struct PerMeshData_t {
             glm::mat4 transform;
         };
@@ -40,13 +46,16 @@ namespace HrothCore
         uint32_t MeshIndexCount = 0;
         PerMeshData_t *BufferPerMeshDataBase = nullptr;
         PerMeshData_t *BufferPerMeshDataPtr = nullptr;
+        /* ----------- */
 
+        /* PerFrameData */
         struct PerFrameData_t {
             glm::mat4 view;
             glm::mat4 proj;
         };
         std::shared_ptr<Buffer<PerFrameData_t>> BufferPerFrameData;
         PerFrameData_t PerFrameData;
+        /* ------------ */
 
         glm::ivec2 FramebufferSize;
     };
@@ -64,16 +73,18 @@ namespace HrothCore
             return true;
         });
 
-        s_Data.MeshShader = std::make_shared<Shader>("./assets/shaders/Basic.vert", "./assets/shaders/Basic.frag");
+        s_Data.Shaders[MeshShader] = std::make_shared<Shader>("./assets/shaders/Basic.vert", "./assets/shaders/Basic.frag");
 
         s_Data.MeshVAO = std::make_shared<VertexArray>();
 
-        s_Data.BufferBindlessSamplers = std::make_shared<Buffer<uint32_t>>();
+        s_Data.BufferBindlessSamplers = std::make_shared<Buffer<uint32_t>>(RenderData::MaxTextures);
 
         s_Data.BufferPerMeshData = std::make_shared<Buffer<RenderData::PerMeshData_t>>(RenderData::MaxMeshes);
         s_Data.BufferPerMeshDataBase = new RenderData::PerMeshData_t[RenderData::MaxMeshes];
+        s_Data.BufferPerMeshData->BindToShader(0, BufferShaderType::ShaderStorage);
 
         s_Data.BufferPerFrameData = std::make_shared<Buffer<RenderData::PerFrameData_t>>();
+        s_Data.BufferPerFrameData->BindToShader(0, BufferShaderType::Uniform);
     }
 
     void Renderer::Shutdown()
@@ -83,6 +94,7 @@ namespace HrothCore
 
     void Renderer::BeginScene(const Camera &camera)
     {
+        RenderCommand::EnableDepthTest(true);
         RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1.0f});
         RenderCommand::Clear();
 
@@ -110,6 +122,8 @@ namespace HrothCore
         s_Data.MeshIndexCount++;
     }
 
+    /* GPU LOADING */
+
     std::pair<int, int> Renderer::LoadVertexData(VerticesData vertices, std::vector<uint32_t> indices)
     {
         std::pair<int, int> offsets = std::make_pair(s_Data.MeshVAO->GetVerticesCount(), s_Data.MeshVAO->GetIndicesCount());
@@ -123,12 +137,27 @@ namespace HrothCore
         s_Data.BufferBindlessSamplers->AddData(1, &bindlessID);
     }
 
+    /* ----------- */
+
+    /* Utils */
+
+    void Renderer::ReloadShader(Shaders shader)
+    {
+        s_Data.Shaders[shader]->Hotreload();
+    }
+
+    void Renderer::ReloadAllShader()
+    {
+        for (auto &shader : s_Data.Shaders)
+            shader->Hotreload();
+    }
+
+    /* ----- */
+
     void Renderer::StartBatch()
     {
         s_Data.MeshIndexCount = 0;
         s_Data.BufferPerMeshDataPtr = s_Data.BufferPerMeshDataBase;
-
-        DrawMesh(Mesh(), glm::mat4(1.0f));
     }
 
     void Renderer::NextBatch()
@@ -146,11 +175,8 @@ namespace HrothCore
             s_Data.BufferPerMeshData->SetData(s_Data.MeshIndexCount, s_Data.BufferPerMeshDataBase);
 
             s_Data.MeshVAO->Bind();
-            s_Data.MeshShader->Start();
-            s_Data.BufferPerFrameData->BindToShader(0, BufferShaderType::Uniform);
-            s_Data.BufferPerMeshData->BindToShader(1, BufferShaderType::ShaderStorage);
-
-            glDrawArrays(GL_TRIANGLES, 0, 36);
+            s_Data.Shaders[MeshShader]->Start();
+            glDrawArraysInstanced(GL_TRIANGLES, 0, 36, s_Data.MeshIndexCount);
         }
     }
 }

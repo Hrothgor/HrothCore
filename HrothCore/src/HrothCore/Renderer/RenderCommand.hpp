@@ -2,16 +2,16 @@
 
 namespace HrothCore
 {
-    class RenderCommand
+    namespace RenderCommand
     {
-    public:
-        static void SetClearColor(const glm::vec4 &color);
-        static void Clear();
+        void EnableDepthTest(bool enable);
+        void SetClearColor(const glm::vec4 &color);
+        void Clear();
 
-        static void SetViewport(const glm::ivec2 &size);
+        void SetViewport(const glm::ivec2 &size);
 
-        static void DrawItem();
-        static void MultiDrawIndirect();
-        static void MultiDrawIndirectSkinned();
+        void DrawItem();
+        void MultiDrawIndirect();
+        void MultiDrawIndirectSkinned();
     };
 }
