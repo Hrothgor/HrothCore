@@ -7,23 +7,18 @@ namespace HrothCore
     class Camera;
     class Texture;
 
-    class Renderer
+    namespace Renderer
     {
-        public:
-            static void Init();
-            static void Shutdown();
+        void Init();
+        void Shutdown();
 
-            static void BeginScene(const Camera &camera);
-            static void EndScene();
+        void BeginScene(const Camera &camera);
+        void EndScene();
 
-            static void DrawMesh(const Mesh &mesh, const glm::mat4 &transform = glm::mat4(1.0f));
+        void DrawMesh(const Mesh &mesh, const glm::mat4 &transform = glm::mat4(1.0f));
 
-            // return Mesh base vertex and index
-            static std::pair<int, int> LoadVertexData(VerticesData vertices, std::vector<uint32_t> indices);
-            static void LoadBindlessTexture(const Texture &texture);
-        private:
-            static void StartBatch();
-            static void NextBatch();
-            static void Flush();
+        // return Mesh base vertex and index
+        std::pair<int, int> LoadVertexData(VerticesData vertices, std::vector<uint32_t> indices);
+        void LoadBindlessTexture(const Texture &texture);
     };
 }

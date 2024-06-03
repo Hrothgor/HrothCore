@@ -2,7 +2,6 @@
 
 #include "HrothCore/Utils/UUID.hpp"
 
-#include <stdio.h>
 #include <random>
 
 namespace HrothCore
@@ -85,10 +84,13 @@ namespace HrothCore
     {
         uint32_t data1, data2, data3, data40, data41, data42, data43;
 
-#define _CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES // Required for sscanf on window to use sscanf_s instead
-        int succes = sscanf(str.c_str(), "%08X-%04X-%04X-%04X-%04X%04X%04X",
+#ifdef _MSC_VER
+    #define SSCANF sscanf_s
+#else
+    #define SSCANF sscanf
+#endif
+        int succes = SSCANF(str.c_str(), "%08X-%04X-%04X-%04X-%04X%04X%04X",
             &data1, &data2, &data3, &data40, &data41, &data42, &data43);
-#undef _CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES
 
         HC_ASSERT(succes == 7, "Failed to parse UUID string!");
 

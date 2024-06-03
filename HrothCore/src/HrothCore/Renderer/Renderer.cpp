@@ -19,6 +19,12 @@
 
 namespace HrothCore
 {
+    namespace Renderer {
+        void StartBatch();
+        void NextBatch();
+        void Flush();
+    }
+
     struct RenderData {
         static constexpr uint32_t MaxMeshes = 1000;
 
@@ -93,6 +99,30 @@ namespace HrothCore
         Flush();
     }
 
+    void Renderer::DrawMesh(const Mesh &mesh, const glm::mat4 &transform)
+    {
+        if (s_Data.MeshIndexCount >= RenderData::MaxMeshes)
+            NextBatch();
+
+        s_Data.BufferPerMeshDataPtr->transform = transform;
+        s_Data.BufferPerMeshDataPtr++;
+
+        s_Data.MeshIndexCount++;
+    }
+
+    std::pair<int, int> Renderer::LoadVertexData(VerticesData vertices, std::vector<uint32_t> indices)
+    {
+        std::pair<int, int> offsets = std::make_pair(s_Data.MeshVAO->GetVerticesCount(), s_Data.MeshVAO->GetIndicesCount());
+        s_Data.MeshVAO->AddVertices(vertices, indices);
+        return offsets;
+    }
+
+    void Renderer::LoadBindlessTexture(const Texture &texture)
+    {
+        uint32_t bindlessID = texture.GetBindlessID();
+        s_Data.BufferBindlessSamplers->AddData(1, &bindlessID);
+    }
+
     void Renderer::StartBatch()
     {
         s_Data.MeshIndexCount = 0;
@@ -122,29 +152,5 @@ namespace HrothCore
 
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
-    }
-
-    void Renderer::DrawMesh(const Mesh &mesh, const glm::mat4 &transform)
-    {
-        if (s_Data.MeshIndexCount >= RenderData::MaxMeshes)
-            NextBatch();
-
-        s_Data.BufferPerMeshDataPtr->transform = transform;
-        s_Data.BufferPerMeshDataPtr++;
-
-        s_Data.MeshIndexCount++;
-    }
-
-    std::pair<int, int> Renderer::LoadVertexData(VerticesData vertices, std::vector<uint32_t> indices)
-    {
-        std::pair<int, int> offsets = std::make_pair(s_Data.MeshVAO->GetVerticesCount(), s_Data.MeshVAO->GetIndicesCount());
-        s_Data.MeshVAO->AddVertices(vertices, indices);
-        return offsets;
-    }
-
-    void Renderer::LoadBindlessTexture(const Texture &texture)
-    {
-        uint32_t bindlessID = texture.GetBindlessID();
-        s_Data.BufferBindlessSamplers->AddData(1, &bindlessID);
     }
 }

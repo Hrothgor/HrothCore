@@ -18,13 +18,9 @@
 
 namespace HrothCore
 {
-    class Logger
+    namespace Logger
     {
-        public:
-            static void Init(const std::string &logFile);
-
-            static std::shared_ptr<spdlog::logger> &GetSpdLogger() { return s_SpdLogger; }
-        private:
-            static std::shared_ptr<spdlog::logger> s_SpdLogger;
-    };
+        void Init(const std::string &logFile);
+        std::shared_ptr<spdlog::logger> &GetSpdLogger();
+    }
 }

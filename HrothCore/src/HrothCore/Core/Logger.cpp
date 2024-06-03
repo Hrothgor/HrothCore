@@ -7,7 +7,7 @@
 
 namespace HrothCore
 {
-    std::shared_ptr<spdlog::logger> Logger::s_SpdLogger;
+    static std::shared_ptr<spdlog::logger> s_SpdLogger;
 
     void Logger::Init(const std::string &logFile)
     {
@@ -22,5 +22,10 @@ namespace HrothCore
         s_SpdLogger->set_pattern("%^[%T] [%l] %n: %v%$");
         s_SpdLogger->set_level(spdlog::level::debug);
         s_SpdLogger->flush_on(spdlog::level::debug);
+    }
+
+    std::shared_ptr<spdlog::logger> &Logger::GetSpdLogger()
+    {
+        return s_SpdLogger;
     }
 }
