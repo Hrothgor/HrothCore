@@ -30,6 +30,7 @@
 // ---Types---------------------------
 #include "HrothCore/Types/Mesh.hpp"
 #include "HrothCore/Types/Model.hpp"
+#include "HrothCore/Types/Camera.hpp"
 // -----------------------------------
 
 // ---Entry Point---------------------
