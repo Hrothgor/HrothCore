@@ -37,10 +37,15 @@ namespace HrothCore
             return AssetManager::Get().GetAsset<T>(Index);
         }
 
-        AssetRef(uint32_t index)
+        bool IsValid() const
+        {
+            return Index != -1;
+        }
+
+        AssetRef(int32_t index = -1)
             : Index(index) {}
-            
+
         private:
-            uint32_t Index;
+            int32_t Index;
     };
 }

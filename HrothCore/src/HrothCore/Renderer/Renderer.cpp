@@ -39,22 +39,35 @@ namespace HrothCore
         /* --------------- */
 
         /* PerMeshData */
-        struct PerMeshData_t {
+        struct PerMeshData {
             glm::mat4 transform;
         };
-        std::shared_ptr<Buffer<PerMeshData_t>> BufferPerMeshData;
+        std::shared_ptr<Buffer<PerMeshData>> BufferPerMeshData;
         uint32_t MeshIndexCount = 0;
-        PerMeshData_t *BufferPerMeshDataBase = nullptr;
-        PerMeshData_t *BufferPerMeshDataPtr = nullptr;
+        PerMeshData *BufferPerMeshDataBase = nullptr;
+        PerMeshData *BufferPerMeshDataPtr = nullptr;
         /* ----------- */
 
+        /* Indirect Buffer */
+        struct DrawIndirectCommand {
+            uint32_t indexCount;
+            uint32_t instanceCount;
+            uint32_t firstIndex;
+            int32_t baseVertex;
+            uint32_t baseInstance;
+        };
+        std::shared_ptr<Buffer<DrawIndirectCommand>> BufferIndirectDraw;
+        DrawIndirectCommand *BufferIndirectDrawBase = nullptr;
+        DrawIndirectCommand *BufferIndirectDrawPtr = nullptr;
+        /* -------------- */
+
         /* PerFrameData */
-        struct PerFrameData_t {
+        struct PerFrameData {
             glm::mat4 view;
             glm::mat4 proj;
         };
-        std::shared_ptr<Buffer<PerFrameData_t>> BufferPerFrameData;
-        PerFrameData_t PerFrameData;
+        std::shared_ptr<Buffer<PerFrameData>> BufferPerFrameData;
+        PerFrameData PerFrameDataUniform;
         /* ------------ */
 
         glm::ivec2 FramebufferSize;
@@ -79,11 +92,15 @@ namespace HrothCore
 
         s_Data.BufferBindlessSamplers = std::make_shared<Buffer<uint32_t>>(RenderData::MaxTextures);
 
-        s_Data.BufferPerMeshData = std::make_shared<Buffer<RenderData::PerMeshData_t>>(RenderData::MaxMeshes);
-        s_Data.BufferPerMeshDataBase = new RenderData::PerMeshData_t[RenderData::MaxMeshes];
+        s_Data.BufferPerMeshData = std::make_shared<Buffer<RenderData::PerMeshData>>(RenderData::MaxMeshes);
         s_Data.BufferPerMeshData->BindToShader(0, BufferShaderType::ShaderStorage);
+        s_Data.BufferPerMeshDataBase = new RenderData::PerMeshData[RenderData::MaxMeshes];
 
-        s_Data.BufferPerFrameData = std::make_shared<Buffer<RenderData::PerFrameData_t>>();
+        s_Data.BufferIndirectDraw = std::make_shared<Buffer<RenderData::DrawIndirectCommand>>(RenderData::MaxMeshes);
+        s_Data.BufferIndirectDraw->BindIndirectDraw();
+        s_Data.BufferIndirectDrawBase = new RenderData::DrawIndirectCommand[RenderData::MaxMeshes];
+
+        s_Data.BufferPerFrameData = std::make_shared<Buffer<RenderData::PerFrameData>>();
         s_Data.BufferPerFrameData->BindToShader(0, BufferShaderType::Uniform);
     }
 
@@ -100,8 +117,8 @@ namespace HrothCore
 
         RenderCommand::SetViewport(s_Data.FramebufferSize);
 
-        s_Data.PerFrameData.view = camera.GetViewMatrix();
-        s_Data.PerFrameData.proj = camera.GetProjMatrix(s_Data.FramebufferSize.x / (float)s_Data.FramebufferSize.y);
+        s_Data.PerFrameDataUniform.view = camera.GetViewMatrix();
+        s_Data.PerFrameDataUniform.proj = camera.GetProjMatrix(s_Data.FramebufferSize.x / (float)s_Data.FramebufferSize.y);
 
         StartBatch();
     }
@@ -118,6 +135,13 @@ namespace HrothCore
 
         s_Data.BufferPerMeshDataPtr->transform = transform;
         s_Data.BufferPerMeshDataPtr++;
+
+        s_Data.BufferIndirectDrawPtr->indexCount = mesh.IndicesCount;
+        s_Data.BufferIndirectDrawPtr->instanceCount = 1;
+        s_Data.BufferIndirectDrawPtr->firstIndex = mesh.BaseIndex;
+        s_Data.BufferIndirectDrawPtr->baseVertex = mesh.BaseVertex;
+        s_Data.BufferIndirectDrawPtr->baseInstance = 0;
+        s_Data.BufferIndirectDrawPtr++;
 
         s_Data.MeshIndexCount++;
     }
@@ -158,6 +182,7 @@ namespace HrothCore
     {
         s_Data.MeshIndexCount = 0;
         s_Data.BufferPerMeshDataPtr = s_Data.BufferPerMeshDataBase;
+        s_Data.BufferIndirectDrawPtr = s_Data.BufferIndirectDrawBase;
     }
 
     void Renderer::NextBatch()
@@ -168,15 +193,16 @@ namespace HrothCore
 
     void Renderer::Flush()
     {
-        s_Data.BufferPerFrameData->SetData(1, &s_Data.PerFrameData);
+        s_Data.BufferPerFrameData->SetData(1, &s_Data.PerFrameDataUniform);
 
         if (s_Data.MeshIndexCount)
         {
             s_Data.BufferPerMeshData->SetData(s_Data.MeshIndexCount, s_Data.BufferPerMeshDataBase);
+            s_Data.BufferIndirectDraw->SetData(s_Data.MeshIndexCount, s_Data.BufferIndirectDrawBase);
 
             s_Data.MeshVAO->Bind();
             s_Data.Shaders[MeshShader]->Start();
-            glDrawArraysInstanced(GL_TRIANGLES, 0, 36, s_Data.MeshIndexCount);
+            glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, s_Data.MeshIndexCount, 0);
         }
     }
 }

@@ -117,6 +117,11 @@ namespace HrothCore
                 glBindBufferBase(GetGLBufferShaderType(type), binding, m_HandleID);
             }
 
+            void BindIndirectDraw()
+            {
+                glBindBuffer(GL_DRAW_INDIRECT_BUFFER, m_HandleID);
+            }
+
             /* ------------------- */
 
             uint32_t GetID() const { return m_HandleID; }

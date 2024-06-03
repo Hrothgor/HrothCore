@@ -5,6 +5,7 @@
 
 #include "HrothCore/Components/IDComponent.hpp"
 #include "HrothCore/Components/TransformComponent.hpp"
+#include "HrothCore/Components/StaticMeshComponent.hpp"
 
 #include "HrothCore/Utils/UUID.hpp"
 
@@ -112,10 +113,14 @@ namespace HrothCore
         UpdateDirtyTransforms(GetRoot());
 
         Renderer::BeginScene(camera);
-        for (int x = 0; x < 16; x++)
-            for (int y = 0; y < 16; y++)
-                for (int z = 0; z < 16; z++)
-                    Renderer::DrawMesh(Mesh(), glm::translate(glm::mat4(1.0f), glm::vec3(x * -3.5f, y * -3.5f, z * -3.5f)));
+        auto view = m_Registry.group<TransformComponent, StaticMeshComponent>();
+        for (auto entity : view)
+        {
+            auto &transform = view.get<TransformComponent>(entity);
+            auto &staticMesh = view.get<StaticMeshComponent>(entity);
+            if (staticMesh.ModelRef.IsValid())
+                Renderer::DrawMesh(staticMesh.ModelRef.Get().GetMesh(0), transform.Global);
+        }
         Renderer::EndScene();
     }
 }
