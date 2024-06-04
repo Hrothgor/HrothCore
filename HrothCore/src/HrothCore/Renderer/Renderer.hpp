@@ -6,11 +6,21 @@ namespace HrothCore
 {
     class Camera;
     class Texture;
+    class Shader;
+    class Framebuffer;
 
     enum Shaders
     {
-        MeshShader = 0,
+        GBufferShader = 0,
+        ScreenViewShader,
         NumShaders
+    };
+
+    enum Framebuffers
+    {
+        GBuffer = 0,
+        ScreenView,
+        NumFramebuffers
     };
 
     namespace Renderer
@@ -37,6 +47,9 @@ namespace HrothCore
 
         /* Utils */
 
+        std::shared_ptr<Framebuffer> GetFramebuffer(Framebuffers framebuffer);
+
+        std::shared_ptr<Shader> GetShader(Shaders shader);
         void ReloadShader(Shaders shader);
         void ReloadAllShader();
 

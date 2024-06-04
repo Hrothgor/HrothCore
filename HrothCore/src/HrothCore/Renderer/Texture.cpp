@@ -14,6 +14,11 @@ namespace HrothCore
     GLenum ComputeGLInternalFormat(TextureInfo::Format format, TextureInfo::DataType dataType);
     /* -----------------------------*/
 
+    Texture::Texture()
+        : m_Info(), m_Width(0), m_Height(0), m_HandleID(0)
+    {
+    }
+
     Texture::Texture(uint32_t width, uint32_t height, TextureInfo info)
         : m_Info(info), m_Width(width), m_Height(height), m_HandleID(0)
     {

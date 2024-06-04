@@ -91,7 +91,7 @@ namespace HrothCore
         GLchar infolog[512];
         if (!success) {
             glGetProgramInfoLog(programID, 512, NULL, infolog);
-            HC_LOG_ERROR("Could not validate shader program");
+            HC_LOG_ERROR("Could not validate shader program: {0} {1}", m_VertexFile, m_FragmentFile);
             HC_LOG_ERROR("\t{0}", infolog);
             glDeleteProgram(programID);
             return 0;

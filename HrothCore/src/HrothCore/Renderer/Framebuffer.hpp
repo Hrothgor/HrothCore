@@ -1,36 +1,45 @@
 #pragma once
 
+#include "HrothCore/Renderer/Texture.hpp"
+
 namespace HrothCore
 {
-    class Texture;
+    enum class BlitFilterMode
+    {
+        Nearest,
+        Linear
+    };
 
     class Framebuffer
     {
-        enum class BlitFilterMode
-        {
-            Nearest,
-            Linear
-        };
-
         public:
-            Framebuffer(std::vector<Texture *> textures, Texture *depthTexture = nullptr);
+            Framebuffer(uint32_t width, uint32_t height);
             ~Framebuffer();
 
-            void Bind() const;
+            void CreateTextureAttachment(const std::string &name, TextureInfo info = TextureInfo());
+            void CreateDepthTextureAttachment(TextureInfo info = TextureInfo());
+            Texture *GetTexture(const std::string &name);
+            Texture *GetDepthTexture();
 
-            void ClearColor(glm::vec4 color = glm::vec4(1.0, 1.0, 1.0, 1.0));
-            void ClearColorAttachment(uint32_t attachmentIndex, glm::vec4 color = glm::vec4(1.0, 1.0, 1.0, 1.0));
-            void ClearDepth(float depth = 1.0);
+            void BindForDrawing() const;
+
+            void ClearColor(glm::vec4 color = glm::vec4(0.0, 0.0, 0.0, 1.0));
+            void ClearColorAttachment(uint32_t attachmentIndex, glm::vec4 color = glm::vec4(0.0, 0.0, 0.0, 1.0));
+            void ClearDepth(float depth = 0.0);
             void Clear();
 
-            void BlitToColor(Framebuffer *src, glm::ivec2 srcSize, glm::ivec2 dstSize, BlitFilterMode filterMode);
-            void BlitToColorAttachment(uint32_t myAttachmentIndex, uint32_t srcAttachmentIndex, 
-                Framebuffer *src, glm::ivec2 srcSize, glm::ivec2 dstSize, BlitFilterMode filterMode);
-            void BlitToDepth(Framebuffer *src, glm::ivec2 srcSize, glm::ivec2 dstSize, BlitFilterMode filterMode); 
+            void BlitToColor(Framebuffer *dst, glm::ivec2 srcSize, glm::ivec2 dstSize, BlitFilterMode filterMode);
+            void BlitToColorAttachment(uint32_t myAttachmentIndex, uint32_t dstAttachmentIndex, 
+                Framebuffer *dst, glm::ivec2 srcSize, glm::ivec2 dstSize, BlitFilterMode filterMode);
+            void BlitToDepth(Framebuffer *dst, glm::ivec2 srcSize, glm::ivec2 dstSize, BlitFilterMode filterMode); 
 
             uint32_t GetID() const { return m_HandleID; }
         private:
-            uint32_t m_AttachmentsNumber;
+            std::unordered_map<std::string, Texture> m_Textures;
+            Texture m_DepthTexture;
+
+            uint32_t m_Width, m_Height;
+
             uint32_t m_HandleID;
     };
 }

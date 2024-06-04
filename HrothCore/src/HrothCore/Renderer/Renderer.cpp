@@ -4,6 +4,7 @@
 #include "HrothCore/Renderer/RenderCommand.hpp"
 #include "HrothCore/Renderer/VertexArray.hpp"
 #include "HrothCore/Renderer/Buffer.hpp"
+#include "HrothCore/Renderer/Framebuffer.hpp"
 #include "HrothCore/Renderer/Shader.hpp"
 #include "HrothCore/Renderer/Texture.hpp"
 
@@ -31,12 +32,14 @@ namespace HrothCore
         static constexpr uint32_t MaxTextures = 4 * MaxMeshes;
         /* --------- */
 
-        /* VAO/SHADER/SSBO */
+        /* GPU stuff */
         std::shared_ptr<VertexArray> MeshVAO;
+        std::shared_ptr<VertexArray> EmptyVAO;
         std::array<std::shared_ptr<Shader>, NumShaders> Shaders;
+        std::array<std::shared_ptr<Framebuffer>, NumFramebuffers> Framebuffers;
 
-        std::shared_ptr<Buffer<uint32_t>> BufferBindlessSamplers;
-        /* --------------- */
+        std::shared_ptr<Buffer<uint64_t>> BufferBindlessSamplers;
+        /* --------- */
 
         /* PerMeshData */
         struct PerMeshData {
@@ -65,6 +68,7 @@ namespace HrothCore
         struct PerFrameData {
             glm::mat4 view;
             glm::mat4 proj;
+            glm::vec2 resolution;
         };
         std::shared_ptr<Buffer<PerFrameData>> BufferPerFrameData;
         PerFrameData PerFrameDataUniform;
@@ -86,11 +90,21 @@ namespace HrothCore
             return true;
         });
 
-        s_Data.Shaders[MeshShader] = std::make_shared<Shader>("./assets/shaders/Basic.vert", "./assets/shaders/Basic.frag");
-
         s_Data.MeshVAO = std::make_shared<VertexArray>();
+        s_Data.EmptyVAO = std::make_shared<VertexArray>();
 
-        s_Data.BufferBindlessSamplers = std::make_shared<Buffer<uint32_t>>(RenderData::MaxTextures);
+        s_Data.Shaders[GBufferShader] = std::make_shared<Shader>("./assets/shaders/GBuffer.vert", "./assets/shaders/GBuffer.frag");
+        s_Data.Shaders[ScreenViewShader] = std::make_shared<Shader>("./assets/shaders/View.vert", "./assets/shaders/View.frag");
+        
+        s_Data.Framebuffers[GBuffer] = std::make_shared<Framebuffer>(s_Data.FramebufferSize.x, s_Data.FramebufferSize.y);
+        s_Data.Framebuffers[GBuffer]->CreateTextureAttachment("Tex1", TextureInfo{ .dataType = TextureInfo::DataType::Float });
+        s_Data.Framebuffers[GBuffer]->CreateTextureAttachment("Tex2", TextureInfo{ .dataType = TextureInfo::DataType::Float });
+        s_Data.Framebuffers[GBuffer]->CreateTextureAttachment("Tex3", TextureInfo{ .dataType = TextureInfo::DataType::Float });
+        s_Data.Framebuffers[GBuffer]->CreateTextureAttachment("Tex4", TextureInfo{ .dataType = TextureInfo::DataType::Float });
+        s_Data.Framebuffers[ScreenView] = std::make_shared<Framebuffer>(s_Data.FramebufferSize.x, s_Data.FramebufferSize.y);
+        s_Data.Framebuffers[ScreenView]->CreateTextureAttachment("Tex1", TextureInfo{ .dataType = TextureInfo::DataType::Float });
+
+        s_Data.BufferBindlessSamplers = std::make_shared<Buffer<uint64_t>>(RenderData::MaxTextures);
 
         s_Data.BufferPerMeshData = std::make_shared<Buffer<RenderData::PerMeshData>>(RenderData::MaxMeshes);
         s_Data.BufferPerMeshData->BindToShader(0, BufferShaderType::ShaderStorage);
@@ -112,13 +126,14 @@ namespace HrothCore
     void Renderer::BeginScene(const Camera &camera)
     {
         RenderCommand::EnableDepthTest(true);
-        RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1.0f});
+        RenderCommand::SetClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
         RenderCommand::Clear();
 
         RenderCommand::SetViewport(s_Data.FramebufferSize);
 
         s_Data.PerFrameDataUniform.view = camera.GetViewMatrix();
         s_Data.PerFrameDataUniform.proj = camera.GetProjMatrix(s_Data.FramebufferSize.x / (float)s_Data.FramebufferSize.y);
+        s_Data.PerFrameDataUniform.resolution = glm::vec2(s_Data.FramebufferSize);
 
         StartBatch();
     }
@@ -157,7 +172,7 @@ namespace HrothCore
 
     void Renderer::LoadBindlessTexture(const Texture &texture)
     {
-        uint32_t bindlessID = texture.GetBindlessID();
+        uint64_t bindlessID = texture.GetBindlessID();
         s_Data.BufferBindlessSamplers->AddData(1, &bindlessID);
     }
 
@@ -165,8 +180,36 @@ namespace HrothCore
 
     /* Utils */
 
+    std::shared_ptr<Framebuffer> Renderer::GetFramebuffer(Framebuffers framebuffer)
+    {
+        if (framebuffer >= NumFramebuffers)
+        {
+            HC_LOG_WARNING("Renderer::GetFramebuffer: Framebuffer index out of range");
+            return nullptr;
+        }
+
+        return s_Data.Framebuffers[framebuffer];
+    }
+
+    std::shared_ptr<Shader> Renderer::GetShader(Shaders shader)
+    {
+        if (shader >= NumShaders)
+        {
+            HC_LOG_WARNING("Renderer::GetShader: Shader index out of range");
+            return nullptr;
+        }
+
+        return s_Data.Shaders[shader];
+    }
+
     void Renderer::ReloadShader(Shaders shader)
     {
+        if (shader >= NumShaders)
+        {
+            HC_LOG_WARNING("Renderer::ReloadShader: Shader index out of range");
+            return;
+        }
+
         s_Data.Shaders[shader]->Hotreload();
     }
 
@@ -200,9 +243,25 @@ namespace HrothCore
             s_Data.BufferPerMeshData->SetData(s_Data.BatchMeshCount, s_Data.BufferPerMeshDataBase);
             s_Data.BufferIndirectDraw->SetData(s_Data.BatchMeshCount, s_Data.BufferIndirectDrawBase);
 
+            s_Data.Framebuffers[GBuffer]->Clear();
+            s_Data.Framebuffers[GBuffer]->BindForDrawing();
             s_Data.MeshVAO->Bind();
-            s_Data.Shaders[MeshShader]->Start();
+            s_Data.Shaders[GBufferShader]->Start();
             glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, s_Data.BatchMeshCount, 0);
         }
+
+        s_Data.Framebuffers[ScreenView]->Clear();
+        s_Data.Framebuffers[ScreenView]->BindForDrawing();
+        s_Data.EmptyVAO->Bind();
+        s_Data.Shaders[ScreenViewShader]->Start();
+        s_Data.Framebuffers[GBuffer]->GetTexture("Tex1")->BindTextureUnit(0);
+        s_Data.Framebuffers[GBuffer]->GetTexture("Tex2")->BindTextureUnit(1);
+        s_Data.Framebuffers[GBuffer]->GetTexture("Tex3")->BindTextureUnit(2);
+        s_Data.Framebuffers[GBuffer]->GetTexture("Tex4")->BindTextureUnit(3);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+        
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        s_Data.Framebuffers[ScreenView]->BlitToColor(nullptr, s_Data.FramebufferSize, s_Data.FramebufferSize, BlitFilterMode::Nearest); // Blit to screen
     }
 }
