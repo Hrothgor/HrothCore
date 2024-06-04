@@ -75,7 +75,6 @@ namespace HrothCore
         for (uint32_t i = 0; i < mesh->mNumFaces; i++)
         {
             aiFace face = mesh->mFaces[i];
-            meshData.Indices.reserve(face.mNumIndices);
             for(uint32_t j = 0; j < face.mNumIndices; j++)
                 meshData.Indices.push_back(face.mIndices[j]);
         }

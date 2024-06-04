@@ -6,7 +6,7 @@
 
 namespace HrothCore
 {
-    VertexArray::VertexArray(bool indexed)
+    VertexArray::VertexArray()
         : m_VaoID(0)
         , m_VboPosition(BufferUsage::Dynamic)
         , m_VboNormal(BufferUsage::Dynamic)

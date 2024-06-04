@@ -43,7 +43,7 @@ namespace HrothCore
             glm::mat4 transform;
         };
         std::shared_ptr<Buffer<PerMeshData>> BufferPerMeshData;
-        uint32_t MeshIndexCount = 0;
+        uint32_t BatchMeshCount = 0;
         PerMeshData *BufferPerMeshDataBase = nullptr;
         PerMeshData *BufferPerMeshDataPtr = nullptr;
         /* ----------- */
@@ -53,7 +53,7 @@ namespace HrothCore
             uint32_t indexCount;
             uint32_t instanceCount;
             uint32_t firstIndex;
-            int32_t baseVertex;
+            uint32_t baseVertex;
             uint32_t baseInstance;
         };
         std::shared_ptr<Buffer<DrawIndirectCommand>> BufferIndirectDraw;
@@ -130,7 +130,7 @@ namespace HrothCore
 
     void Renderer::DrawMesh(const Mesh &mesh, const glm::mat4 &transform)
     {
-        if (s_Data.MeshIndexCount >= RenderData::MaxMeshes)
+        if (s_Data.BatchMeshCount >= RenderData::MaxMeshes)
             NextBatch();
 
         s_Data.BufferPerMeshDataPtr->transform = transform;
@@ -143,7 +143,7 @@ namespace HrothCore
         s_Data.BufferIndirectDrawPtr->baseInstance = 0;
         s_Data.BufferIndirectDrawPtr++;
 
-        s_Data.MeshIndexCount++;
+        s_Data.BatchMeshCount++;
     }
 
     /* GPU LOADING */
@@ -180,7 +180,7 @@ namespace HrothCore
 
     void Renderer::StartBatch()
     {
-        s_Data.MeshIndexCount = 0;
+        s_Data.BatchMeshCount = 0;
         s_Data.BufferPerMeshDataPtr = s_Data.BufferPerMeshDataBase;
         s_Data.BufferIndirectDrawPtr = s_Data.BufferIndirectDrawBase;
     }
@@ -195,14 +195,14 @@ namespace HrothCore
     {
         s_Data.BufferPerFrameData->SetData(1, &s_Data.PerFrameDataUniform);
 
-        if (s_Data.MeshIndexCount)
+        if (s_Data.BatchMeshCount)
         {
-            s_Data.BufferPerMeshData->SetData(s_Data.MeshIndexCount, s_Data.BufferPerMeshDataBase);
-            s_Data.BufferIndirectDraw->SetData(s_Data.MeshIndexCount, s_Data.BufferIndirectDrawBase);
+            s_Data.BufferPerMeshData->SetData(s_Data.BatchMeshCount, s_Data.BufferPerMeshDataBase);
+            s_Data.BufferIndirectDraw->SetData(s_Data.BatchMeshCount, s_Data.BufferIndirectDrawBase);
 
             s_Data.MeshVAO->Bind();
             s_Data.Shaders[MeshShader]->Start();
-            glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, s_Data.MeshIndexCount, 0);
+            glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, s_Data.BatchMeshCount, 0);
         }
     }
 }

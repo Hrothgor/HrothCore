@@ -8,7 +8,7 @@ namespace HrothCore
     class VertexArray
     {
         public:
-            VertexArray(bool indexed = true);
+            VertexArray();
             ~VertexArray();
 
             void Bind() const;
