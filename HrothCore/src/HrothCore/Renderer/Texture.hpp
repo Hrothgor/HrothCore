@@ -30,6 +30,7 @@ namespace HrothCore
             Float
         } dataType = DataType::UByte;
 
+        bool bindless = false;
         bool mipmapped = false;
     };
 
@@ -48,7 +49,9 @@ namespace HrothCore
             void Resize(uint32_t width, uint32_t height);
 
             uint32_t GetID() const { return m_HandleID; }
-            uint64_t GetBindlessID() const { return m_BindlessID; }
+            uint64_t GetBindlessID() const;
+
+            void Release();
         private:
             void CreateTexture();
 

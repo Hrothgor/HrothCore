@@ -45,7 +45,6 @@ namespace HrothCore
 
             ~Buffer()
             {
-                glDeleteBuffers(1, &m_HandleID);
             }
 
             /* --------------------*/
@@ -108,6 +107,11 @@ namespace HrothCore
 
                 if (capacity > m_Capacity)
                     Resize(capacity);
+            }
+
+            void Release()
+            {
+                glDeleteBuffers(1, &m_HandleID);
             }
 
             /* --------------------------- */

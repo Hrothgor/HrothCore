@@ -21,6 +21,7 @@ namespace HrothCore
             void LoadVector3(uint32_t location, const glm::vec3 &value);
             void LoadMatrix(uint32_t location, const glm::mat4 &value);
 
+            void Release();
         protected:
             uint32_t LoadShader(const std::string &file, uint32_t type) const;
             uint32_t LinkProgram(uint32_t vertexShaderID, uint32_t fragmentShaderID) const;

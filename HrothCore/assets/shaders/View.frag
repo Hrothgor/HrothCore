@@ -1,6 +1,6 @@
 #version 460 core
 
-layout (location = 0) in vec2 uv;
+in vec2 uv;
 
 layout(std140, binding = 0) uniform PerFrameData
 {
@@ -9,10 +9,10 @@ layout(std140, binding = 0) uniform PerFrameData
     uniform vec2 iResolution;
 };
 
-uniform sampler2D iTex1;
-uniform sampler2D iTex2;
-uniform sampler2D iTex3;
-uniform sampler2D iTex4;
+layout (binding = 0) uniform sampler2D iTex1;
+layout (binding = 1) uniform sampler2D iTex2;
+layout (binding = 2) uniform sampler2D iTex3;
+layout (binding = 3) uniform sampler2D iTex4;
 
 layout (location = 0) out vec4 FragColor;
 
@@ -26,7 +26,7 @@ void main()
         || (fragCoord.x > iResolution.x / 2 - (gridThickness / 2) && fragCoord.x < iResolution.x / 2 + (gridThickness / 2))
         || (fragCoord.y > iResolution.y / 2 - (gridThickness / 2) && fragCoord.y < iResolution.y / 2 + (gridThickness / 2)))
     {
-        FragColor = vec4(1.0, 0.7, 0.0, 1.0);
+        FragColor = vec4(0.3, 0.3, 0.3, 1.0);
         return;
     }
 
@@ -41,10 +41,10 @@ void main()
     }
     else if (fragCoord.x < iResolution.x / 2 && fragCoord.y > iResolution.y / 2)
     {
-        FragColor = vec4(texture(iTex3, vec2(uv.x * 2, (uv.y - 0.5) * 2)).rgb / 255.0, 1.0);
+        FragColor = vec4(texture(iTex3, vec2(uv.x * 2, (uv.y - 0.5) * 2)).rgb, 1.0);
     }
     else if (fragCoord.x > iResolution.x / 2 && fragCoord.y > iResolution.y / 2)
     {
-        FragColor = vec4(vec3(texture(iTex4, vec2((uv.x - 0.5) * 2, (uv.y - 0.5) * 2)).r), 1.0);
+        FragColor = vec4(vec3(texture(iTex4, vec2((uv.x - 0.5) * 2, (uv.y - 0.5) * 2)).rgb), 1.0);
     }
 }

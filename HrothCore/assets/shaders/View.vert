@@ -1,6 +1,6 @@
 #version 460 core
 
-layout (location = 0) out vec2 uv;
+out vec2 uv;
 
 void main(void)
 {

@@ -25,6 +25,11 @@ namespace HrothCore
         glVertexArrayAttribFormat(m_VaoID, 1, 3, GL_FLOAT, GL_FALSE, 0);
         glVertexArrayAttribFormat(m_VaoID, 2, 2, GL_FLOAT, GL_FALSE, 0);
 
+        glVertexArrayVertexBuffer(m_VaoID, 0, m_VboPosition.GetID(), 0, sizeof(glm::vec3));
+        glVertexArrayVertexBuffer(m_VaoID, 1, m_VboNormal.GetID(), 0, sizeof(glm::vec3));
+        glVertexArrayVertexBuffer(m_VaoID, 2, m_VboTexCoords.GetID(), 0, sizeof(glm::vec2));
+        glVertexArrayElementBuffer(m_VaoID, m_Ibo.GetID());
+
         glVertexArrayAttribBinding(m_VaoID, 0, 0);
         glVertexArrayAttribBinding(m_VaoID, 1, 1);
         glVertexArrayAttribBinding(m_VaoID, 2, 2);
@@ -32,7 +37,6 @@ namespace HrothCore
 
     VertexArray::~VertexArray()
     {
-        glDeleteVertexArrays(1, &m_VaoID);
     }
 
     void VertexArray::Bind() const
@@ -62,5 +66,14 @@ namespace HrothCore
 
         m_Ibo.AddData(static_cast<uint32_t>(indices.size()), indices.data());
         glVertexArrayElementBuffer(m_VaoID, m_Ibo.GetID());
+    }
+
+    void VertexArray::Release()
+    {
+        glDeleteVertexArrays(1, &m_VaoID);
+        m_VboPosition.Release();
+        m_VboNormal.Release();
+        m_VboTexCoords.Release();
+        m_Ibo.Release();
     }
 }

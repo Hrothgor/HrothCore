@@ -34,6 +34,8 @@ namespace HrothCore
             void BlitToDepth(Framebuffer *dst, glm::ivec2 srcSize, glm::ivec2 dstSize, BlitFilterMode filterMode); 
 
             uint32_t GetID() const { return m_HandleID; }
+
+            void Release();
         private:
             std::unordered_map<std::string, Texture> m_Textures;
             Texture m_DepthTexture;

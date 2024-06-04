@@ -17,6 +17,8 @@ namespace HrothCore
 
             uint32_t GetVerticesCount() const { return m_VerticesCount; }
             uint32_t GetIndicesCount() const { return m_IndicesCount; }
+        
+            void Release();
         private:
             uint32_t m_VaoID;
 

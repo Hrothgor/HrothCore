@@ -2,6 +2,8 @@
 
 #include "HrothCore/Scene/GameObject.hpp"
 
+#include "HrothCore/Components/TransformComponent.hpp"
+
 namespace HrothCore
 {
     GameObject::GameObject(entt::entity handle, Scene *scene)
@@ -23,6 +25,8 @@ namespace HrothCore
 
         m_Parent = parent;
         parent->AddChild(this);
+
+        GetComponent<TransformComponent>().ForceDirty();
     }
 
     void GameObject::DetachFromParent()

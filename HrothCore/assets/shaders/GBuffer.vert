@@ -20,10 +20,10 @@ layout(std430, binding = 0) readonly buffer perMeshData {
     PerMeshData_t PerMeshData[];
 };
 
-layout (location = 0) out vec3 color;
-layout (location = 1) out vec3 worldNormal;
-layout (location = 2) out vec3 localNormal;
-layout (location = 3) out vec2 texCoord;
+out vec3 color;
+out vec3 worldNormal;
+out vec3 localNormal;
+out vec2 texCoord;
 
 void main() {
     mat4 MVP = iProj * iView * PerMeshData[gl_DrawID].model;

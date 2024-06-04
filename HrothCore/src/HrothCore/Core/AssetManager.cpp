@@ -5,6 +5,18 @@
 
 namespace HrothCore
 {
+    void AssetManager::Init()
+    {
+    }
+
+    void AssetManager::Shutdown()
+    {
+        for (auto &texture : m_Textures)
+        {
+            texture.second.Release();
+        }
+    }
+
     AssetRef<Model> AssetManager::GetModelRef(const std::string &path)
     {
         auto it = std::find_if(m_Models.begin(), m_Models.end(), 

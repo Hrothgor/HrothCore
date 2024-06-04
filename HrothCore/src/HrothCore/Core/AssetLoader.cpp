@@ -225,6 +225,7 @@ namespace HrothCore
             case 4: info.format = TextureInfo::Format::RGBA; break;
         }
         info.dataType = TextureInfo::DataType::UByte;
+        info.bindless = true;
         
         Texture texture(textureData.Width, textureData.Height, info);
         texture.SetData(textureData.Data);

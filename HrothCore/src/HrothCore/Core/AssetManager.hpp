@@ -15,6 +15,9 @@ namespace HrothCore
         public:
             virtual ~AssetManager() = default;
 
+            void Init();
+            void Shutdown();
+
             AssetRef<Model> GetModelRef(const std::string &path);
             AssetRef<Texture> GetTextureRef(const std::string &path);
 

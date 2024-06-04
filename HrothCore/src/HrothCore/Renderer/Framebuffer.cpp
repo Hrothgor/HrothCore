@@ -70,7 +70,6 @@ namespace HrothCore
 
     Framebuffer::~Framebuffer()
     {
-        glDeleteFramebuffers(1, &m_HandleID);
     }
 
     void Framebuffer::BindForDrawing() const
@@ -78,6 +77,13 @@ namespace HrothCore
         if (m_Textures.size() == 0)
         {
             HC_LOG_WARNING("Framebuffer::BindForDrawing: no attachments to draw");
+            return;
+        }
+
+        const GLenum status = glCheckNamedFramebufferStatus(m_HandleID, GL_FRAMEBUFFER);
+        if (status != GL_FRAMEBUFFER_COMPLETE)
+        {
+            HC_LOG_WARNING("Framebuffer::BindForDrawing: framebuffer is not complete {0}", status);
             return;
         }
 
@@ -168,5 +174,13 @@ namespace HrothCore
                             0, 0, srcSize.x, srcSize.y,
                             0, 0, dstSize.x, dstSize.y,
                             GL_DEPTH_BUFFER_BIT, filterGL);
+    }
+
+    void Framebuffer::Release()
+    {
+        glDeleteFramebuffers(1, &m_HandleID);
+        for (auto &texture : m_Textures)
+            texture.second.Release();
+        m_DepthTexture.Release();
     }
 }

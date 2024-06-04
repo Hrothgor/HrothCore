@@ -18,8 +18,6 @@ namespace HrothCore
 
     Shader::~Shader()
     {
-        Stop();
-        glDeleteProgram(m_ProgramID);
     }
 
     void Shader::Start() const
@@ -134,5 +132,11 @@ namespace HrothCore
     void Shader::LoadMatrix(uint32_t location, const glm::mat4 &value)
     {
         glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
+    }
+
+    void Shader::Release()
+    {
+        Stop();
+        glDeleteProgram(m_ProgramID);
     }
 }

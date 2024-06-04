@@ -27,8 +27,6 @@ namespace HrothCore
 
     Texture::~Texture()
     {
-        glMakeTextureHandleNonResidentARB(m_BindlessID);
-        glDeleteTextures(1, &m_HandleID);
     }
 
     void Texture::CreateTexture()
@@ -43,6 +41,7 @@ namespace HrothCore
 
         glTextureStorage2D(m_HandleID, 1, ComputeGLInternalFormat(m_Info.format, m_Info.dataType), m_Width, m_Height);
         
+        if (m_Info.bindless)
         {
             m_BindlessID = glGetTextureHandleARB(m_HandleID);
             glMakeTextureHandleResidentARB(m_BindlessID);
@@ -72,6 +71,24 @@ namespace HrothCore
         m_Width = width;
         m_Height = height;
         CreateTexture();
+    }
+
+    uint64_t Texture::GetBindlessID() const
+    {
+        if (!m_Info.bindless)
+        {
+            HC_LOG_WARNING("Texture::GetBindlessID: texture is not bindless");
+            return 0;
+        }
+
+        return m_BindlessID;
+    }
+
+    void Texture::Release()
+    {
+        if (m_Info.bindless)
+            glMakeTextureHandleNonResidentARB(m_BindlessID);
+        glDeleteTextures(1, &m_HandleID);
     }
 
     /* ----- TextureInfo to GL -----*/

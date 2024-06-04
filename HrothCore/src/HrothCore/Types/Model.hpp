@@ -2,12 +2,8 @@
 
 #include "HrothCore/Types/Mesh.hpp"
 
-#include "HrothCore/Renderer/Texture.hpp"
-#include "HrothCore/Types/Mesh.hpp"
-
 namespace HrothCore
 {
-    class Texture;
     struct Mesh;
 
     class Model

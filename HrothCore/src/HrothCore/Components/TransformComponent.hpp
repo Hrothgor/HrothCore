@@ -20,6 +20,8 @@ namespace HrothCore
             void Scale(const glm::vec3 &scale);
             void Rotate(const glm::vec3 &rotation);
 
+            void ForceDirty() { IsDirty = true; }
+
         private:
             void UpdateLocal();
 
