@@ -7,7 +7,7 @@ namespace HrothCore
         public:
             virtual void OnAttach() {}
             virtual void OnDetach() {}
-            virtual void OnUpdate() {}
+            virtual void OnUpdate(float dt) {}
     };
 
     class ImGuiLayer
@@ -19,9 +19,13 @@ namespace HrothCore
 
             void Init();
             void Shutdown();
+
             void BeginFrame();
-            void Render();
+            void Render(float dt);
             void EndFrame();
+
+            void UseDocking(bool use = true) { m_UseDocking = use; }
+
 
             template<typename T, typename ... Args>
             void RegisterPanel(Args&&... args)
@@ -31,9 +35,10 @@ namespace HrothCore
             }
 
         private:
-            void SetupStyle();
             void SetupDocking();
+            void SetupStyle();
 
             std::vector<std::unique_ptr<ImGuiPanel>> m_Panels;
+            bool m_UseDocking = false;
     };
 }

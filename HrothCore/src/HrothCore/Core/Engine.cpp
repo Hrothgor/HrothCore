@@ -60,20 +60,18 @@ namespace HrothCore
 
     void Engine::Update(float dt)
     {
-        m_Client->Update(dt);
-        HC_LOG_INFO("Engine::Update: {0} ms", dt);
-        HC_LOG_INFO("Engine::Update: {0} fps", GetFPS());
-
         if (m_Camera)
             m_Scene->Render(*m_Camera);
         else 
             HC_LOG_ERROR("Engine::Update: No Camera to render the scene!");
 
         ImGuiLayer::Get().BeginFrame();
-        ImGuiLayer::Get().Render();
+        ImGuiLayer::Get().Render(dt);
         ImGuiLayer::Get().EndFrame();
 
         m_FPSCounter.Tick(dt);
+
+        m_Client->Update(dt);
     }
 
     void Engine::SetCameraPtr(Camera *camera)

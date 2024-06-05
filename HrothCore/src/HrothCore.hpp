@@ -19,6 +19,7 @@
 #include "HrothCore/Renderer/Shader.hpp"
 #include "HrothCore/Renderer/VertexArray.hpp"
 #include "HrothCore/Renderer/ImGuiLayer.hpp"
+#include "HrothCore/Renderer/Renderer.hpp"
 // -----------------------------------
 
 // ---Events--------------------------

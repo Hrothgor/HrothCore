@@ -38,14 +38,15 @@ namespace HrothCore
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-
-        // SetupDocking();
     }
 
-    void ImGuiLayer::Render()
+    void ImGuiLayer::Render(float dt)
     {
+        if (m_UseDocking)
+            SetupDocking();
+
         for (const auto &panel : m_Panels)
-            panel->OnUpdate();
+            panel->OnUpdate(dt);
     }
 
     void ImGuiLayer::EndFrame()

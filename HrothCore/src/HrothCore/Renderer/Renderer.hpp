@@ -32,6 +32,7 @@ namespace HrothCore
 
         void BeginScene(const Camera &camera);
         void EndScene();
+        void RenderToScreen();
 
         void DrawMesh(const Mesh &mesh, const glm::mat4 &transform = glm::mat4(1.0f));
         

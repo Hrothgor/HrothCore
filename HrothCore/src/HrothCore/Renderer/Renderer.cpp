@@ -144,11 +144,12 @@ namespace HrothCore
     {
         RenderCommand::EnableDepthTest(true);
 
-        RenderCommand::SetViewport(s_Data.FramebufferSize);
-
         s_Data.PerFrameDataUniform.view = camera.GetViewMatrix();
         s_Data.PerFrameDataUniform.proj = camera.GetProjMatrix(s_Data.FramebufferSize.x / (float)s_Data.FramebufferSize.y);
         s_Data.PerFrameDataUniform.resolution = glm::vec2(s_Data.FramebufferSize);
+
+        s_Data.Framebuffers[GBuffer]->Clear();
+        s_Data.Framebuffers[ScreenView]->Clear();
 
         StartBatch();
     }
@@ -156,6 +157,25 @@ namespace HrothCore
     void Renderer::EndScene()
     {
         Flush();
+
+        // ScreenView pass
+        s_Data.Framebuffers[ScreenView]->BindForDrawing();
+        s_Data.Shaders[ScreenViewShader]->Start();
+        s_Data.EmptyVAO->Bind();
+        s_Data.Framebuffers[GBuffer]->GetTexture("Tex1")->BindTextureUnit(0);
+        s_Data.Framebuffers[GBuffer]->GetTexture("Tex2")->BindTextureUnit(1);
+        s_Data.Framebuffers[GBuffer]->GetTexture("Tex3")->BindTextureUnit(2);
+        s_Data.Framebuffers[GBuffer]->GetTexture("Tex4")->BindTextureUnit(3);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glViewport(0, 0, s_Data.FramebufferSize.x, s_Data.FramebufferSize.y);
+    }
+
+    void Renderer::RenderToScreen()
+    {
+        // Blit to screen
+        glBlitNamedFramebuffer(s_Data.Framebuffers[ScreenView]->GetID(), 0, 0, 0, s_Data.FramebufferSize.x, s_Data.FramebufferSize.y, 0, 0, s_Data.FramebufferSize.x, s_Data.FramebufferSize.y, GL_COLOR_BUFFER_BIT, GL_LINEAR);
     }
 
     void Renderer::DrawMesh(const Mesh &mesh, const glm::mat4 &transform)
@@ -254,7 +274,6 @@ namespace HrothCore
         s_Data.BufferPerFrameData->SetData(1, &s_Data.PerFrameDataUniform);
 
         // GBuffer pass
-        s_Data.Framebuffers[GBuffer]->Clear();
         if (s_Data.BatchMeshCount)
         {
             s_Data.BufferPerMeshData->SetData(s_Data.BatchMeshCount, s_Data.BufferPerMeshDataBase);
@@ -265,21 +284,5 @@ namespace HrothCore
             s_Data.MeshVAO->Bind();
             glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, s_Data.BatchMeshCount, 0);
         }
-
-        // ScreenView pass
-        s_Data.Framebuffers[ScreenView]->Clear();
-        s_Data.Framebuffers[ScreenView]->BindForDrawing();
-        s_Data.Shaders[ScreenViewShader]->Start();
-        s_Data.EmptyVAO->Bind();
-        s_Data.Framebuffers[GBuffer]->GetTexture("Tex1")->BindTextureUnit(0);
-        s_Data.Framebuffers[GBuffer]->GetTexture("Tex2")->BindTextureUnit(1);
-        s_Data.Framebuffers[GBuffer]->GetTexture("Tex3")->BindTextureUnit(2);
-        s_Data.Framebuffers[GBuffer]->GetTexture("Tex4")->BindTextureUnit(3);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
-        
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        
-        // Blit to screen
-        glBlitNamedFramebuffer(s_Data.Framebuffers[ScreenView]->GetID(), 0, 0, 0, s_Data.FramebufferSize.x, s_Data.FramebufferSize.y, 0, 0, s_Data.FramebufferSize.x, s_Data.FramebufferSize.y, GL_COLOR_BUFFER_BIT, GL_LINEAR);
     }
 }
