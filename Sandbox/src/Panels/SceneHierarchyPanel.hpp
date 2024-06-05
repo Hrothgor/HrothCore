@@ -7,17 +7,17 @@ namespace HrothCore
     class GameObject;
     class Scene;
 
-    class SceneHierarchyPanel : public HrothCore::ImGuiPanel
+    class SceneHierarchyPanel : public ImGuiPanel
     {
         public:
-            SceneHierarchyPanel(std::shared_ptr<HrothCore::Scene> scene);
+            SceneHierarchyPanel(std::shared_ptr<Scene> scene);
 
-            void OnUpdate() override;
+            void OnUpdate(float dt) override;
 
         private:
             //returns the node's rectangle for tree lines drawing
-            ImVec4 TraverseScene(HrothCore::GameObject *parent);
+            ImVec4 TraverseScene(GameObject *parent);
 
-            std::shared_ptr<HrothCore::Scene> m_Scene;
+            std::shared_ptr<Scene> m_Scene;
     };
 }

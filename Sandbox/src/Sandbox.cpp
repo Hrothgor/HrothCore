@@ -2,6 +2,7 @@
 
 #include "Panels/InfoPanel.hpp"
 #include "Panels/SceneHierarchyPanel.hpp"
+#include "Panels/ViewportPanel.hpp"
 
 namespace HrothCore
 {
@@ -17,8 +18,10 @@ namespace HrothCore
             void Init() override
             {
                 HC_LOG_INFO("SandboxClient::Init");
+                ImGuiLayer::Get().UseDocking(true);
                 ImGuiLayer::Get().RegisterPanel<InfoPanel>();
                 ImGuiLayer::Get().RegisterPanel<SceneHierarchyPanel>(Engine::Get().GetScene());
+                ImGuiLayer::Get().RegisterPanel<ViewportPanel>(&m_EditorCameraPositioner);
 
                 Engine::Get().SetCameraPtr(&m_EditorCamera);
             }
@@ -30,7 +33,6 @@ namespace HrothCore
 
             void Update(float dt) override
             {
-                m_EditorCameraPositioner.Update(dt);
             }
         
         private:

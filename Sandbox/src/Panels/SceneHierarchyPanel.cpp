@@ -41,7 +41,7 @@ namespace HrothCore
         ImGui::SetCursorPos(pos);
     }
 
-    void SceneHierarchyPanel::OnUpdate()
+    void SceneHierarchyPanel::OnUpdate(float dt)
     {
         ImGui::Begin("Scene Hierarchy");
 

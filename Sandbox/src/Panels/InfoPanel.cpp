@@ -3,18 +3,19 @@
 #include "Panels/InfoPanel.hpp"
 
 #include "HrothCore/Core/Application.hpp"
+#include "HrothCore/Core/Engine.hpp"
 #include "HrothCore/Core/Window.hpp"
 
 namespace HrothCore
 {
-    void InfoPanel::OnUpdate()
+    void InfoPanel::OnUpdate(float dt)
     {
         ImGui::Begin("Info");
         auto &app = Application::Get();
         auto &window = app.GetWindow();
 
-        ImGui::Text("FPS: %.1f", 1.0f / window.GetDeltaTime());
-        ImGui::Text("Delta: %.3f", window.GetDeltaTime());
+        ImGui::Text("FPS: %.1f", Engine::Get().GetFPS());
+        ImGui::Text("Delta: %.3f", dt);
 
         ImGui::Separator();
 

@@ -4,9 +4,9 @@
 
 namespace HrothCore
 {
-    class InfoPanel : public HrothCore::ImGuiPanel
+    class InfoPanel : public ImGuiPanel
     {
         public:
-            void OnUpdate() override;
+            void OnUpdate(float dt) override;
     };
 }
