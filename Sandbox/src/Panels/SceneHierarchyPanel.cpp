@@ -7,8 +7,8 @@
 
 namespace HrothCore
 {
-    SceneHierarchyPanel::SceneHierarchyPanel(std::shared_ptr<Scene> scene)
-        : m_Scene(scene)
+    SceneHierarchyPanel::SceneHierarchyPanel(Scene **scenePtr)
+        : m_ScenePtr(scenePtr)
     {
     }
 
@@ -45,16 +45,23 @@ namespace HrothCore
     {
         ImGui::Begin("Scene Hierarchy");
 
+        if (!m_ScenePtr || !*m_ScenePtr)
+        {
+            ImGui::Text("No Scene Selected");
+            ImGui::End();
+            return;
+        }
+
         DrawBackGround(50, ImGui::GetStyle().Colors[ImGuiCol_WindowBg], ImVec4(0.125f, 0.125f, 0.125f, 1.0f));
         TraverseScene(nullptr);
         
         ImGui::BeginChild("Blank Space");
         if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && ImGui::IsWindowHovered())
-            m_Scene->SetSelectedEntity(nullptr);
+            (*m_ScenePtr)->SetSelectedEntity(nullptr);
         if (ImGui::BeginPopupContextWindow("_SCENE_HIERARCHY_CONTEXTMENU"))
         {
             if (ImGui::MenuItem("Create Empty Entity"))
-                m_Scene->Instantiate();
+                (*m_ScenePtr)->Instantiate();
             ImGui::EndPopup();
         }
         ImGui::EndChild();
@@ -64,7 +71,7 @@ namespace HrothCore
             if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("_SCENE_HIERARCHY_ENTITY_DRAG"))
             {
                 GameObject *cpy = static_cast<GameObject *>(payload->Data);
-                GameObject *ent = m_Scene->Find(cpy->GetComponent<IDComponent>().Uuid);
+                GameObject *ent = (*m_ScenePtr)->Find(cpy->GetComponent<IDComponent>().Uuid);
                 ent->DetachFromParent();
             }
             ImGui::EndDragDropTarget();
@@ -78,7 +85,7 @@ namespace HrothCore
     {
         if (!object)
         {
-            for (auto &child : m_Scene->GetRoot()->GetChilds())
+            for (auto &child : (*m_ScenePtr)->GetRoot()->GetChilds())
                 TraverseScene(child);
             return ImVec4();
         }
@@ -86,7 +93,7 @@ namespace HrothCore
         ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanFullWidth;
         if (object->GetChilds().empty())
             flags |= ImGuiTreeNodeFlags_Leaf;
-        if (m_Scene->GetSelectedEntity() == object)
+        if ((*m_ScenePtr)->GetSelectedEntity() == object)
             flags |= ImGuiTreeNodeFlags_Selected;
 
         bool expanded = ImGui::TreeNodeEx((void *)object, flags, "%s", object->GetComponent<IDComponent>().Name.c_str());
@@ -94,7 +101,7 @@ namespace HrothCore
         if (ImGui::BeginPopupContextItem((char *)object))
         {
             if (ImGui::MenuItem("Create Empty Entity"))
-                m_Scene->Instantiate(object);
+                (*m_ScenePtr)->Instantiate(object);
             ImGui::EndPopup();
         }
 
@@ -110,14 +117,14 @@ namespace HrothCore
             if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("_SCENE_HIERARCHY_ENTITY_DRAG"))
             {
                 GameObject *cpy = static_cast<GameObject *>(payload->Data);
-                GameObject *ent = m_Scene->Find(cpy->GetComponent<IDComponent>().Uuid);
+                GameObject *ent = (*m_ScenePtr)->Find(cpy->GetComponent<IDComponent>().Uuid);
                 ent->AttachToParent(object);
             }
             ImGui::EndDragDropTarget();
         }
 
         if (ImGui::IsItemClicked())
-            m_Scene->SetSelectedEntity(object);
+            (*m_ScenePtr)->SetSelectedEntity(object);
 
         const ImVec4 nodeRect = ImVec4(ImGui::GetItemRectMin().x, ImGui::GetItemRectMin().y, ImGui::GetItemRectMax().x, ImGui::GetItemRectMax().y);
 

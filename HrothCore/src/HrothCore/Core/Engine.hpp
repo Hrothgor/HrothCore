@@ -23,12 +23,13 @@ namespace HrothCore
 
             void SetCameraPtr(Camera *camera);
 
-            std::shared_ptr<Scene> GetScene() const { return m_Scene; }
+            Scene *GetScene() const { return m_Scene; }
+            Scene **GetScenePtr() { return &m_Scene; }
 
         private:
             FPSCounter m_FPSCounter;
             std::shared_ptr<IClient> m_Client;
-            std::shared_ptr<Scene> m_Scene;
+            Scene *m_Scene;
 
             Camera *m_Camera;
     };

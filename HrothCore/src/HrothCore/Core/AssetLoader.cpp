@@ -162,7 +162,7 @@ namespace HrothCore
 
         OptimizeMesh(modelData.Meshes);
 
-        HC_LOG_INFO("Model optimzed: {0}", path);
+        HC_LOG_INFO("Model optimized: {0}", path);
 
         return modelData;
     }

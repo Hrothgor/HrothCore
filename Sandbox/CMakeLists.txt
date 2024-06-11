@@ -42,8 +42,11 @@ target_include_directories(Sandbox PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../HrothCore ${CMAKE_CURRENT_BINARY_DIR}/HrothCore)
 
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/external/imguizmo)
+
 target_link_libraries(Sandbox PRIVATE
-						HrothCore)
+						HrothCore
+						imguizmo)
 
 ###########################################
 

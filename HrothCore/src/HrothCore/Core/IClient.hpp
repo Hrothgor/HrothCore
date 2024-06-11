@@ -2,8 +2,6 @@
 
 namespace HrothCore
 {
-    class ImGuiLayer;
-
     class IClient
     {
         public:

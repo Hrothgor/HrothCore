@@ -40,7 +40,8 @@ namespace HrothCore
                 : m_Usage(usage), m_Capacity(dataLength), m_Size(dataLength)
             {
                 glCreateBuffers(1, &m_HandleID);
-                glNamedBufferStorage(m_HandleID, m_Capacity * sizeof(T), data, GetGLBufferUsage(m_Usage));
+                glNamedBufferStorage(m_HandleID, m_Capacity * sizeof(T), nullptr, GetGLBufferUsage(m_Usage));
+                SetData(dataLength, data);
             }
 
             ~Buffer()

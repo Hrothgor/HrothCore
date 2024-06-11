@@ -25,9 +25,9 @@ namespace HrothCore
         HC_ASSERT(client != nullptr, "Engine: Need a client to run!");
 
         Renderer::Init();
-        ImGuiLayer::Get().Init();
+        ImGuiLayer::Init();
 
-        m_Scene = std::make_shared<Scene>();
+        m_Scene = new Scene;
 
         // TEMP
         AssetRef<Model> bunnyRef = AssetManager::GetModelRef("./assets/models/bunny/bunny.obj");
@@ -54,20 +54,22 @@ namespace HrothCore
     void Engine::Shutdown()
     {
         m_Client->Shutdown();
-        ImGuiLayer::Get().Shutdown();
+        ImGuiLayer::Shutdown();
         Renderer::Shutdown();
+
+        delete m_Scene;
     }
 
     void Engine::Update(float dt)
     {
-        if (m_Camera)
+        if (m_Camera && m_Scene)
             m_Scene->Render(*m_Camera);
         else 
             HC_LOG_ERROR("Engine::Update: No Camera to render the scene!");
 
-        ImGuiLayer::Get().BeginFrame();
-        ImGuiLayer::Get().Render(dt);
-        ImGuiLayer::Get().EndFrame();
+        ImGuiLayer::BeginFrame();
+        ImGuiLayer::Render(dt);
+        ImGuiLayer::EndFrame();
 
         m_FPSCounter.Tick(dt);
 

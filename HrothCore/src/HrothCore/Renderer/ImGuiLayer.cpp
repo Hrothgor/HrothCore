@@ -8,6 +8,20 @@
 
 namespace HrothCore
 {
+    namespace ImGuiLayer
+    {
+        void SetupDocking();
+        void SetupStyle();
+    }
+
+    struct ImGuiData
+    {
+        std::vector<std::unique_ptr<ImGuiPanel>> Panels;
+        bool UseDocking = false;
+    };
+
+    static ImGuiData s_Data;
+
     void ImGuiLayer::Init()
     {
         IMGUI_CHECKVERSION();
@@ -25,7 +39,7 @@ namespace HrothCore
 
     void ImGuiLayer::Shutdown()
     {
-        for (const auto &panel : m_Panels)
+        for (const auto &panel : s_Data.Panels)
             panel->OnDetach();
 
         ImGui_ImplOpenGL3_Shutdown();
@@ -42,10 +56,10 @@ namespace HrothCore
 
     void ImGuiLayer::Render(float dt)
     {
-        if (m_UseDocking)
+        if (s_Data.UseDocking)
             SetupDocking();
 
-        for (const auto &panel : m_Panels)
+        for (const auto &panel : s_Data.Panels)
             panel->OnUpdate(dt);
     }
 
@@ -57,6 +71,16 @@ namespace HrothCore
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    }
+
+    void ImGuiLayer::UseDocking(bool use)
+    {
+        s_Data.UseDocking = use;
+    }
+
+    std::vector<std::unique_ptr<ImGuiPanel>> &ImGuiLayer::Panels()
+    {
+        return s_Data.Panels;
     }
 
     void ImGuiLayer::SetupStyle()

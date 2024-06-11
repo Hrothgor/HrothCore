@@ -142,7 +142,7 @@ namespace HrothCore
 
     void Renderer::BeginScene(const Camera &camera)
     {
-        RenderCommand::EnableDepthTest(true);
+        glEnable(GL_DEPTH_TEST);        
 
         s_Data.PerFrameDataUniform.view = camera.GetViewMatrix();
         s_Data.PerFrameDataUniform.proj = camera.GetProjMatrix(s_Data.FramebufferSize.x / (float)s_Data.FramebufferSize.y);

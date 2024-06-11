@@ -38,6 +38,7 @@ namespace HrothCore
 
         HC_ASSERT(GLVersion.major > 4 || (GLVersion.major == 4 && GLVersion.minor >= 5), "HrothCore requires at least OpenGL version 4.5!");
     
+#if DEBUG
         glEnable(GL_DEBUG_OUTPUT);
         glDebugMessageCallback([](GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam)
         {
@@ -79,6 +80,7 @@ namespace HrothCore
                     break;
             }
         }, nullptr);
+#endif
     }
 
     void RenderContext::Shutdown()
