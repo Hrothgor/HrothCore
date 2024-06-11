@@ -5,13 +5,21 @@
 
 namespace HrothCore
 {
+    struct AssetManagerData
+    {
+        std::vector<std::pair<std::string, Model>> Models;
+        std::vector<std::pair<std::string, Texture>> Textures;
+    };
+
+    static AssetManagerData s_Data;
+
     void AssetManager::Init()
     {
     }
 
     void AssetManager::Shutdown()
     {
-        for (auto &texture : m_Textures)
+        for (auto &texture : s_Data.Textures)
         {
             texture.second.Release();
         }
@@ -19,51 +27,51 @@ namespace HrothCore
 
     AssetRef<Model> AssetManager::GetModelRef(const std::string &path)
     {
-        auto it = std::find_if(m_Models.begin(), m_Models.end(), 
+        auto it = std::find_if(s_Data.Models.begin(), s_Data.Models.end(), 
             [path](const std::pair<std::string, Model> &modelAsset) { return modelAsset.first == path; });
 
-        if (it == m_Models.end())
+        if (it == s_Data.Models.end())
         {
             ModelData modelData = AssetLoader::LoadModel(path); // Load file
             Model model;
             for (const MeshData &meshData : modelData.Meshes) {
                 model.AddMesh(AssetLoader::LoadMeshToGPU(meshData)); // Load mesh to GPU
             }
-            m_Models.push_back({path, model});
-            return AssetRef<Model>(static_cast<uint32_t>(m_Models.size() - 1));
+            s_Data.Models.push_back({path, model});
+            return AssetRef<Model>(static_cast<uint32_t>(s_Data.Models.size() - 1));
         }
 
-        return AssetRef<Model>(static_cast<uint32_t>(it - m_Models.begin()));
+        return AssetRef<Model>(static_cast<uint32_t>(it - s_Data.Models.begin()));
     }
 
     AssetRef<Texture> AssetManager::GetTextureRef(const std::string &path)
     {
-        auto it = std::find_if(m_Textures.begin(), m_Textures.end(),
+        auto it = std::find_if(s_Data.Textures.begin(), s_Data.Textures.end(),
             [path](const std::pair<std::string, Texture> &textureAsset) { return textureAsset.first == path; });
 
-        if (it == m_Textures.end())
+        if (it == s_Data.Textures.end())
         {
             TextureData textureData = AssetLoader::LoadTexture(path); // Load file
-            m_Textures.push_back({path, AssetLoader::LoadTextureToGPU(textureData)}); // Load texture to GPU
-            return AssetRef<Texture>(static_cast<uint32_t>(m_Textures.size() - 1));
+            s_Data.Textures.push_back({path, AssetLoader::LoadTextureToGPU(textureData)}); // Load texture to GPU
+            return AssetRef<Texture>(static_cast<uint32_t>(s_Data.Textures.size() - 1));
         }
 
-        return AssetRef<Texture>(static_cast<uint32_t>(it - m_Textures.begin()));
+        return AssetRef<Texture>(static_cast<uint32_t>(it - s_Data.Textures.begin()));
     }
 
     /* ----- GETTER ----- */
 
     template<>
-    Model& AssetManager::GetAsset<Model>(uint32_t index)
+    const Model& AssetManager::GetAsset<Model>(uint32_t index)
     {
-        HC_ASSERT(index < m_Models.size(), "Index out of bounds!");
-        return m_Models[index].second;
+        HC_ASSERT(index < s_Data.Models.size() || index < 0, "Index out of bounds!");
+        return s_Data.Models[index].second;
     }
 
     template<>
-    Texture& AssetManager::GetAsset<Texture>(uint32_t index)
+    const Texture& AssetManager::GetAsset<Texture>(uint32_t index)
     {
-        HC_ASSERT(index < m_Textures.size(), "Index out of bounds!");
-        return m_Textures[index].second;
+        HC_ASSERT(index < s_Data.Textures.size() || index < 0, "Index out of bounds!");
+        return s_Data.Textures[index].second;
     }
 }

@@ -30,8 +30,8 @@ namespace HrothCore
         m_Scene = std::make_shared<Scene>();
 
         // TEMP
-        AssetRef<Model> bunnyRef = AssetManager::Get().GetModelRef("./assets/models/bunny/bunny.obj");
-        AssetRef<Model> dragonRef = AssetManager::Get().GetModelRef("./assets/models/dragon/dragon.obj");
+        AssetRef<Model> bunnyRef = AssetManager::GetModelRef("./assets/models/bunny/bunny.obj");
+        AssetRef<Model> dragonRef = AssetManager::GetModelRef("./assets/models/dragon/dragon.obj");
         for (int x = 0; x < 4; x++)
             for (int y = 0; y < 4; y++)
                 for (int z = 0; z < 4; z++) {

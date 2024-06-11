@@ -5,7 +5,7 @@
 namespace HrothCore
 {
     StaticMeshComponent::StaticMeshComponent()
-        : ModelRef(0)
+        : ModelRef()
     {
     }
 

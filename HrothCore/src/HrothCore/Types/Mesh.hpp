@@ -46,7 +46,7 @@ namespace HrothCore
         std::vector<MeshData> Meshes;
         std::vector<MaterialData> Materials;
     };
-    
+
     struct Mesh
     {
         uint32_t VerticesCount;

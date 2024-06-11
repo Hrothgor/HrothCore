@@ -5,16 +5,12 @@
 
 namespace HrothCore
 {
-    class AssetLoader
+    namespace AssetLoader
     {
-        public:
-            static ModelData LoadModel(const std::string &path);
-            static TextureData LoadTexture(const std::string &path);
+        ModelData LoadModel(const std::string &path);
+        TextureData LoadTexture(const std::string &path);
 
-        private:
-            static Mesh LoadMeshToGPU(const MeshData &meshData);
-            static Texture LoadTextureToGPU(const TextureData &textureData);
-
-        friend class AssetManager;
+        Mesh LoadMeshToGPU(const MeshData &meshData);
+        Texture LoadTextureToGPU(const TextureData &textureData);
     };
 }

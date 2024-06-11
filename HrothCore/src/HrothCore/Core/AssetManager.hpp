@@ -8,36 +8,24 @@ namespace HrothCore
     template<typename>
     struct AssetRef;
 
-    class AssetManager
+    namespace AssetManager
     {
-        HC_SINGLETON(AssetManager);
+        void Init();
+        void Shutdown();
 
-        public:
-            virtual ~AssetManager() = default;
+        AssetRef<Model> GetModelRef(const std::string &path);
+        AssetRef<Texture> GetTextureRef(const std::string &path);
 
-            void Init();
-            void Shutdown();
-
-            AssetRef<Model> GetModelRef(const std::string &path);
-            AssetRef<Texture> GetTextureRef(const std::string &path);
-
-        private:
-            template<typename T>
-            T& GetAsset(uint32_t index);
-
-            std::vector<std::pair<std::string, Model>> m_Models;
-            std::vector<std::pair<std::string, Texture>> m_Textures;
-
-            friend struct AssetRef<Model>;
-            friend struct AssetRef<Texture>;
+        template<typename T>
+        const T& GetAsset(uint32_t index);
     };
 
     template<typename T>
     struct AssetRef
     {
-        T& Get() const
+        const T& Get() const
         {
-            return AssetManager::Get().GetAsset<T>(Index);
+            return AssetManager::GetAsset<T>(Index);
         }
 
         bool IsValid() const

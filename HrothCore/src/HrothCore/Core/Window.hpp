@@ -33,52 +33,52 @@ namespace HrothCore
 
     class Window
     {
-    public:
-        Window(const WindowProps &props = WindowProps(), WindowMode mode = WindowMode::Windowed);
-        virtual ~Window();
+		public:
+			Window(const WindowProps &props = WindowProps(), WindowMode mode = WindowMode::Windowed);
+			virtual ~Window();
 
-        void Update();
+			void Update();
 
-		bool ShouldClose() const;
-		void Close();
+			bool ShouldClose() const;
+			void Close();
 
-		uint32_t GetWidth() const { return m_Props.Width; }
-		uint32_t GetHeight() const { return m_Props.Height; }
+			uint32_t GetWidth() const { return m_Props.Width; }
+			uint32_t GetHeight() const { return m_Props.Height; }
 
-		void EnableVSync(bool enable = true);
-		bool IsVSync() const { return m_Props.VSync; }
+			void EnableVSync(bool enable = true);
+			bool IsVSync() const { return m_Props.VSync; }
 
-		void HideCursor();
-		void ShowCursor();
-		void SetCursorPos(double xpos, double ypos);
-		
-		void SetWindowMode(WindowMode mode);
+			void HideCursor();
+			void ShowCursor();
+			void SetCursorPos(double xpos, double ypos);
+			
+			void SetWindowMode(WindowMode mode);
 
-		double GetDeltaTime() const { return m_DeltaTime; }
+			double GetDeltaTime() const { return m_DeltaTime; }
 
-		GLFWwindow *GetNativeWindow() const { return m_Window; }
-		
-		int32_t GetVramAvailableKb() { return m_RenderContext->VramAvailableKb(); }
-		int32_t GetVramUsedKb() { return m_RenderContext->VramUsedKb(); }
+			GLFWwindow *GetNativeWindow() const { return m_Window; }
+			
+			int32_t GetVramAvailableKb() { return m_RenderContext->VramAvailableKb(); }
+			int32_t GetVramUsedKb() { return m_RenderContext->VramUsedKb(); }
 
-	private:
-		void Init(const WindowProps &props);
-		void SetupCallbacks();
-		void Shutdown();
+		private:
+			void Init(const WindowProps &props);
+			void SetupCallbacks();
+			void Shutdown();
 
-    private:
-        WindowProps m_Props;
-		std::unique_ptr<RenderContext> m_RenderContext;
-		
-		double m_LastFrameTime = 0.0f;
-		double m_DeltaTime = 0.016f;
+		private:
+			WindowProps m_Props;
+			std::unique_ptr<RenderContext> m_RenderContext;
+			
+			double m_LastFrameTime = 0.0f;
+			double m_DeltaTime = 0.016f;
 
-		GLFWwindow *m_Window;
-		GLFWmonitor *m_Monitor;
-		const GLFWvidmode *m_VideoMode;
+			GLFWwindow *m_Window;
+			GLFWmonitor *m_Monitor;
+			const GLFWvidmode *m_VideoMode;
 
-		int m_OldWindowedSize[2];
-		int m_OldWindowedPos[2];
-		WindowMode m_CurrentWindowMode = WindowMode::Windowed;
+			int m_OldWindowedSize[2];
+			int m_OldWindowedPos[2];
+			WindowMode m_CurrentWindowMode = WindowMode::Windowed;
     };
 }
