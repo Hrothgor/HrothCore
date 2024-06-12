@@ -119,7 +119,13 @@ namespace HrothCore
             auto &transform = view.get<TransformComponent>(entity);
             auto &staticMesh = view.get<StaticMeshComponent>(entity);
             if (staticMesh.ModelRef.IsValid())
-                Renderer::DrawMesh(staticMesh.ModelRef.Get().GetMesh(0), transform.Global);
+            {
+                auto &model = staticMesh.ModelRef.Get();
+                for (uint32_t i = 0; i < model.GetMeshesCount(); i++)
+                {
+                    Renderer::DrawMesh(model.GetMesh(i), model.GetMaterial(i), transform.Global);
+                }
+            }
         }
         Renderer::EndScene();
     }

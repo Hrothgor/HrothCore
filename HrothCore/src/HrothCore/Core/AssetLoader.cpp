@@ -1,6 +1,7 @@
 #include "HrothCore_pch.hpp"
 
 #include "HrothCore/Core/AssetLoader.hpp"
+#include "HrothCore/Core/AssetManager.hpp"
 #include "HrothCore/Renderer/Renderer.hpp"
 #include "HrothCore/Renderer/VertexArray.hpp"
 
@@ -27,17 +28,19 @@ namespace HrothCore
     {
         MaterialData materialData;
 
-        materialData.Textures[MaterialData::TextureType::Albedo] = ProcessMaterialTexture(material, aiTextureType_BASE_COLOR);
-        materialData.Textures[MaterialData::TextureType::Metallic] = ProcessMaterialTexture(material, aiTextureType_METALNESS);
+        materialData.Textures[MaterialData::TextureType::Diffuse] = ProcessMaterialTexture(material, aiTextureType_DIFFUSE);
+        materialData.Textures[MaterialData::TextureType::Specular] = ProcessMaterialTexture(material, aiTextureType_SPECULAR);
         materialData.Textures[MaterialData::TextureType::Normal] = ProcessMaterialTexture(material, aiTextureType_NORMALS);
         materialData.Textures[MaterialData::TextureType::Occlusion] = ProcessMaterialTexture(material, aiTextureType_AMBIENT);
         materialData.Textures[MaterialData::TextureType::Emissive] = ProcessMaterialTexture(material, aiTextureType_EMISSIVE);
 
-        materialData.AlbedoValue = glm::vec3(1.0f);
-        // Retrieve the diffuse color (albedo)
-        aiColor3D diffuseColor;
-        if (material->Get(AI_MATKEY_COLOR_DIFFUSE, diffuseColor) == AI_SUCCESS)
-            materialData.AlbedoValue = glm::vec3(diffuseColor.r, diffuseColor.g, diffuseColor.b);
+        material->Get(AI_MATKEY_COLOR_DIFFUSE,  materialData.DiffuseColor);
+        material->Get(AI_MATKEY_COLOR_SPECULAR, materialData.SpecularColor);
+        material->Get(AI_MATKEY_COLOR_AMBIENT, materialData.AmbientColor);
+        material->Get(AI_MATKEY_COLOR_EMISSIVE, materialData.EmissiveColor);
+        material->Get(AI_MATKEY_SHININESS, materialData.Shininess);
+        material->Get(AI_MATKEY_REFLECTIVITY, materialData.DiffuseReflectivity);
+        material->Get(AI_MATKEY_SHININESS_STRENGTH, materialData.SpecularReflectivity);
 
         return materialData;
     }
@@ -212,6 +215,34 @@ namespace HrothCore
         return mesh;
     }
 
+    Material AssetLoader::LoadMaterialToGPU(const MaterialData &materialData)
+    {
+        Material material;
+
+#define LOAD_MAT_TEXTURE(texturePath, materialTexture) materialTexture = texturePath.empty() ? -1 : AssetManager::GetTextureRef(texturePath).Get().GetSamplerIndex();
+
+        LOAD_MAT_TEXTURE(materialData.Textures[MaterialData::TextureType::Diffuse], material.DiffuseTextureIndex);
+        LOAD_MAT_TEXTURE(materialData.Textures[MaterialData::TextureType::Specular], material.SpecularTextureIndex);
+        LOAD_MAT_TEXTURE(materialData.Textures[MaterialData::TextureType::Normal], material.NormalTextureIndex);
+        LOAD_MAT_TEXTURE(materialData.Textures[MaterialData::TextureType::Occlusion], material.OcclusionTextureIndex);
+        LOAD_MAT_TEXTURE(materialData.Textures[MaterialData::TextureType::Emissive], material.EmissiveTextureIndex);
+
+#undef LOAD_MAT_TEXTURE
+
+        material.DiffuseColor = materialData.DiffuseColor;
+        material.SpecularColor = materialData.SpecularColor;
+        material.AmbientColor = materialData.AmbientColor;
+        material.EmissiveColor = materialData.EmissiveColor;
+        
+        material.OcclusionStrength = materialData.OcclusionStrength;
+
+        material.Shininess = materialData.Shininess;
+        material.DiffuseReflectivity = materialData.DiffuseReflectivity;
+        material.SpecularReflectivity = materialData.SpecularReflectivity;
+
+        return material;
+    }
+
     Texture AssetLoader::LoadTextureToGPU(const TextureData &textureData)
     {
         TextureInfo info;
@@ -232,7 +263,9 @@ namespace HrothCore
 
         stbi_image_free((void *)textureData.Data);
 
-        Renderer::LoadBindlessTexture(texture);
+        uint32_t samplerIndex = Renderer::LoadBindlessTexture(texture);
+
+        texture.SetSamplerIndex(samplerIndex);
 
         return texture;
     }

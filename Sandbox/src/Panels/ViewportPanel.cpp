@@ -10,6 +10,8 @@
 #include "HrothCore/Components/TransformComponent.hpp"
 #include "HrothCore/Scene/GameObject.hpp"
 
+#include "HrothCore/Core/Input.hpp"
+
 #include <ImGuizmo.h>
 
 namespace HrothCore
@@ -17,6 +19,21 @@ namespace HrothCore
     ViewportPanel::ViewportPanel(Scene **scenePtr, Camera *camera, CameraPositionerEditor *cameraPositioner)
         : m_ScenePtr(scenePtr), m_Camera(camera), m_CameraPositioner(cameraPositioner)
     {
+        m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
+    }
+
+    void ViewportPanel::ProcessInput(float dt)
+    {
+        bool control = Input::IsKeyPressed(KeyCode::LeftControl) || Input::IsKeyPressed(KeyCode::RightControl);
+
+        m_GizmoSnap = control;
+
+        if (Input::IsKeyPressed(KeyCode::NUM_1))
+            m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
+        if (Input::IsKeyPressed(KeyCode::NUM_2))
+            m_GizmoType = ImGuizmo::OPERATION::ROTATE;
+        if (Input::IsKeyPressed(KeyCode::NUM_3))
+            m_GizmoType = ImGuizmo::OPERATION::SCALE;
     }
 
     void ViewportPanel::OnUpdate(float dt)
@@ -31,14 +48,20 @@ namespace HrothCore
             return;
         }
 
-        bool isFocus = ImGui::IsWindowFocused() && ImGui::IsWindowHovered();
-        if (isFocus && m_CameraPositioner)
-            m_CameraPositioner->Update(dt);
+        ProcessInput(dt);
 
         ImVec2 size = ImGui::GetContentRegionAvail();
         ImGui::Image((ImTextureID)(size_t)Renderer::GetFramebuffer(Framebuffers::ScreenView)->GetTexture("Color")->GetID(),
                     size, ImVec2 {0, 1}, ImVec2 {1, 0});
+
+        float windowWidth = ImGui::GetWindowWidth();
+        float windowHeight = ImGui::GetWindowHeight();
+        Renderer::ResizeView(static_cast<uint32_t>(windowWidth), static_cast<uint32_t>(windowHeight));
         DrawGuizmo();
+
+        bool isFocus = ImGui::IsWindowFocused() && ImGui::IsWindowHovered();
+        if (isFocus && m_CameraPositioner && !m_UsedGizmo)
+            m_CameraPositioner->Update(dt);
         
         ImGui::End();
         ImGui::PopStyleVar();
@@ -46,22 +69,27 @@ namespace HrothCore
 
     void ViewportPanel::DrawGuizmo()
     {
-        GameObject *entity = nullptr;
+        m_UsedGizmo = false;
 
+        GameObject *entity = nullptr;
 		if (!(entity = (*m_ScenePtr)->GetSelectedEntity()) || m_GizmoType == -1)
             return;
 
-        ImGuizmo::SetDrawlist();
-        ImGuizmo::AllowAxisFlip(false);
-        float windowWidth = (float)ImGui::GetWindowWidth();
-        float windowHeight = (float)ImGui::GetWindowHeight();
-        ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
+        if (!m_Camera)
+            return;
+
+        float windowWidth = ImGui::GetWindowWidth();
+        float windowHeight = ImGui::GetWindowHeight();
 
         glm::mat4 cameraProjection = m_Camera->GetProjMatrix(windowWidth / windowHeight);
         glm::mat4 cameraView = m_Camera->GetViewMatrix();
 
+        ImGuizmo::SetDrawlist();
+        ImGuizmo::AllowAxisFlip(false);
+        ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
+
         TransformComponent &transform = entity->GetComponent<TransformComponent>();
-        glm::mat4 transformMat = transform.Global;
+        glm::mat4 transformMat = transform.Local;
 
         // Snapping
         float snapValue = 0.5;
@@ -86,6 +114,8 @@ namespace HrothCore
             transform.SetPosition(glm::vec3(translation[0], translation[1], translation[2]));
             transform.SetRotation(glm::vec3(rotation[0], rotation[1], rotation[2]));
             transform.SetScale(glm::vec3(scale[0], scale[1], scale[2]));
+
+            m_UsedGizmo = true;
         }
     }
 }

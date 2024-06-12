@@ -17,8 +17,25 @@ namespace HrothCore
         m_Meshes.push_back(mesh);
     }
 
+    void Model::AddMaterial(const Material &material)
+    {
+        m_Materials.push_back(material);
+    }
+
     size_t Model::GetMeshesCount() const
     {
         return m_Meshes.size();
+    }
+
+    const Mesh& Model::GetMesh(size_t index) const
+    { 
+        HC_ASSERT(index < m_Meshes.size(), "Index out of bounds");
+        return m_Meshes[index];
+    }
+
+    const Material& Model::GetMaterial(size_t index) const
+    { 
+        HC_ASSERT(index < m_Materials.size(), "Index out of bounds");
+        return m_Materials[index];
     }
 }

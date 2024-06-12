@@ -15,6 +15,10 @@ namespace HrothCore
         glCreateFramebuffers(1, &m_HandleID);
     }
 
+    Framebuffer::~Framebuffer()
+    {
+    }
+
     void Framebuffer::CreateTextureAttachment(const std::string &name, TextureInfo info)
     {
         uint32_t index = static_cast<uint32_t>(m_Textures.size());
@@ -68,8 +72,29 @@ namespace HrothCore
         }
     }
 
-    Framebuffer::~Framebuffer()
+    void Framebuffer::Resize(uint32_t width, uint32_t height)
     {
+        HC_ASSERT(width > 0 && height > 0, "Framebuffer::Resize: invalid size");
+
+        if (m_Width == width && m_Height == height)
+            return;
+
+        m_Width = width;
+        m_Height = height;
+
+        int index = 0;
+        for (auto &[name, texture] : m_Textures)
+        {
+            texture.Resize(width, height);
+            glNamedFramebufferTexture(m_HandleID, GL_COLOR_ATTACHMENT0 + index, texture.GetID(), 0);
+            index++;
+        }
+
+        if (m_DepthTexture.GetID() != 0)
+        {
+            m_DepthTexture.Resize(width, height);
+            glNamedFramebufferTexture(m_HandleID, GL_DEPTH_ATTACHMENT, m_DepthTexture.GetID(), 0);
+        }
     }
 
     void Framebuffer::BindForDrawing() const
@@ -83,7 +108,7 @@ namespace HrothCore
         const GLenum status = glCheckNamedFramebufferStatus(m_HandleID, GL_FRAMEBUFFER);
         if (status != GL_FRAMEBUFFER_COMPLETE)
         {
-            HC_LOG_WARNING("Framebuffer::BindForDrawing: framebuffer is not complete {0}", status);
+            HC_LOG_WARNING("Framebuffer::BindForDrawing: framebuffer is not complete, status: {0}", status);
             return;
         }
 
@@ -119,7 +144,7 @@ namespace HrothCore
         ClearDepth();
     }
 
-    void Framebuffer::BlitToColor(Framebuffer *dst, glm::ivec2 srcSize, glm::ivec2 dstSize, BlitFilterMode filterMode)
+    void Framebuffer::BlitToColor(Framebuffer *dst, glm::ivec2 dstSize, BlitFilterMode filterMode)
     {
         GLuint readID = GetID();
         GLuint drawID = dst ? dst->GetID() : 0;
@@ -132,13 +157,13 @@ namespace HrothCore
         }
             
         glBlitNamedFramebuffer(readID, drawID,
-                            0, 0, srcSize.x, srcSize.y,
+                            0, 0, m_Width, m_Height,
                             0, 0, dstSize.x, dstSize.y,
                             GL_COLOR_BUFFER_BIT, filterGL);
     }
 
     void Framebuffer::BlitToColorAttachment(uint32_t myAttachmentIndex, uint32_t dstAttachmentIndex, 
-                Framebuffer *dst, glm::ivec2 srcSize, glm::ivec2 dstSize, BlitFilterMode filterMode)
+                Framebuffer *dst, glm::ivec2 dstSize, BlitFilterMode filterMode)
     {
         GLuint readID = GetID();
         GLuint drawID = dst ? dst->GetID() : 0;
@@ -153,12 +178,12 @@ namespace HrothCore
         glNamedFramebufferDrawBuffer(readID, GL_COLOR_ATTACHMENT0 + myAttachmentIndex);
         glNamedFramebufferReadBuffer(drawID, GL_COLOR_ATTACHMENT0 + dstAttachmentIndex);
         glBlitNamedFramebuffer(readID, drawID,
-                            0, 0, srcSize.x, srcSize.y,
+                            0, 0, m_Width, m_Height,
                             0, 0, dstSize.x, dstSize.y,
                             GL_COLOR_BUFFER_BIT, filterGL);
     }
 
-    void Framebuffer::BlitToDepth(Framebuffer *dst, glm::ivec2 srcSize, glm::ivec2 dstSize, BlitFilterMode filterMode)
+    void Framebuffer::BlitToDepth(Framebuffer *dst, glm::ivec2 dstSize, BlitFilterMode filterMode)
     {
         GLuint readID = GetID();
         GLuint drawID = dst ? dst->GetID() : 0;
@@ -171,7 +196,7 @@ namespace HrothCore
         }
             
         glBlitNamedFramebuffer(readID, drawID,
-                            0, 0, srcSize.x, srcSize.y,
+                            0, 0, m_Width, m_Height,
                             0, 0, dstSize.x, dstSize.y,
                             GL_DEPTH_BUFFER_BIT, filterGL);
     }

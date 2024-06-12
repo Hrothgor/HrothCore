@@ -24,6 +24,25 @@ namespace HrothCore
                 ImGuiLayer::RegisterPanel<ViewportPanel>(Engine::Get().GetScenePtr(), &m_EditorCamera, &m_EditorCameraPositioner);
 
                 Engine::Get().SetCameraPtr(&m_EditorCamera);
+
+                // TEMP
+                AssetRef<Model> bunnyRef = AssetManager::GetModelRef("./assets/models/bunny/bunny.obj");
+                AssetRef<Model> teapotRef = AssetManager::GetModelRef("./assets/models/teapot/teapot.obj");
+                AssetRef<Model> dragonRef = AssetManager::GetModelRef("./assets/models/dragon/dragon.obj");
+                for (int x = 0; x < 4; x++)
+                    for (int y = 0; y < 4; y++)
+                        for (int z = 0; z < 4; z++) {
+                            GameObject *go = Engine::Get().GetScene()->Instantiate();
+                            go->GetComponent<TransformComponent>().SetPosition(glm::vec3(x * 3.5f, y * 3.5f, z * 3.5f));
+                            if ((x + y + z) % 2 == 0)
+                            {
+                                go->GetComponent<TransformComponent>().SetScale(glm::vec3(0.02f, 0.02f, 0.02f));
+                                go->AddComponent<StaticMeshComponent>(teapotRef);
+                            }
+                            else
+                                go->AddComponent<StaticMeshComponent>(bunnyRef);
+                        }
+                //
             }
 
             void Shutdown() override

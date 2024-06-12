@@ -11,6 +11,7 @@ namespace HrothCore
         TextureData LoadTexture(const std::string &path);
 
         Mesh LoadMeshToGPU(const MeshData &meshData);
+        Material LoadMaterialToGPU(const MaterialData &materialData);
         Texture LoadTextureToGPU(const TextureData &textureData);
     };
 }

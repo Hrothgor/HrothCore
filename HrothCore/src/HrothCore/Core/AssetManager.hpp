@@ -15,6 +15,7 @@ namespace HrothCore
 
         AssetRef<Model> GetModelRef(const std::string &path);
         AssetRef<Texture> GetTextureRef(const std::string &path);
+        AssetRef<Material> GetMaterialRef(const std::string &path);
 
         template<typename T>
         const T& GetAsset(uint32_t index);

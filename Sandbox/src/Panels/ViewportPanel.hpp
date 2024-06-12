@@ -16,9 +16,11 @@ namespace HrothCore
             void OnUpdate(float dt) override;
         private:
             void DrawGuizmo();
+            void ProcessInput(float dt);
 
             int m_GizmoType;
-            bool m_GizmoSnap;
+            bool m_GizmoSnap = false;
+            bool m_UsedGizmo = false;
 
             Scene **m_ScenePtr;
             Camera *m_Camera;

@@ -21,17 +21,25 @@ namespace HrothCore
     {
         enum TextureType : uint32_t
         {
-            Albedo,
-            Metallic,
+            Diffuse,
+            Specular,
             Normal,
             Occlusion,
             Emissive,
             NumTypes
         };
-
         std::array<std::string, TextureType::NumTypes> Textures;
 
-        glm::vec3 AlbedoValue;
+        glm::vec3 DiffuseColor = glm::vec3(1.0f);
+        glm::vec3 SpecularColor = glm::vec3(1.0f);
+        glm::vec3 AmbientColor = glm::vec3(1.0f);
+        glm::vec3 EmissiveColor = glm::vec3(1.0f);
+
+        float OcclusionStrength = 1.0f;
+
+        float Shininess = 32.0f;
+        float DiffuseReflectivity = 1.0f;
+        float SpecularReflectivity = 1.0f;
     };
 
     struct MeshData
@@ -45,6 +53,26 @@ namespace HrothCore
     {
         std::vector<MeshData> Meshes;
         std::vector<MaterialData> Materials;
+    };
+
+    struct Material
+    {
+        int32_t DiffuseTextureIndex; // index in SamplerBuffer
+        int32_t SpecularTextureIndex; // index in SamplerBuffer
+        int32_t NormalTextureIndex; // index in SamplerBuffer
+        int32_t OcclusionTextureIndex; // index in SamplerBuffer
+        int32_t EmissiveTextureIndex; // index in SamplerBuffer
+
+        alignas(16) glm::vec3 DiffuseColor;
+        alignas(16) glm::vec3 SpecularColor;
+        alignas(16) glm::vec3 AmbientColor;
+        alignas(16) glm::vec3 EmissiveColor;
+
+        float OcclusionStrength;
+
+        float Shininess;
+        float DiffuseReflectivity;
+        float SpecularReflectivity;
     };
 
     struct Mesh

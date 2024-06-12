@@ -51,6 +51,9 @@ namespace HrothCore
             uint32_t GetID() const { return m_HandleID; }
             uint64_t GetBindlessID() const;
 
+            void SetSamplerIndex(uint32_t index) { m_SamplerIndex = index; }
+            uint32_t GetSamplerIndex() const { return m_SamplerIndex; }
+
             void Release();
         private:
             void CreateTexture();
@@ -59,5 +62,6 @@ namespace HrothCore
             uint32_t m_Width, m_Height;
             uint32_t m_HandleID;
             uint64_t m_BindlessID;
+            uint32_t m_SamplerIndex;
     };
 }

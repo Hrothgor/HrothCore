@@ -21,6 +21,10 @@ namespace HrothCore
             Texture *GetTexture(const std::string &name);
             Texture *GetDepthTexture();
 
+            void Resize(uint32_t width, uint32_t height);
+            uint32_t GetWidth() const { return m_Width; }
+            uint32_t GetHeight() const { return m_Height; }
+
             void BindForDrawing() const;
 
             void ClearColor(glm::vec4 color = glm::vec4(0.0, 0.0, 0.0, 1.0));
@@ -28,10 +32,10 @@ namespace HrothCore
             void ClearDepth(float depth = 0.0);
             void Clear();
 
-            void BlitToColor(Framebuffer *dst, glm::ivec2 srcSize, glm::ivec2 dstSize, BlitFilterMode filterMode);
+            void BlitToColor(Framebuffer *dst, glm::ivec2 dstSize, BlitFilterMode filterMode);
             void BlitToColorAttachment(uint32_t myAttachmentIndex, uint32_t dstAttachmentIndex, 
-                Framebuffer *dst, glm::ivec2 srcSize, glm::ivec2 dstSize, BlitFilterMode filterMode);
-            void BlitToDepth(Framebuffer *dst, glm::ivec2 srcSize, glm::ivec2 dstSize, BlitFilterMode filterMode); 
+                Framebuffer *dst, glm::ivec2 dstSize, BlitFilterMode filterMode);
+            void BlitToDepth(Framebuffer *dst, glm::ivec2 dstSize, BlitFilterMode filterMode); 
 
             uint32_t GetID() const { return m_HandleID; }
 

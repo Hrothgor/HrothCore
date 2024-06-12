@@ -9,6 +9,7 @@ namespace HrothCore
     {
         std::vector<std::pair<std::string, Model>> Models;
         std::vector<std::pair<std::string, Texture>> Textures;
+        std::vector<std::pair<std::string, Material>> Materials;
     };
 
     static AssetManagerData s_Data;
@@ -37,6 +38,13 @@ namespace HrothCore
             for (const MeshData &meshData : modelData.Meshes) {
                 model.AddMesh(AssetLoader::LoadMeshToGPU(meshData)); // Load mesh to GPU
             }
+            std::string directory = path.substr(0, path.find_last_of('/') + 1);
+            for (MaterialData &materialData : modelData.Materials) {
+                for (int i = 0; i < MaterialData::TextureType::NumTypes; i++)
+                    if (!materialData.Textures[i].empty())
+                        materialData.Textures[i] = directory + materialData.Textures[i];
+                model.AddMaterial(AssetLoader::LoadMaterialToGPU(materialData)); // Load Material to GPU
+            }
             s_Data.Models.push_back({path, model});
             return AssetRef<Model>(static_cast<uint32_t>(s_Data.Models.size() - 1));
         }
@@ -59,6 +67,21 @@ namespace HrothCore
         return AssetRef<Texture>(static_cast<uint32_t>(it - s_Data.Textures.begin()));
     }
 
+    AssetRef<Material> AssetManager::GetMaterialRef(const std::string &path)
+    {
+        auto it = std::find_if(s_Data.Materials.begin(), s_Data.Materials.end(),
+            [path](const std::pair<std::string, Material> &materialAsset) { return materialAsset.first == path; });
+
+        // if (it == s_Data.Materials.end())
+        // {
+        //     Material material; // TODO
+        //     s_Data.Materials.push_back({path, material}); // Load texture to GPU
+        //     return AssetRef<Material>(static_cast<uint32_t>(s_Data.Materials.size() - 1));
+        // }
+
+        return AssetRef<Material>(static_cast<uint32_t>(it - s_Data.Materials.begin()));
+    }
+
     /* ----- GETTER ----- */
 
     template<>
@@ -73,5 +96,12 @@ namespace HrothCore
     {
         HC_ASSERT(index < s_Data.Textures.size() || index < 0, "Index out of bounds!");
         return s_Data.Textures[index].second;
+    }
+
+    template<>
+    const Material& AssetManager::GetAsset<Material>(uint32_t index)
+    {
+        HC_ASSERT(index < s_Data.Materials.size() || index < 0, "Index out of bounds!");
+        return s_Data.Materials[index].second;
     }
 }

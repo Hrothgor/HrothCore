@@ -44,6 +44,7 @@ namespace HrothCore
         /* PerMeshData */
         struct PerMeshData {
             glm::mat4 transform;
+            Material material;
         };
         std::shared_ptr<Buffer<PerMeshData>> BufferPerMeshData;
         uint32_t BatchMeshCount = 0;
@@ -73,49 +74,38 @@ namespace HrothCore
         std::shared_ptr<Buffer<PerFrameData>> BufferPerFrameData;
         PerFrameData PerFrameDataUniform;
         /* ------------ */
-
-        glm::ivec2 FramebufferSize;
     };
 
     static RenderData s_Data;
 
     void Renderer::Init()
     {
-        s_Data.FramebufferSize.x = Application::Get().GetWindow().GetWidth();
-        s_Data.FramebufferSize.y = Application::Get().GetWindow().GetHeight();
-		HC_REGISTER_EVENT(WindowResizeEvent, [](const WindowResizeEvent &event) -> bool
-        {
-            s_Data.FramebufferSize.x = event.Width;
-            s_Data.FramebufferSize.y = event.Height;
-            return true;
-        });
 
         s_Data.MeshVAO = std::make_shared<VertexArray>();
         s_Data.EmptyVAO = std::make_shared<VertexArray>();
 
         s_Data.Shaders[GBufferShader] = std::make_shared<Shader>("./assets/shaders/GBuffer.vert", "./assets/shaders/GBuffer.frag");
         s_Data.Shaders[ScreenViewShader] = std::make_shared<Shader>("./assets/shaders/View.vert", "./assets/shaders/View.frag");
+
+        auto &window = Application::Get().GetWindow();
         
-        s_Data.Framebuffers[GBuffer] = std::make_shared<Framebuffer>(s_Data.FramebufferSize.x, s_Data.FramebufferSize.y);
+        s_Data.Framebuffers[GBuffer] = std::make_shared<Framebuffer>(window.GetWidth(), window.GetHeight());
         s_Data.Framebuffers[GBuffer]->CreateTextureAttachment("Tex1", TextureInfo{ .dataType = TextureInfo::DataType::UByte });
         s_Data.Framebuffers[GBuffer]->CreateTextureAttachment("Tex2", TextureInfo{ .dataType = TextureInfo::DataType::UByte });
         s_Data.Framebuffers[GBuffer]->CreateTextureAttachment("Tex3", TextureInfo{ .dataType = TextureInfo::DataType::UByte });
         s_Data.Framebuffers[GBuffer]->CreateTextureAttachment("Tex4", TextureInfo{ .dataType = TextureInfo::DataType::UByte });
-        s_Data.Framebuffers[ScreenView] = std::make_shared<Framebuffer>(s_Data.FramebufferSize.x, s_Data.FramebufferSize.y);
+        s_Data.Framebuffers[ScreenView] = std::make_shared<Framebuffer>(window.GetWidth(), window.GetHeight());
         s_Data.Framebuffers[ScreenView]->CreateTextureAttachment("Color", TextureInfo{ .dataType = TextureInfo::DataType::UByte });
 
         s_Data.BufferBindlessSamplers = std::make_shared<Buffer<uint64_t>>(RenderData::MaxTextures);
 
         s_Data.BufferPerMeshData = std::make_shared<Buffer<RenderData::PerMeshData>>(RenderData::MaxMeshes);
-        s_Data.BufferPerMeshData->BindToShader(0, BufferShaderType::ShaderStorage);
         s_Data.BufferPerMeshDataBase = new RenderData::PerMeshData[RenderData::MaxMeshes];
 
         s_Data.BufferIndirectDraw = std::make_shared<Buffer<RenderData::DrawIndirectCommand>>(RenderData::MaxMeshes);
-        s_Data.BufferIndirectDraw->BindIndirectDraw();
         s_Data.BufferIndirectDrawBase = new RenderData::DrawIndirectCommand[RenderData::MaxMeshes];
 
         s_Data.BufferPerFrameData = std::make_shared<Buffer<RenderData::PerFrameData>>();
-        s_Data.BufferPerFrameData->BindToShader(0, BufferShaderType::Uniform);
     }
 
     void Renderer::Shutdown()
@@ -142,14 +132,19 @@ namespace HrothCore
 
     void Renderer::BeginScene(const Camera &camera)
     {
-        glEnable(GL_DEPTH_TEST);        
+        glEnable(GL_DEPTH_TEST);
 
         s_Data.PerFrameDataUniform.view = camera.GetViewMatrix();
-        s_Data.PerFrameDataUniform.proj = camera.GetProjMatrix(s_Data.FramebufferSize.x / (float)s_Data.FramebufferSize.y);
-        s_Data.PerFrameDataUniform.resolution = glm::vec2(s_Data.FramebufferSize);
+        s_Data.PerFrameDataUniform.proj = camera.GetProjMatrix(s_Data.Framebuffers[ScreenView]->GetWidth() / (float)s_Data.Framebuffers[ScreenView]->GetHeight());
+        s_Data.PerFrameDataUniform.resolution = glm::vec2(s_Data.Framebuffers[ScreenView]->GetWidth(), s_Data.Framebuffers[ScreenView]->GetHeight());
 
         s_Data.Framebuffers[GBuffer]->Clear();
         s_Data.Framebuffers[ScreenView]->Clear();
+
+        s_Data.BufferIndirectDraw->BindIndirectDraw();
+        s_Data.BufferPerFrameData->BindToShader(0, BufferShaderType::Uniform);
+        s_Data.BufferBindlessSamplers->BindToShader(0, BufferShaderType::ShaderStorage);
+        s_Data.BufferPerMeshData->BindToShader(1, BufferShaderType::ShaderStorage);
 
         StartBatch();
     }
@@ -169,21 +164,22 @@ namespace HrothCore
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        glViewport(0, 0, s_Data.FramebufferSize.x, s_Data.FramebufferSize.y);
     }
 
     void Renderer::RenderToScreen()
     {
+        auto &window = Application::Get().GetWindow();
         // Blit to screen
-        glBlitNamedFramebuffer(s_Data.Framebuffers[ScreenView]->GetID(), 0, 0, 0, s_Data.FramebufferSize.x, s_Data.FramebufferSize.y, 0, 0, s_Data.FramebufferSize.x, s_Data.FramebufferSize.y, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+        s_Data.Framebuffers[ScreenView]->BlitToColor(nullptr, glm::ivec2(window.GetWidth(), window.GetHeight()), BlitFilterMode::Linear);
     }
 
-    void Renderer::DrawMesh(const Mesh &mesh, const glm::mat4 &transform)
+    void Renderer::DrawMesh(const Mesh &mesh, const Material &material, const glm::mat4 &transform)
     {
         if (s_Data.BatchMeshCount >= RenderData::MaxMeshes)
             NextBatch();
 
         s_Data.BufferPerMeshDataPtr->transform = transform;
+        s_Data.BufferPerMeshDataPtr->material = material;
         s_Data.BufferPerMeshDataPtr++;
 
         s_Data.BufferIndirectDrawPtr->indexCount = mesh.IndicesCount;
@@ -205,10 +201,11 @@ namespace HrothCore
         return offsets;
     }
 
-    void Renderer::LoadBindlessTexture(const Texture &texture)
+    uint32_t Renderer::LoadBindlessTexture(const Texture &texture)
     {
         uint64_t bindlessID = texture.GetBindlessID();
         s_Data.BufferBindlessSamplers->AddData(1, &bindlessID);
+        return s_Data.BufferBindlessSamplers->GetSize() - 1;
     }
 
     /* ----------- */
@@ -224,6 +221,12 @@ namespace HrothCore
         }
 
         return s_Data.Framebuffers[framebuffer];
+    }
+
+    void Renderer::ResizeView(uint32_t width, uint32_t height)
+    {
+        s_Data.Framebuffers[GBuffer]->Resize(width, height);
+        s_Data.Framebuffers[ScreenView]->Resize(width, height);
     }
 
     std::shared_ptr<Shader> Renderer::GetShader(Shaders shader)

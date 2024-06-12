@@ -63,11 +63,12 @@ namespace HrothCore
 
     void Texture::Resize(uint32_t width, uint32_t height)
     {
-        if ((m_Width == width && m_Height == height)
-            || width == 0 || height == 0)
+        HC_ASSERT(width > 0 && height > 0, "Texture::Resize: width and height must be greater than 0");
+        
+        if (m_Width == width && m_Height == height)
             return;
 
-        glDeleteTextures(1, &m_HandleID);
+        Release();
         m_Width = width;
         m_Height = height;
         CreateTexture();
