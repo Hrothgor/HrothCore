@@ -35,8 +35,8 @@ namespace HrothCore
                 m_Rotation.x = glm::clamp(m_Rotation.x, -80.0f, 80.0f);
 
                 m_Dirty = true;
-                window.SetCursorPos(m_PrevMousePos.x, m_PrevMousePos.y);
             }
+            window.SetCursorPos(m_PrevMousePos.x, m_PrevMousePos.y);
         } else if (Input::IsMouseButtonReleased(m_KeyBinding.Rotate)) {
             m_IsMouseClicked = false;
             Window &window = Application::Get().GetWindow();

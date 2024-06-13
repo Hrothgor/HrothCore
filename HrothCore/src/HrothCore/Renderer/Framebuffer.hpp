@@ -25,7 +25,7 @@ namespace HrothCore
             uint32_t GetWidth() const { return m_Width; }
             uint32_t GetHeight() const { return m_Height; }
 
-            void BindForDrawing() const;
+            void BindForDrawing();
 
             void ClearColor(glm::vec4 color = glm::vec4(0.0, 0.0, 0.0, 1.0));
             void ClearColorAttachment(uint32_t attachmentIndex, glm::vec4 color = glm::vec4(0.0, 0.0, 0.0, 1.0));
@@ -41,10 +41,13 @@ namespace HrothCore
 
             void Release();
         private:
+            void ResizeImpl();
+
             std::unordered_map<std::string, Texture> m_Textures;
             Texture m_DepthTexture;
 
             uint32_t m_Width, m_Height;
+            bool m_NeedsResize = false;
 
             uint32_t m_HandleID;
     };

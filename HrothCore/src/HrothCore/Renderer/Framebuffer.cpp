@@ -82,27 +82,38 @@ namespace HrothCore
         m_Width = width;
         m_Height = height;
 
+        m_NeedsResize = true;
+    }
+
+    void Framebuffer::ResizeImpl()
+    {
         int index = 0;
         for (auto &[name, texture] : m_Textures)
         {
-            texture.Resize(width, height);
+            texture.Resize(m_Width, m_Height);
             glNamedFramebufferTexture(m_HandleID, GL_COLOR_ATTACHMENT0 + index, texture.GetID(), 0);
             index++;
         }
 
         if (m_DepthTexture.GetID() != 0)
         {
-            m_DepthTexture.Resize(width, height);
+            m_DepthTexture.Resize(m_Width, m_Height);
             glNamedFramebufferTexture(m_HandleID, GL_DEPTH_ATTACHMENT, m_DepthTexture.GetID(), 0);
         }
     }
 
-    void Framebuffer::BindForDrawing() const
+    void Framebuffer::BindForDrawing()
     {
         if (m_Textures.size() == 0)
         {
             HC_LOG_WARNING("Framebuffer::BindForDrawing: no attachments to draw");
             return;
+        }
+
+        if (m_NeedsResize)
+        {
+            ResizeImpl();
+            m_NeedsResize = false;
         }
 
         const GLenum status = glCheckNamedFramebufferStatus(m_HandleID, GL_FRAMEBUFFER);

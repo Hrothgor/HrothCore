@@ -48,17 +48,20 @@ namespace HrothCore
             return;
         }
 
+        // Input
         ProcessInput(dt);
+
+        // Draw
+        float windowWidth = ImGui::GetWindowWidth();
+        float windowHeight = ImGui::GetWindowHeight();
+        Renderer::ResizeView(static_cast<uint32_t>(windowWidth), static_cast<uint32_t>(windowHeight));
 
         ImVec2 size = ImGui::GetContentRegionAvail();
         ImGui::Image((ImTextureID)(size_t)Renderer::GetFramebuffer(Framebuffers::ScreenView)->GetTexture("Color")->GetID(),
                     size, ImVec2 {0, 1}, ImVec2 {1, 0});
-
-        float windowWidth = ImGui::GetWindowWidth();
-        float windowHeight = ImGui::GetWindowHeight();
-        Renderer::ResizeView(static_cast<uint32_t>(windowWidth), static_cast<uint32_t>(windowHeight));
         DrawGuizmo();
 
+        // Camera
         bool isFocus = ImGui::IsWindowFocused() && ImGui::IsWindowHovered();
         if (isFocus && m_CameraPositioner && !m_UsedGizmo)
             m_CameraPositioner->Update(dt);
