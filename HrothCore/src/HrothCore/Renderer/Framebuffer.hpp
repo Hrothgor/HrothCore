@@ -17,7 +17,7 @@ namespace HrothCore
             ~Framebuffer();
 
             void CreateTextureAttachment(const std::string &name, TextureInfo info = TextureInfo());
-            void CreateDepthTextureAttachment(TextureInfo info = TextureInfo());
+            void CreateDepthTextureAttachment();
             Texture *GetTexture(const std::string &name);
             Texture *GetDepthTexture();
 
@@ -29,7 +29,7 @@ namespace HrothCore
 
             void ClearColor(glm::vec4 color = glm::vec4(0.0, 0.0, 0.0, 1.0));
             void ClearColorAttachment(uint32_t attachmentIndex, glm::vec4 color = glm::vec4(0.0, 0.0, 0.0, 1.0));
-            void ClearDepth(float depth = 0.0);
+            void ClearDepth(float depth = 1.0);
             void Clear();
 
             void BlitToColor(Framebuffer *dst, glm::ivec2 dstSize, BlitFilterMode filterMode);

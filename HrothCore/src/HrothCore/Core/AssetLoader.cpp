@@ -34,13 +34,12 @@ namespace HrothCore
         materialData.Textures[MaterialData::TextureType::Occlusion] = ProcessMaterialTexture(material, aiTextureType_AMBIENT);
         materialData.Textures[MaterialData::TextureType::Emissive] = ProcessMaterialTexture(material, aiTextureType_EMISSIVE);
 
-        material->Get(AI_MATKEY_COLOR_DIFFUSE,  materialData.DiffuseColor);
-        material->Get(AI_MATKEY_COLOR_SPECULAR, materialData.SpecularColor);
-        material->Get(AI_MATKEY_COLOR_AMBIENT, materialData.AmbientColor);
-        material->Get(AI_MATKEY_COLOR_EMISSIVE, materialData.EmissiveColor);
+        material->Get(AI_MATKEY_EMISSIVE_INTENSITY, materialData.EmissiveIntensity);
+
+        material->Get(AI_MATKEY_BASE_COLOR,  materialData.Color);
+
         material->Get(AI_MATKEY_SHININESS, materialData.Shininess);
-        material->Get(AI_MATKEY_REFLECTIVITY, materialData.DiffuseReflectivity);
-        material->Get(AI_MATKEY_SHININESS_STRENGTH, materialData.SpecularReflectivity);
+        material->Get(AI_MATKEY_REFLECTIVITY, materialData.Reflectivity);
 
         return materialData;
     }
@@ -229,16 +228,13 @@ namespace HrothCore
 
 #undef LOAD_MAT_TEXTURE
 
-        material.DiffuseColor = materialData.DiffuseColor;
-        material.SpecularColor = materialData.SpecularColor;
-        material.AmbientColor = materialData.AmbientColor;
-        material.EmissiveColor = materialData.EmissiveColor;
-        
         material.OcclusionStrength = materialData.OcclusionStrength;
+        material.EmissiveIntensity = materialData.EmissiveIntensity;
+
+        material.Color = materialData.Color;
 
         material.Shininess = materialData.Shininess;
-        material.DiffuseReflectivity = materialData.DiffuseReflectivity;
-        material.SpecularReflectivity = materialData.SpecularReflectivity;
+        material.Reflectivity = materialData.Reflectivity;
 
         return material;
     }

@@ -191,6 +191,17 @@ namespace HrothCore
                     case TextureInfo::DataType::Int: return GL_RGBA32I;
                     case TextureInfo::DataType::Float: return GL_RGBA32F;
                 }
+            case TextureInfo::Format::Depth:
+                switch (dataType)
+                {
+                    case TextureInfo::DataType::UByte: return GL_DEPTH_COMPONENT16;
+                    case TextureInfo::DataType::Byte: return GL_DEPTH_COMPONENT16;
+                    case TextureInfo::DataType::UShort: return GL_DEPTH_COMPONENT16;
+                    case TextureInfo::DataType::Short: return GL_DEPTH_COMPONENT16;
+                    case TextureInfo::DataType::UInt: return GL_DEPTH_COMPONENT32;
+                    case TextureInfo::DataType::Int: return GL_DEPTH_COMPONENT32;
+                    case TextureInfo::DataType::Float: return GL_DEPTH_COMPONENT32F;
+                }
         }
         return 0;
     }

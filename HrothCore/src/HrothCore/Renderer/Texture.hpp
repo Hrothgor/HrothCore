@@ -19,7 +19,7 @@ namespace HrothCore
         enum class Format
         {
             R, RG, RGB,
-            RGBA
+            RGBA, Depth
         } format = Format::RGBA;
 
         enum class DataType

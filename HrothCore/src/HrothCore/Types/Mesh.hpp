@@ -30,16 +30,13 @@ namespace HrothCore
         };
         std::array<std::string, TextureType::NumTypes> Textures;
 
-        glm::vec3 DiffuseColor = glm::vec3(1.0f);
-        glm::vec3 SpecularColor = glm::vec3(1.0f);
-        glm::vec3 AmbientColor = glm::vec3(1.0f);
-        glm::vec3 EmissiveColor = glm::vec3(1.0f);
+        float OcclusionStrength = 1.0; // between 0 and 1
+        float EmissiveIntensity = 1.0;
 
-        float OcclusionStrength = 1.0f;
+        glm::vec3 Color = glm::vec3(1.0f);
 
-        float Shininess = 32.0f;
-        float DiffuseReflectivity = 1.0f;
-        float SpecularReflectivity = 1.0f;
+        float Shininess = 32.0;
+        float Reflectivity = 1.0; // between 0 and 1
     };
 
     struct MeshData
@@ -57,22 +54,19 @@ namespace HrothCore
 
     struct Material
     {
-        int32_t DiffuseTextureIndex; // index in SamplerBuffer
-        int32_t SpecularTextureIndex; // index in SamplerBuffer
-        int32_t NormalTextureIndex; // index in SamplerBuffer
-        int32_t OcclusionTextureIndex; // index in SamplerBuffer
-        int32_t EmissiveTextureIndex; // index in SamplerBuffer
+        int32_t DiffuseTextureIndex = -1; // index in SamplerBuffer
+        int32_t SpecularTextureIndex = -1; // index in SamplerBuffer
+        int32_t NormalTextureIndex = -1; // index in SamplerBuffer
+        int32_t OcclusionTextureIndex = -1; // index in SamplerBuffer
+        int32_t EmissiveTextureIndex = -1; // index in SamplerBuffer
 
-        alignas(16) glm::vec3 DiffuseColor;
-        alignas(16) glm::vec3 SpecularColor;
-        alignas(16) glm::vec3 AmbientColor;
-        alignas(16) glm::vec3 EmissiveColor;
+        float OcclusionStrength = 1.0; // between 0 and 1
+        float EmissiveIntensity = 1.0;
 
-        float OcclusionStrength;
+        alignas(16) glm::vec3 Color = glm::vec3(1.0f);
 
-        float Shininess;
-        float DiffuseReflectivity;
-        float SpecularReflectivity;
+        float Shininess = 32.0;
+        float Reflectivity = 1.0; // between 0 and 1
     };
 
     struct Mesh

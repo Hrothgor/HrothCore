@@ -1,6 +1,7 @@
 #version 460 core
 #extension GL_ARB_bindless_texture : enable
 
+in vec3 FragPos;
 in vec2 TexCoord;
 in vec3 Normal;
 // MATERIAL
@@ -9,14 +10,11 @@ in flat int SpecularTextureIndex;
 in flat int NormalTextureIndex;
 in flat int OcclusionTextureIndex;
 in flat int EmissiveTextureIndex;
-in vec3 DiffuseColor;
-in vec3 SpecularColor;
-in vec3 AmbientColor;
-in vec3 EmissiveColor;
 in float OcclusionStrength;
+in float EmissiveIntensity;
+in vec3 Color;
 in float Shininess;
-in float DiffuseReflectivity;
-in float SpecularReflectivity;
+in float Reflectivity;
 
 layout (location = 0) out vec4 gTex1;
 layout (location = 1) out vec4 gTex2;
@@ -29,11 +27,26 @@ layout(std430, binding = 0) readonly restrict buffer textureSamplers {
 
 void main()
 {
-    if(DiffuseTextureIndex == -1)
-        gTex1 = vec4(DiffuseColor, 1.0);
-    else
-        gTex1 = texture(sampler2D(TextureSamplers[DiffuseTextureIndex]), TexCoord);
-    gTex2 = vec4(0.0,1.0,0.0, 1.0);
-    gTex3 = vec4(1.0,0.0,0.0, 1.0);
-    gTex4 = vec4(0.0,0.0,1.0, 1.0);
+    // gTex1 RGB = ALBEDO, A = Specular
+    gTex1.rgb = DiffuseTextureIndex == -1 ?
+                    Color :
+                    texture(sampler2D(TextureSamplers[DiffuseTextureIndex]), TexCoord).rgb;
+    gTex1.a = SpecularTextureIndex == -1 ?
+                    1.0 :
+                    texture(sampler2D(TextureSamplers[SpecularTextureIndex]), TexCoord).r;
+    // gTex2 RGB  = NORMAL, A = Shininess
+    gTex2.rgb = NormalTextureIndex == -1 ?
+                    Normal :
+                    normalize(texture(sampler2D(TextureSamplers[NormalTextureIndex]), TexCoord).xyz);
+    gTex2.a = Shininess;
+    // gTex3 RGB = EMISSIVE, A = Reflectivity
+    gTex3.rgb = EmissiveTextureIndex == -1 ?
+                    vec3(0.0) :
+                    texture(sampler2D(TextureSamplers[EmissiveTextureIndex]), TexCoord).rgb * EmissiveIntensity;
+    gTex3.a = Reflectivity;
+    // gTex4 RGB = POSITION, A = OCCLUSION
+    gTex4.rgb = vec3(FragPos.x, FragPos.y, FragPos.z);
+    gTex4.a = OcclusionTextureIndex == -1 ?
+                    1.0 :
+                    texture(sampler2D(TextureSamplers[OcclusionTextureIndex]), TexCoord).r * OcclusionStrength;
 }

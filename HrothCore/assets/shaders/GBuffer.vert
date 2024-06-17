@@ -19,16 +19,13 @@ struct Material
     int occlusionTextureIndex;
     int emissiveTextureIndex;
 
-    vec3 diffuseColor;
-    vec3 specularColor;
-    vec3 ambientColor;
-    vec3 emissiveColor;
-
     float occlusionStrength;
+    float emissiveIntensity;
+
+    vec3 color;
 
     float shininess;
-    float diffuseReflectivity;
-    float specularReflectivity;
+    float reflectivity;
 };
 
 struct PerMeshData_t
@@ -41,6 +38,7 @@ layout(std430, binding = 1) readonly buffer perMeshData {
     PerMeshData_t PerMeshData[];
 };
 
+out vec3 FragPos;
 out vec2 TexCoord;
 out vec3 Normal;
 // MATERIAL
@@ -49,19 +47,17 @@ out flat int SpecularTextureIndex;
 out flat int NormalTextureIndex;
 out flat int OcclusionTextureIndex;
 out flat int EmissiveTextureIndex;
-out vec3 DiffuseColor;
-out vec3 SpecularColor;
-out vec3 AmbientColor;
-out vec3 EmissiveColor;
 out float OcclusionStrength;
+out float EmissiveIntensity;
+out vec3 Color;
 out float Shininess;
-out float DiffuseReflectivity;
-out float SpecularReflectivity;
+out float Reflectivity;
 
 void main() {
     mat4 MVP = iProj * iView * PerMeshData[gl_DrawID].model;
     gl_Position = MVP * vec4(aPos, 1.0);
 
+    FragPos = (PerMeshData[gl_DrawID].model * vec4(aPos, 1.0)).xyz;
     TexCoord = aTexCoord;
     Normal = normalize(PerMeshData[gl_DrawID].model * vec4(aNormal, 0.0)).xyz;
 
@@ -71,14 +67,11 @@ void main() {
     OcclusionTextureIndex = PerMeshData[gl_DrawID].material.occlusionTextureIndex;
     EmissiveTextureIndex = PerMeshData[gl_DrawID].material.emissiveTextureIndex;
 
-    DiffuseColor = PerMeshData[gl_DrawID].material.diffuseColor;
-    SpecularColor = PerMeshData[gl_DrawID].material.specularColor;
-    AmbientColor = PerMeshData[gl_DrawID].material.ambientColor;
-    EmissiveColor = PerMeshData[gl_DrawID].material.emissiveColor;
-
     OcclusionStrength = PerMeshData[gl_DrawID].material.occlusionStrength;
+    EmissiveIntensity = PerMeshData[gl_DrawID].material.emissiveIntensity;
+
+    Color = PerMeshData[gl_DrawID].material.color;
 
     Shininess = PerMeshData[gl_DrawID].material.shininess;
-    DiffuseReflectivity = PerMeshData[gl_DrawID].material.diffuseReflectivity;
-    SpecularReflectivity = PerMeshData[gl_DrawID].material.specularReflectivity;
+    Reflectivity = PerMeshData[gl_DrawID].material.reflectivity;
 }

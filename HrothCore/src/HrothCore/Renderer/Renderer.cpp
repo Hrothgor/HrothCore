@@ -80,6 +80,9 @@ namespace HrothCore
 
     void Renderer::Init()
     {
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
 
         s_Data.MeshVAO = std::make_shared<VertexArray>();
         s_Data.EmptyVAO = std::make_shared<VertexArray>();
@@ -94,6 +97,7 @@ namespace HrothCore
         s_Data.Framebuffers[GBuffer]->CreateTextureAttachment("Tex2", TextureInfo{ .dataType = TextureInfo::DataType::UByte });
         s_Data.Framebuffers[GBuffer]->CreateTextureAttachment("Tex3", TextureInfo{ .dataType = TextureInfo::DataType::UByte });
         s_Data.Framebuffers[GBuffer]->CreateTextureAttachment("Tex4", TextureInfo{ .dataType = TextureInfo::DataType::UByte });
+        s_Data.Framebuffers[GBuffer]->CreateDepthTextureAttachment();
         s_Data.Framebuffers[ScreenView] = std::make_shared<Framebuffer>(window.GetWidth(), window.GetHeight());
         s_Data.Framebuffers[ScreenView]->CreateTextureAttachment("Color", TextureInfo{ .dataType = TextureInfo::DataType::UByte });
 
@@ -132,8 +136,6 @@ namespace HrothCore
 
     void Renderer::BeginScene(const Camera &camera)
     {
-        glEnable(GL_DEPTH_TEST);
-
         s_Data.PerFrameDataUniform.view = camera.GetViewMatrix();
         s_Data.PerFrameDataUniform.proj = camera.GetProjMatrix(s_Data.Framebuffers[ScreenView]->GetWidth() / (float)s_Data.Framebuffers[ScreenView]->GetHeight());
         s_Data.PerFrameDataUniform.resolution = glm::vec2(s_Data.Framebuffers[ScreenView]->GetWidth(), s_Data.Framebuffers[ScreenView]->GetHeight());

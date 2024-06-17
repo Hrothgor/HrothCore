@@ -33,7 +33,7 @@ namespace HrothCore
         glNamedFramebufferDrawBuffers(m_HandleID, attachementCount, attachments);
     }
 
-    void Framebuffer::CreateDepthTextureAttachment(TextureInfo info)
+    void Framebuffer::CreateDepthTextureAttachment()
     {
         if (m_DepthTexture.GetID() != 0)
         {
@@ -41,7 +41,7 @@ namespace HrothCore
             return;
         }
 
-        m_DepthTexture = Texture(m_Width, m_Height, info);
+        m_DepthTexture = Texture(m_Width, m_Height, TextureInfo{ .format = TextureInfo::Format::Depth, .dataType = TextureInfo::DataType::Float });
 
         glNamedFramebufferTexture(m_HandleID, GL_DEPTH_ATTACHMENT, m_DepthTexture.GetID(), 0);
     }

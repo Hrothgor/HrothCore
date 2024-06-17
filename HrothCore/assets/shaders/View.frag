@@ -16,35 +16,106 @@ layout (binding = 3) uniform sampler2D iTex4;
 
 layout (location = 0) out vec4 FragColor;
 
+// void main()
+// {
+//     vec2 fragCoord = uv * iResolution;
+    
+//     float gridThickness = 5.0;
+//     // Draw border around textures
+//     if (fragCoord.x < gridThickness || fragCoord.x > iResolution.x - gridThickness || fragCoord.y < gridThickness || fragCoord.y > iResolution.y - gridThickness
+//         || (fragCoord.x > iResolution.x / 2 - (gridThickness / 2) && fragCoord.x < iResolution.x / 2 + (gridThickness / 2))
+//         || (fragCoord.y > iResolution.y / 2 - (gridThickness / 2) && fragCoord.y < iResolution.y / 2 + (gridThickness / 2)))
+//     {
+//         FragColor = vec4(0.3, 0.3, 0.3, 1.0);
+//         return;
+//     }
+
+//     // Display albedo then normal then position then depth in every corner of the screen
+//     if (fragCoord.x < iResolution.x / 2 && fragCoord.y < iResolution.y / 2)
+//     {
+//         FragColor = vec4(texture(iTex1, vec2(uv.x * 2, uv.y * 2)).rgb, 1.0);
+//     }
+//     else if (fragCoord.x > iResolution.x / 2 && fragCoord.y < iResolution.y / 2)
+//     {
+//         FragColor = vec4(texture(iTex2, vec2((uv.x - 0.5) * 2, uv.y * 2)).rgb, 1.0);
+//     }
+//     else if (fragCoord.x < iResolution.x / 2 && fragCoord.y > iResolution.y / 2)
+//     {
+//         FragColor = vec4(texture(iTex3, vec2(uv.x * 2, (uv.y - 0.5) * 2)).rgb, 1.0);
+//     }
+//     else if (fragCoord.x > iResolution.x / 2 && fragCoord.y > iResolution.y / 2)
+//     {
+//         FragColor = vec4(vec3(texture(iTex4, vec2((uv.x - 0.5) * 2, (uv.y - 0.5) * 2)).rgb), 1.0);
+//     }
+// }
+
 void main()
 {
     vec2 fragCoord = uv * iResolution;
     
-    float gridThickness = 5.0;
+    // 3*3 grid
+    vec2 gridSpacing = iResolution / 3;
+    float gridThickness = 2.0;
     // Draw border around textures
-    if (fragCoord.x < gridThickness || fragCoord.x > iResolution.x - gridThickness || fragCoord.y < gridThickness || fragCoord.y > iResolution.y - gridThickness
-        || (fragCoord.x > iResolution.x / 2 - (gridThickness / 2) && fragCoord.x < iResolution.x / 2 + (gridThickness / 2))
-        || (fragCoord.y > iResolution.y / 2 - (gridThickness / 2) && fragCoord.y < iResolution.y / 2 + (gridThickness / 2)))
+    if (mod(fragCoord.x, gridSpacing.x) < gridThickness || mod(fragCoord.y, gridSpacing.y) < gridThickness)
     {
-        FragColor = vec4(0.3, 0.3, 0.3, 1.0);
+        FragColor = vec4(1.0, 0.0, 0.0, 1.0);
         return;
     }
 
-    // Display albedo then normal then position then depth in every corner of the screen
-    if (fragCoord.x < iResolution.x / 2 && fragCoord.y < iResolution.y / 2)
+    vec2 gridSpaceUV = uv * 3.0;
+
+    // gTex1 RGB = ALBEDO A = Specular
+    if (fragCoord.x < gridSpacing.x
+         && fragCoord.y < gridSpacing.y)
     {
-        FragColor = vec4(texture(iTex1, vec2(uv.x * 2, uv.y * 2)).rgb, 1.0);
+        FragColor = vec4(texture(iTex1, vec2(gridSpaceUV.x, gridSpaceUV.y)).rgb, 1.0);
+        return;
     }
-    else if (fragCoord.x > iResolution.x / 2 && fragCoord.y < iResolution.y / 2)
+    if ((fragCoord.x > gridSpacing.x && fragCoord.x < gridSpacing.x * 2)
+         && fragCoord.y < gridSpacing.y)
     {
-        FragColor = vec4(texture(iTex2, vec2((uv.x - 0.5) * 2, uv.y * 2)).rgb, 1.0);
+        FragColor = vec4(vec3(texture(iTex1, vec2(gridSpaceUV.x, gridSpaceUV.y)).a), 1.0);
+        return;
     }
-    else if (fragCoord.x < iResolution.x / 2 && fragCoord.y > iResolution.y / 2)
+    // gTex2 RGB = NORMAL A = Shininess
+    if (fragCoord.x > gridSpacing.x * 2
+         && fragCoord.y < gridSpacing.y)
     {
-        FragColor = vec4(texture(iTex3, vec2(uv.x * 2, (uv.y - 0.5) * 2)).rgb, 1.0);
+        FragColor = vec4(texture(iTex2, vec2(gridSpaceUV.x, gridSpaceUV.y)).rgb, 1.0);
+        return;
     }
-    else if (fragCoord.x > iResolution.x / 2 && fragCoord.y > iResolution.y / 2)
+    if (fragCoord.x < gridSpacing.x
+         && (fragCoord.y > gridSpacing.y && fragCoord.y < gridSpacing.y * 2))
     {
-        FragColor = vec4(vec3(texture(iTex4, vec2((uv.x - 0.5) * 2, (uv.y - 0.5) * 2)).rgb), 1.0);
+        FragColor = vec4(vec3(texture(iTex2, vec2(gridSpaceUV.x, gridSpaceUV.y)).a), 1.0);
+        return;
     }
-}
+    // gTex3 RGB = EMISSIVE A = Reflectivity
+    if ((fragCoord.x > gridSpacing.x && fragCoord.x < gridSpacing.x * 2)
+         && (fragCoord.y > gridSpacing.y && fragCoord.y < gridSpacing.y * 2))
+    {
+        FragColor = vec4(texture(iTex3, vec2(gridSpaceUV.x, gridSpaceUV.y)).rgb, 1.0);
+        return;
+    }
+    if (fragCoord.x > gridSpacing.x * 2
+         && (fragCoord.y > gridSpacing.y && fragCoord.y < gridSpacing.y * 2))
+    {
+        FragColor = vec4(vec3(texture(iTex3, vec2(gridSpaceUV.x, gridSpaceUV.y)).a), 1.0);
+        return;
+    }
+    // gTex4 RGB = POSITION A = OCCLUSION
+    if (fragCoord.x < gridSpacing.x
+         && fragCoord.y > gridSpacing.y * 2)
+    {
+        FragColor = vec4(texture(iTex4, vec2(gridSpaceUV.x, gridSpaceUV.y)).rgb, 1.0);
+        return;
+    }
+    if ((fragCoord.x > gridSpacing.x && fragCoord.x < gridSpacing.x * 2)
+         && fragCoord.y > gridSpacing.y * 2)
+    {
+        FragColor = vec4(vec3(texture(iTex4, vec2(gridSpaceUV.x, gridSpaceUV.y)).a), 1.0);
+        return;
+    }
+    FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+}   
