@@ -170,6 +170,8 @@ namespace HrothCore
         s_Data.Framebuffers[GBuffer]->Clear();
         s_Data.Framebuffers[ScreenView]->Clear();
 
+
+
         s_Data.BufferIndirectDraw->BindIndirectDraw();
         s_Data.BufferPerFrameData->BindToShader(0, BufferShaderType::Uniform);
         s_Data.BufferBindlessSamplers->BindToShader(0, BufferShaderType::ShaderStorage);

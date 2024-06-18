@@ -6,6 +6,8 @@
 #include "HrothCore/Core/Engine.hpp"
 #include "HrothCore/Core/Window.hpp"
 
+#include "HrothCore/Renderer/Renderer.hpp"
+
 namespace HrothCore
 {
     void InfoPanel::OnUpdate(float dt)
@@ -23,6 +25,13 @@ namespace HrothCore
         int32_t usedVram = window.GetVramUsedKb();
         ImGui::ProgressBar(usedVram / (float)availableVram);
         ImGui::Text("VRAM: %d/%d KB", usedVram, availableVram);
+
+        ImGui::Separator();
+
+        if (ImGui::Button("Hot reload shaders"))
+        {
+            Renderer::ReloadAllShader();
+        }
     
         ImGui::End();
     }
