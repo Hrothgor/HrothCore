@@ -146,7 +146,7 @@ namespace HrothCore
     ModelData AssetLoader::LoadModel(const std::string &path)
     {
         Assimp::Importer importer;
-        const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
+        const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate);
 
         if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) 
         {
@@ -210,6 +210,8 @@ namespace HrothCore
 
         mesh.BaseVertex = offsets.first;
         mesh.BaseIndex = offsets.second;
+
+        mesh.MaterialIndex = meshData.MaterialIndex;
 
         return mesh;
     }

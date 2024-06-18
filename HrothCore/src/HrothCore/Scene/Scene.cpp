@@ -123,7 +123,9 @@ namespace HrothCore
                 auto &model = staticMesh.ModelRef.Get();
                 for (uint32_t i = 0; i < model.GetMeshesCount(); i++)
                 {
-                    Renderer::DrawMesh(model.GetMesh(i), model.GetMaterial(i), transform.Global);
+                    auto &mesh = model.GetMesh(i);
+                    auto &material = model.GetMaterial(mesh.MaterialIndex);
+                    Renderer::DrawMesh(mesh, material, transform.Global);
                 }
             }
         }

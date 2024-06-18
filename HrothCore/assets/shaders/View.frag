@@ -13,6 +13,7 @@ layout (binding = 0) uniform sampler2D iTex1;
 layout (binding = 1) uniform sampler2D iTex2;
 layout (binding = 2) uniform sampler2D iTex3;
 layout (binding = 3) uniform sampler2D iTex4;
+layout (binding = 4) uniform sampler2D iTexDepth;
 
 layout (location = 0) out vec4 FragColor;
 
@@ -84,5 +85,11 @@ void main()
         FragColor = vec4(vec3(texture(iTex4, vec2(gridSpaceUV.x, gridSpaceUV.y)).a), 1.0);
         return;
     }
-    FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+    // gTexDepth RGB = DEPTH A = unused
+    if (fragCoord.x > gridSpacing.x * 2
+         && fragCoord.y > gridSpacing.y * 2)
+    {
+        FragColor = vec4(vec3(texture(iTexDepth, vec2(gridSpaceUV.x, gridSpaceUV.y)).r), 1.0);
+        return;
+    }
 }   

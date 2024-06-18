@@ -163,6 +163,7 @@ namespace HrothCore
         s_Data.Framebuffers[GBuffer]->GetTexture("Tex2")->BindTextureUnit(1);
         s_Data.Framebuffers[GBuffer]->GetTexture("Tex3")->BindTextureUnit(2);
         s_Data.Framebuffers[GBuffer]->GetTexture("Tex4")->BindTextureUnit(3);
+        s_Data.Framebuffers[GBuffer]->GetDepthTexture()->BindTextureUnit(4);
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);

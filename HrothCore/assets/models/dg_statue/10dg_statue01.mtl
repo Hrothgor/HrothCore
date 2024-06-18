@@ -1,0 +1,15 @@
+newmtl mat_10dg_statue01_4901721
+illum 1
+map_Kd 10dg_statue01_4901721.png
+newmtl mat_armorreflect4
+illum 1
+map_Kd armorreflect4.png
+newmtl mat_10dg_statue01_4901723
+illum 1
+map_Kd 10dg_statue01_4901723.png
+newmtl mat_10dg_statue01_4901724
+illum 1
+map_Kd 10dg_statue01_4901724.png
+newmtl mat_10dg_statue01_4901725
+illum 1
+map_Kd 10dg_statue01_4901725.png
