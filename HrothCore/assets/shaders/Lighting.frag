@@ -39,6 +39,21 @@ layout (binding = 4) uniform sampler2D iTexDepth;
 
 layout (location = 0) out vec4 FragColor;
 
+vec3 WorldPosFromDepth(float depth)
+{
+    float z = depth * 2.0 - 1.0; // range [0, 1] -> [-1, 1]
+
+    vec4 clipSpacePosition = vec4(uv * 2.0 - 1.0, z, 1.0);
+    vec4 viewSpacePosition = inverse(iProj) * clipSpacePosition;
+
+    // Perspective division
+    viewSpacePosition /= viewSpacePosition.w;
+
+    vec4 worldSpacePosition = inverse(iView) * viewSpacePosition;
+
+    return worldSpacePosition.xyz;
+}
+
 void main()
 {
     vec3 Albedo = texture(iTex1, uv).rgb;
@@ -47,20 +62,44 @@ void main()
     float Shininess = texture(iTex2, uv).a;
     vec3 Emissive = texture(iTex3, uv).rgb;
     float Reflectivity = texture(iTex3, uv).a;
-    vec3 Position = texture(iTex4, uv).rgb;
+    vec3 Position = WorldPosFromDepth(texture(iTexDepth, uv).r);
     float Occlusion = texture(iTex4, uv).a;
+
+    vec3 viewDir = normalize((inverse(iView) * vec4(0,0,0,1)).xyz - Position);
 
     vec3 lighting = Albedo * 0.2; // hard-coded ambient component
     for (int i = 0; i < iLightCount; i++)
     {
         Light light = Lights[i];
-        vec3 lightDir = normalize(light.position - Position);
-        float lightDistance = length(light.position - Position);
+
+        vec3 lightPos = light.position;
+        vec3 lightColor = light.color.rgb;
+        float lightIntensity = light.intensity;
+        float lightFallOff = light.fallOff;
+        float lightSpotAngle = light.spotAngle;
+        float lightRange = light.range;
+
+        vec3 lightDir = normalize(lightPos - Position);
+        float lightDistance = length(lightPos - Position);
+
         if (lightDistance > light.range)
             continue;
-        vec3 diffuse = max(dot(Normal, lightDir), 0.0) * Albedo * light.color.rgb;
-        lighting += diffuse;
-    }
 
-    FragColor = vec4(lighting, 1.0);
+        float attenuation = clamp(1.0 - (lightDistance*lightDistance) / (lightRange*lightRange), 0.0, 1.0);
+        vec3 lightPower = lightColor * lightIntensity * attenuation;
+
+        // specular
+        vec3 halfwayDir = normalize(lightDir + viewDir);
+        // float energyConservation = (8.0 + Shininess) / (8.0 * 3.14159265);
+        float spec = pow(max(dot(Normal, halfwayDir), 0.0), Shininess) * Reflectivity;
+        vec3 specular = spec * Specular * lightPower;
+
+        // diffuse
+        vec3 diffuse = max(dot(Normal, lightDir), 0.0) * lightPower;
+
+        lighting += Albedo * diffuse + specular;
+    }
+    FragColor.rgb = lighting;
+    
+    FragColor.a = 1.0;
 }

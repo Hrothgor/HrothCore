@@ -73,11 +73,11 @@ void main()
         FragColor = vec4(vec3(texture(iTex3, vec2(gridSpaceUV.x, gridSpaceUV.y)).a), 1.0);
         return;
     }
-    // gTex4 RGB = POSITION A = OCCLUSION
+    // gTex4 RGB = unused A = OCCLUSION
     if (fragCoord.x < gridSpacing.x
          && fragCoord.y > gridSpacing.y * 2)
     {
-        FragColor = vec4(texture(iTex4, vec2(gridSpaceUV.x, gridSpaceUV.y)).rgb, 1.0);
+        FragColor = vec4(1.0, 0.0, 0.0, 1.0);
         return;
     }
     if ((fragCoord.x > gridSpacing.x && fragCoord.x < gridSpacing.x * 2)

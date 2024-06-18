@@ -38,7 +38,7 @@ namespace HrothCore
 
         material->Get(AI_MATKEY_BASE_COLOR,  materialData.Color);
 
-        material->Get(AI_MATKEY_SHININESS, materialData.Shininess);
+        // material->Get(AI_MATKEY_SHININESS, materialData.Shininess);
         material->Get(AI_MATKEY_REFLECTIVITY, materialData.Reflectivity);
 
         return materialData;

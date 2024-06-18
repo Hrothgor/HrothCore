@@ -44,8 +44,8 @@ void main()
                     vec3(0.0) :
                     texture(sampler2D(TextureSamplers[EmissiveTextureIndex]), TexCoord).rgb * EmissiveIntensity;
     gTex3.a = Reflectivity;
-    // gTex4 RGB = POSITION, A = OCCLUSION
-    gTex4.rgb = vec3(FragPos.x, FragPos.y, FragPos.z);
+    // gTex4 RGB = unused, A = OCCLUSION
+    // gTex4.rgb = vec3(FragPos.x, FragPos.y, FragPos.z);
     gTex4.a = OcclusionTextureIndex == -1 ?
                     1.0 :
                     texture(sampler2D(TextureSamplers[OcclusionTextureIndex]), TexCoord).r * OcclusionStrength;

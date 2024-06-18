@@ -30,13 +30,13 @@ namespace HrothCore
         };
         std::array<std::string, TextureType::NumTypes> Textures;
 
-        float OcclusionStrength = 1.0; // between 0 and 1
-        float EmissiveIntensity = 1.0;
+        float OcclusionStrength = 1.0f; // between 0 and 1
+        float EmissiveIntensity = 1.0f;
 
         glm::vec3 Color = glm::vec3(1.0f);
 
-        float Shininess = 32.0;
-        float Reflectivity = 1.0; // between 0 and 1
+        float Shininess = 16.0f;
+        float Reflectivity = 0.5f; // between 0 and 1
     };
 
     struct MeshData
@@ -60,13 +60,13 @@ namespace HrothCore
         int32_t OcclusionTextureIndex = -1; // index in SamplerBuffer
         int32_t EmissiveTextureIndex = -1; // index in SamplerBuffer
 
-        float OcclusionStrength = 1.0; // between 0 and 1
-        float EmissiveIntensity = 1.0;
+        float OcclusionStrength = 1.0f; // between 0 and 1
+        float EmissiveIntensity = 1.0f;
 
         alignas(16) glm::vec3 Color = glm::vec3(1.0f);
 
-        float Shininess = 32.0;
-        float Reflectivity = 1.0; // between 0 and 1
+        float Shininess = 16.0f;
+        float Reflectivity = 0.5f; // between 0 and 1
     };
 
     struct Mesh
