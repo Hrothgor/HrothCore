@@ -1,6 +1,7 @@
 #pragma once
 
 #include "HrothCore/Types/Mesh.hpp"
+#include "HrothCore/Components/LightComponent.hpp"
 
 namespace HrothCore
 {
@@ -12,7 +13,8 @@ namespace HrothCore
     enum Shaders
     {
         GBufferShader = 0,
-        ScreenViewShader,
+        LightShader,
+        DebugViewShader,
         NumShaders
     };
 
@@ -34,8 +36,9 @@ namespace HrothCore
         void EndScene();
         void RenderToScreen();
 
-        void DrawMesh(const Mesh &mesh, const Material &material, const glm::mat4 &transform = glm::mat4(1.0f));
-        
+        void DrawMesh(const Mesh &mesh, const Material &material, const glm::mat4 &transform);
+        void AddLight(const LightComponent &light, const glm::vec3 &position, const glm::vec3 &rotation);
+
         /* ------ */
 
         /* GPU LOADING */

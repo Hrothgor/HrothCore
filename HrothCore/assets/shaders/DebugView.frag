@@ -7,6 +7,7 @@ layout(std140, binding = 0) uniform PerFrameData
     uniform mat4 iView;
     uniform mat4 iProj;
     uniform vec2 iResolution;
+    uniform int iLightCount;
 };
 
 layout (binding = 0) uniform sampler2D iTex1;

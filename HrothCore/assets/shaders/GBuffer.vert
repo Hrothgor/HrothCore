@@ -9,6 +9,7 @@ layout(std140, binding = 0) uniform PerFrameData
     uniform mat4 iView;
     uniform mat4 iProj;
     uniform vec2 iResolution;
+    uniform int iLightCount;
 };
 
 struct Material
@@ -34,7 +35,8 @@ struct PerMeshData_t
     Material material;
 };
 
-layout(std430, binding = 1) readonly buffer perMeshData {
+layout(std430, binding = 1) readonly buffer perMeshData
+{
     PerMeshData_t PerMeshData[];
 };
 

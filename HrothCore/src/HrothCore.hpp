@@ -42,6 +42,7 @@
 // ---Components----------------------
 #include "HrothCore/Components/IDComponent.hpp"
 #include "HrothCore/Components/TransformComponent.hpp"
+#include "HrothCore/Components/LightComponent.hpp"
 #include "HrothCore/Components/StaticMeshComponent.hpp"
 // -----------------------------------
 

@@ -5,6 +5,7 @@
 
 #include "HrothCore/Components/IDComponent.hpp"
 #include "HrothCore/Components/TransformComponent.hpp"
+#include "HrothCore/Components/LightComponent.hpp"
 #include "HrothCore/Components/StaticMeshComponent.hpp"
 
 #include "HrothCore/Utils/UUID.hpp"
@@ -113,20 +114,31 @@ namespace HrothCore
         UpdateDirtyTransforms(GetRoot());
 
         Renderer::BeginScene(camera);
-        auto view = m_Registry.group<TransformComponent, StaticMeshComponent>();
-        for (auto entity : view)
         {
-            auto &transform = view.get<TransformComponent>(entity);
-            auto &staticMesh = view.get<StaticMeshComponent>(entity);
-            if (staticMesh.ModelRef.IsValid())
+            auto meshView = m_Registry.view<TransformComponent, StaticMeshComponent>();
+            for (auto entity : meshView)
             {
-                auto &model = staticMesh.ModelRef.Get();
-                for (uint32_t i = 0; i < model.GetMeshesCount(); i++)
+                auto &transform = meshView.get<TransformComponent>(entity);
+                auto &staticMesh = meshView.get<StaticMeshComponent>(entity);
+                if (staticMesh.ModelRef.IsValid())
                 {
-                    auto &mesh = model.GetMesh(i);
-                    auto &material = model.GetMaterial(mesh.MaterialIndex);
-                    Renderer::DrawMesh(mesh, material, transform.Global);
+                    auto &model = staticMesh.ModelRef.Get();
+                    for (uint32_t i = 0; i < model.GetMeshesCount(); i++)
+                    {
+                        auto &mesh = model.GetMesh(i);
+                        auto &material = model.GetMaterial(mesh.MaterialIndex);
+                        Renderer::DrawMesh(mesh, material, transform.Global);
+                    }
                 }
+            }
+
+            auto lightView = m_Registry.view<TransformComponent, LightComponent>();
+            for (auto entity : lightView)
+            {
+                auto &transform = lightView.get<TransformComponent>(entity);
+                auto &light = lightView.get<LightComponent>(entity);
+
+                Renderer::AddLight(light, transform.GetPosition(), transform.GetRotation());
             }
         }
         Renderer::EndScene();

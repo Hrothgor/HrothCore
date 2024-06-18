@@ -30,6 +30,7 @@ namespace HrothCore
         /* Constexpr */
         static constexpr uint32_t MaxMeshes = 4096;
         static constexpr uint32_t MaxTextures = 4 * MaxMeshes;
+        static constexpr uint32_t MaxLights = 1024;
         /* --------- */
 
         /* GPU stuff */
@@ -52,6 +53,23 @@ namespace HrothCore
         PerMeshData *BufferPerMeshDataPtr = nullptr;
         /* ----------- */
 
+        /* Lights */
+        struct LightData {
+            alignas(16) glm::vec3 position;
+            alignas(16) glm::vec3 rotation;
+            int32_t type; // 0: Directional, 1: Point, 2: Spot
+            glm::vec4 color;
+            float intensity;
+            float range;
+            float fallOff;
+            float spotAngle;
+        };
+        std::shared_ptr<Buffer<LightData>> BufferLightData;
+        uint32_t LightCount = 0;
+        LightData *BufferLightDataBase = nullptr;
+        LightData *BufferLightDataPtr = nullptr;
+        /* ------ */
+
         /* Indirect Buffer */
         struct DrawIndirectCommand {
             uint32_t indexCount;
@@ -70,6 +88,7 @@ namespace HrothCore
             glm::mat4 view;
             glm::mat4 proj;
             glm::vec2 resolution;
+            int lightCount;
         };
         std::shared_ptr<Buffer<PerFrameData>> BufferPerFrameData;
         PerFrameData PerFrameDataUniform;
@@ -88,15 +107,16 @@ namespace HrothCore
         s_Data.EmptyVAO = std::make_shared<VertexArray>();
 
         s_Data.Shaders[GBufferShader] = std::make_shared<Shader>("./assets/shaders/GBuffer.vert", "./assets/shaders/GBuffer.frag");
-        s_Data.Shaders[ScreenViewShader] = std::make_shared<Shader>("./assets/shaders/View.vert", "./assets/shaders/View.frag");
+        s_Data.Shaders[LightShader] = std::make_shared<Shader>("./assets/shaders/FullScreen.vert", "./assets/shaders/Lighting.frag");
+        s_Data.Shaders[DebugViewShader] = std::make_shared<Shader>("./assets/shaders/FullScreen.vert", "./assets/shaders/DebugView.frag");
 
         auto &window = Application::Get().GetWindow();
         
         s_Data.Framebuffers[GBuffer] = std::make_shared<Framebuffer>(window.GetWidth(), window.GetHeight());
-        s_Data.Framebuffers[GBuffer]->CreateTextureAttachment("Tex1", TextureInfo{ .dataType = TextureInfo::DataType::UByte });
-        s_Data.Framebuffers[GBuffer]->CreateTextureAttachment("Tex2", TextureInfo{ .dataType = TextureInfo::DataType::UByte });
-        s_Data.Framebuffers[GBuffer]->CreateTextureAttachment("Tex3", TextureInfo{ .dataType = TextureInfo::DataType::UByte });
-        s_Data.Framebuffers[GBuffer]->CreateTextureAttachment("Tex4", TextureInfo{ .dataType = TextureInfo::DataType::UByte });
+        s_Data.Framebuffers[GBuffer]->CreateTextureAttachment("Tex1", TextureInfo{ .dataType = TextureInfo::DataType::Float });
+        s_Data.Framebuffers[GBuffer]->CreateTextureAttachment("Tex2", TextureInfo{ .dataType = TextureInfo::DataType::Float });
+        s_Data.Framebuffers[GBuffer]->CreateTextureAttachment("Tex3", TextureInfo{ .dataType = TextureInfo::DataType::Float });
+        s_Data.Framebuffers[GBuffer]->CreateTextureAttachment("Tex4", TextureInfo{ .dataType = TextureInfo::DataType::Float });
         s_Data.Framebuffers[GBuffer]->CreateDepthTextureAttachment();
         s_Data.Framebuffers[ScreenView] = std::make_shared<Framebuffer>(window.GetWidth(), window.GetHeight());
         s_Data.Framebuffers[ScreenView]->CreateTextureAttachment("Color", TextureInfo{ .dataType = TextureInfo::DataType::UByte });
@@ -105,6 +125,9 @@ namespace HrothCore
 
         s_Data.BufferPerMeshData = std::make_shared<Buffer<RenderData::PerMeshData>>(RenderData::MaxMeshes);
         s_Data.BufferPerMeshDataBase = new RenderData::PerMeshData[RenderData::MaxMeshes];
+
+        s_Data.BufferLightData = std::make_shared<Buffer<RenderData::LightData>>(RenderData::MaxLights);
+        s_Data.BufferLightDataBase = new RenderData::LightData[RenderData::MaxLights];
 
         s_Data.BufferIndirectDraw = std::make_shared<Buffer<RenderData::DrawIndirectCommand>>(RenderData::MaxMeshes);
         s_Data.BufferIndirectDrawBase = new RenderData::DrawIndirectCommand[RenderData::MaxMeshes];
@@ -128,6 +151,9 @@ namespace HrothCore
         s_Data.BufferPerMeshData->Release();
         delete s_Data.BufferPerMeshDataBase;
 
+        s_Data.BufferLightData->Release();
+        delete s_Data.BufferLightDataBase;
+
         s_Data.BufferIndirectDraw->Release();
         delete s_Data.BufferIndirectDrawBase;
     
@@ -139,6 +165,7 @@ namespace HrothCore
         s_Data.PerFrameDataUniform.view = camera.GetViewMatrix();
         s_Data.PerFrameDataUniform.proj = camera.GetProjMatrix(s_Data.Framebuffers[ScreenView]->GetWidth() / (float)s_Data.Framebuffers[ScreenView]->GetHeight());
         s_Data.PerFrameDataUniform.resolution = glm::vec2(s_Data.Framebuffers[ScreenView]->GetWidth(), s_Data.Framebuffers[ScreenView]->GetHeight());
+        s_Data.PerFrameDataUniform.lightCount = 0;
 
         s_Data.Framebuffers[GBuffer]->Clear();
         s_Data.Framebuffers[ScreenView]->Clear();
@@ -147,6 +174,10 @@ namespace HrothCore
         s_Data.BufferPerFrameData->BindToShader(0, BufferShaderType::Uniform);
         s_Data.BufferBindlessSamplers->BindToShader(0, BufferShaderType::ShaderStorage);
         s_Data.BufferPerMeshData->BindToShader(1, BufferShaderType::ShaderStorage);
+        s_Data.BufferLightData->BindToShader(2, BufferShaderType::ShaderStorage);
+
+        s_Data.LightCount = 0;
+        s_Data.BufferLightDataPtr = s_Data.BufferLightDataBase;
 
         StartBatch();
     }
@@ -157,7 +188,8 @@ namespace HrothCore
 
         // ScreenView pass
         s_Data.Framebuffers[ScreenView]->BindForDrawing();
-        s_Data.Shaders[ScreenViewShader]->Start();
+        s_Data.Shaders[LightShader]->Start();
+        // s_Data.Shaders[DebugViewShader]->Start();
         s_Data.EmptyVAO->Bind();
         s_Data.Framebuffers[GBuffer]->GetTexture("Tex1")->BindTextureUnit(0);
         s_Data.Framebuffers[GBuffer]->GetTexture("Tex2")->BindTextureUnit(1);
@@ -193,6 +225,29 @@ namespace HrothCore
         s_Data.BufferIndirectDrawPtr++;
 
         s_Data.BatchMeshCount++;
+    }
+
+    void Renderer::AddLight(const LightComponent &light, const glm::vec3 &position, const glm::vec3 &rotation)
+    {
+        if (s_Data.LightCount >= RenderData::MaxLights)
+        {
+            HC_LOG_WARNING("Renderer::AddLight: Light count exceeded maximum light count");
+            return;
+        }
+
+        s_Data.BufferLightDataPtr->position = position;
+        s_Data.BufferLightDataPtr->rotation = rotation;
+        s_Data.BufferLightDataPtr->type = (int32_t)light.Type;
+        s_Data.BufferLightDataPtr->color = light.Color;
+        s_Data.BufferLightDataPtr->intensity = light.Intensity;
+        s_Data.BufferLightDataPtr->range = light.Range;
+        s_Data.BufferLightDataPtr->fallOff = light.FallOff;
+        s_Data.BufferLightDataPtr->spotAngle = light.SpotAngle;
+        s_Data.BufferLightDataPtr++;
+
+        s_Data.LightCount++;
+
+        s_Data.PerFrameDataUniform.lightCount++;
     }
 
     /* GPU LOADING */
@@ -277,7 +332,10 @@ namespace HrothCore
 
     void Renderer::Flush()
     {
+        // Update common buffers
         s_Data.BufferPerFrameData->SetData(1, &s_Data.PerFrameDataUniform);
+        if (s_Data.LightCount)
+            s_Data.BufferLightData->SetData(s_Data.LightCount, s_Data.BufferLightDataBase);
 
         // GBuffer pass
         if (s_Data.BatchMeshCount)

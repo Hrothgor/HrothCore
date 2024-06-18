@@ -37,8 +37,22 @@ namespace HrothCore
                 AssetRef<Model> dragonRef = AssetManager::GetModelRef("./assets/models/dg_statue/dg_statue.obj");
                 GameObject *go = Engine::Get().GetScene()->Instantiate();
                 go->AddComponent<StaticMeshComponent>(dragonRef);
+                
+                for (int i = 0; i < 0; i++)
+                {
+                    GameObject *go = Engine::Get().GetScene()->Instantiate();
+                    go->GetComponent<TransformComponent>().SetPosition(glm::vec3((rand() % 50) - 10, (rand() % 30) - 5, (rand() % 30) - 15));
+                    go->AddComponent<LightComponent>(
+                        LightType::Point,
+                        glm::vec4((rand() % 100) / 100.0f, (rand() % 100) / 100.0f, (rand() % 100) / 100.0f, 1.0f),
+                        1.0f,
+                        5.0f,
+                        1.0f,
+                        30.0f,
+                        false
+                    );
+                }
                 //
-
             }
 
             void Shutdown() override
