@@ -38,7 +38,7 @@ namespace HrothCore
                 GameObject *go = Engine::Get().GetScene()->Instantiate();
                 go->AddComponent<StaticMeshComponent>(dragonRef);
                 
-                for (int i = 0; i < 16; i++)
+                for (int i = 0; i < 1; i++)
                 {
                     GameObject *go = Engine::Get().GetScene()->Instantiate();
                     go->GetComponent<TransformComponent>().SetPosition(glm::vec3((rand() % 50) - 10, (rand() % 30) - 5, (rand() % 30) - 15));
@@ -46,7 +46,7 @@ namespace HrothCore
                         LightType::Point,
                         glm::vec4((rand() % 100) / 100.0f, (rand() % 100) / 100.0f, (rand() % 100) / 100.0f, 1.0f),
                         1.0f,
-                        100.0f,
+                        200.0f,
                         1.0f,
                         30.0f,
                         false

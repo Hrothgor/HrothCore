@@ -61,6 +61,10 @@ vec3 ContrastSaturationBrightness(vec3 color, float brt, float sat, float con)
 	return conColor;
 }
 
+//////////////
+//          //
+//   Main   //
+
 vec3 WorldPosFromDepth(float depth)
 {
     float z = depth * 2.0 - 1.0; // range [0, 1] -> [-1, 1]
@@ -109,15 +113,15 @@ void main()
             continue;
 
         float attenuation = clamp(1.0 - (lightDistance*lightDistance) / (lightRange*lightRange), 0.0, 1.0);
-        vec3 lightPower = lightColor * lightIntensity * attenuation;
+        float lightPower = lightIntensity * attenuation;
 
         // specular
         vec3 halfwayDir = normalize(lightDir + viewDir);
         float spec = pow(max(dot(Normal, halfwayDir), 0.0), Shininess) * Reflectivity;
-        vec3 specular = spec * Specular * lightPower;
+        vec3 specular = spec * Specular * lightPower * vec3(0.4); // white specular
 
         // diffuse
-        vec3 diffuse = max(dot(Normal, lightDir), 0.0) * lightPower;
+        vec3 diffuse = max(dot(Normal, lightDir), 0.0) * lightPower * lightColor;
 
         lighting += Albedo * diffuse + specular;
         lightAccum++;
