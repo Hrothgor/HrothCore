@@ -1,5 +1,6 @@
 #include <HrothCore.hpp>
 
+#include "Panels/AssetBrowserPanel.hpp"
 #include "Panels/InfoPanel.hpp"
 #include "Panels/SceneHierarchyPanel.hpp"
 #include "Panels/ViewportPanel.hpp"
@@ -20,6 +21,7 @@ namespace HrothCore
             {
                 HC_LOG_INFO("SandboxClient::Init");
                 ImGuiLayer::UseDocking(true);
+                ImGuiLayer::RegisterPanel<AssetBrowserPanel>();
                 ImGuiLayer::RegisterPanel<InfoPanel>();
                 ImGuiLayer::RegisterPanel<SceneHierarchyPanel>(Engine::Get().GetScenePtr());
                 ImGuiLayer::RegisterPanel<ViewportPanel>(Engine::Get().GetScenePtr(), &m_EditorCamera, &m_EditorCameraPositioner);
@@ -30,17 +32,17 @@ namespace HrothCore
                 AssetRef<Model> sphereRef = AssetManager::GetModelRef("./assets/models/sphere/sphere.obj");
                 for (int x = 0; x < 4; x++)
                     for (int y = 0; y < 4; y++) {
-                        GameObject *go = Engine::Get().GetScene()->Instantiate();
+                        GameObject *go = Engine::Get().GetScene()->Instantiate("Sphere");
                         go->GetComponent<TransformComponent>().SetPosition(glm::vec3(15 + x * 6.0f, y * 6.0f, 0.0f));
                         go->AddComponent<StaticMeshComponent>(sphereRef);
                     }
                 AssetRef<Model> dragonRef = AssetManager::GetModelRef("./assets/models/dg_statue/dg_statue.obj");
-                GameObject *go = Engine::Get().GetScene()->Instantiate();
+                GameObject *go = Engine::Get().GetScene()->Instantiate("Dragon");
                 go->AddComponent<StaticMeshComponent>(dragonRef);
                 
                 for (int i = 0; i < 1; i++)
                 {
-                    GameObject *go = Engine::Get().GetScene()->Instantiate();
+                    GameObject *go = Engine::Get().GetScene()->Instantiate("Light");
                     go->GetComponent<TransformComponent>().SetPosition(glm::vec3((rand() % 50) - 10, (rand() % 30) - 5, (rand() % 30) - 15));
                     go->AddComponent<LightComponent>(
                         LightType::Point,
